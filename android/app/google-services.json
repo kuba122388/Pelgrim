@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1079805540348",
+    "project_id": "pelgrim-872f5",
+    "storage_bucket": "pelgrim-872f5.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1079805540348:android:54ff8d77c21ff03c76e479",
+        "android_client_info": {
+          "package_name": "com.example.pelgrim"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBwUphJKFSO7I6_Z86A-5Xl-oVi5T7ives"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
