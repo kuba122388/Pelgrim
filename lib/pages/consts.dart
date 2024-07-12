@@ -1,0 +1,1 @@
+const double LOGIN_PAGE_MOVE = 0.12;
