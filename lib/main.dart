@@ -1,8 +1,6 @@
-import 'dart:ui';
-
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:pelgrim/pages/login-page/login-page.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -85,7 +83,10 @@ class CustomBackground extends StatelessWidget {
                   elevation: const WidgetStatePropertyAll(5.0),
                   backgroundColor: const WidgetStatePropertyAll(Colors.white),
                 ),
-                onPressed: null,
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const LoginPage())
+                ),
                 child: Stack(
                   children: [
                     Container(
@@ -120,12 +121,12 @@ class Picture extends StatelessWidget {
   final double width;
 
   const Picture({
-    Key? key,
+    super.key,
     required this.img,
     required this.top,
     required this.left,
     required this.width,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
