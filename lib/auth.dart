@@ -21,10 +21,15 @@ class Auth{
     required String email,
     required String password,
 }) async{
-    await _firebaseAuth.createUserWithEmailAndPassword(
-        email: email,
-        password: password
-    );
+    try {
+      await _firebaseAuth.createUserWithEmailAndPassword(
+          email: email,
+          password: password
+      );
+    }
+    catch(e){
+      throw Exception(e);
+    }
   }
 
   Future<void> signOut() async{
