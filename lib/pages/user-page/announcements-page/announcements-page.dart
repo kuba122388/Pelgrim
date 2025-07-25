@@ -28,94 +28,104 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
   Widget build(BuildContext context) {
     final group =
         '${widget.settings['groupColor']} - ${widget.settings['groupCity']}';
-    final screenWidth = MediaQuery.of(context).size.width;
+    final screenWidth = MediaQuery
+        .of(context)
+        .size
+        .width;
     final screenHeight =
-        MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top;
+        MediaQuery
+            .of(context)
+            .size
+            .height - MediaQuery
+            .of(context)
+            .padding
+            .top;
 
     return SafeArea(
         child: SingleChildScrollView(
-      physics: const NeverScrollableScrollPhysics(),
-      child: SizedBox(
-        width: screenWidth,
-        height: screenHeight,
-        child: Column(
-          children: [
-            Padding(
-                padding: EdgeInsets.only(
-                    top: screenHeight * 0.02, bottom: screenHeight * 0.01),
-                child: const Text('Dodaj Ogłoszenie',
-                    style: TextStyle(
-                        fontFamily: 'Lexend',
-                        fontWeight: FontWeight.bold,
-                        color: FONT_BLACK_COLOR,
-                        fontSize: 18,
-                        shadows: [APP_TEXT_SHADOW]))),
-            Expanded(
-              child: SizedBox(
-                width: screenWidth * 0.85,
-                child: Column(
-                  children: [
-                    InkWell(
-                        onTap: () =>
+          physics: const NeverScrollableScrollPhysics(),
+          child: SizedBox(
+            width: screenWidth,
+            height: screenHeight,
+            child: Column(
+              children: [
+                Padding(
+                    padding: EdgeInsets.only(
+                        top: screenHeight * 0.02, bottom: screenHeight * 0.01),
+                    child: const Text('Dodaj Ogłoszenie',
+                        style: TextStyle(
+                            fontFamily: 'Lexend',
+                            fontWeight: FontWeight.bold,
+                            color: FONT_BLACK_COLOR,
+                            fontSize: 18,
+                            shadows: [APP_TEXT_SHADOW]))),
+                Expanded(
+                  child: SizedBox(
+                    width: screenWidth * 0.85,
+                    child: Column(
+                      children: [
+                        InkWell(
+                            onTap: () =>
                             {_showAddAnnouncementWidget(group, refresh)},
-                        child: _addAnnouncement(screenWidth, screenHeight)),
-                    SizedBox(height: screenHeight * 0.01),
-                    Container(
-                      height: screenHeight * 0.73,
-                      padding:
+                            child: _addAnnouncement(screenWidth, screenHeight)),
+                        SizedBox(height: screenHeight * 0.01),
+                        Container(
+                          height: screenHeight * 0.73,
+                          padding:
                           const EdgeInsets.only(top: 15, left: 15, right: 15),
-                      decoration: BoxDecoration(
-                          color: BACKGROUND_CONTAINERS_COLOR,
-                          border: Border.all(color: Colors.black),
-                          borderRadius: BorderRadius.circular(10)),
-                      child: Column(
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          decoration: BoxDecoration(
+                              color: BACKGROUND_CONTAINERS_COLOR,
+                              border: Border.all(color: Colors.black),
+                              borderRadius: BorderRadius.circular(10)),
+                          child: Column(
                             children: [
-                              const Text('Tablica ogłoszeń',
-                                  style: TextStyle(
-                                      fontFamily: 'Lexend',
-                                      fontWeight: FontWeight.bold,
-                                      color: FONT_BLACK_COLOR,
-                                      fontSize: FONT_SIZE_BIG)),
                               Row(
+                                mainAxisAlignment: MainAxisAlignment
+                                    .spaceBetween,
                                 children: [
-                                  SizedBox(
-                                      width: 36,
-                                      height: 24,
-                                      child: Checkbox(
-                                        value: important,
-                                        onChanged: (bool? value) {
-                                          setState(() {
-                                            important = value!;
-                                          });
-                                        },
-                                        activeColor: Colors.grey,
-                                      )),
-                                  const Text('Ważne',
+                                  const Text('Tablica ogłoszeń',
                                       style: TextStyle(
                                           fontFamily: 'Lexend',
                                           fontWeight: FontWeight.bold,
-                                          fontSize: FONT_SIZE_SMALL,
-                                          color: FONT_BLACK_COLOR))
+                                          color: FONT_BLACK_COLOR,
+                                          fontSize: FONT_SIZE_BIG)),
+                                  Row(
+                                    children: [
+                                      SizedBox(
+                                          width: 36,
+                                          height: 24,
+                                          child: Checkbox(
+                                            value: important,
+                                            onChanged: (bool? value) {
+                                              setState(() {
+                                                important = value!;
+                                              });
+                                            },
+                                            activeColor: Colors.grey,
+                                          )),
+                                      const Text('Ważne',
+                                          style: TextStyle(
+                                              fontFamily: 'Lexend',
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: FONT_SIZE_SMALL,
+                                              color: FONT_BLACK_COLOR))
+                                    ],
+                                  ),
                                 ],
                               ),
+                              const SizedBox(height: 10),
+                              Expanded(child: _displayAnnouncements(group)),
                             ],
                           ),
-                          const SizedBox(height: 10),
-                          Expanded(child: _displayAnnouncements(group)),
-                        ],
-                      ),
-                    )
-                  ],
-                ),
-              ),
-            )
-          ],
-        ),
-      ),
-    ));
+                        )
+                      ],
+                    ),
+                  ),
+                )
+              ],
+            ),
+          ),
+        ));
   }
 
   StreamBuilder<List<Announcement>> _displayAnnouncements(String group) {
@@ -142,7 +152,9 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
                 child: Column(
                   children: announcements.map((announcement) {
                     return Visibility(
-                        visible: important == true ? announcement.important : true,
+                        visible: important == true
+                            ? announcement.important
+                            : true,
                         child: Container(
                             padding: const EdgeInsets.all(15),
                             margin: const EdgeInsets.only(bottom: 10),
@@ -158,18 +170,27 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
                                   crossAxisAlignment: WrapCrossAlignment.center,
                                   children: [
                                     Padding(
-                                        padding: const EdgeInsets.only(right: 5),
+                                        padding: const EdgeInsets.only(
+                                            right: 5),
                                         child: Text(
                                           announcement.anonymous == false
                                               ? announcement.author
                                               : 'Autor Anonimowy',
-                                          style: const TextStyle(fontFamily: 'Lexend'),
+                                          style: const TextStyle(
+                                              fontFamily: 'Lexend'),
                                         )
                                     ),
                                     Padding(
-                                        padding: const EdgeInsets.only(right: 10),
+                                        padding: const EdgeInsets.only(
+                                            right: 10),
                                         child: Text(
-                                          '${announcement.date.day}.${announcement.date.month}.${announcement.date.year} ${announcement.date.hour}:${announcement.date.minute}:${announcement.date.second}',
+                                          '${announcement.date
+                                              .day}.${announcement.date
+                                              .month}.${announcement.date
+                                              .year} ${announcement.date
+                                              .hour}:${announcement.date
+                                              .minute}:${announcement.date
+                                              .second}',
                                           style: const TextStyle(
                                               fontSize: 8,
                                               fontFamily: 'Lexend'
@@ -193,10 +214,12 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
                                   children: [
                                     Flexible(
                                         child: Padding(
-                                            padding: const EdgeInsets.only(top: 5, bottom: 10),
+                                            padding: const EdgeInsets.only(
+                                                top: 5, bottom: 10),
                                             child: Text(
                                               announcement.content,
-                                              style: const TextStyle(fontSize: FONT_SIZE_SMALL),
+                                              style: const TextStyle(
+                                                  fontSize: FONT_SIZE_SMALL),
                                               softWrap: true,
                                             )
                                         )
@@ -205,15 +228,19 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
                                 ),
                                 Visibility(
                                     visible: announcement.author ==
-                                        '${widget.myUser.firstName} ${widget.myUser.lastName}'
+                                        '${widget.myUser.firstName} ${widget
+                                            .myUser.lastName}' || widget.myUser.admin
                                         ? true
                                         : false,
                                     child: Row(
                                       mainAxisAlignment: MainAxisAlignment.end,
                                       children: [
                                         InkWell(
-                                            onTap: () => _deleteAnnouncement(announcement, group),
-                                            child: Image.asset('./images/trash.png', width: 15)
+                                            onTap: () =>
+                                                _deleteAnnouncement(
+                                                    announcement, group),
+                                            child: Image.asset(
+                                                './images/trash.png', width: 15)
                                         )
                                       ],
                                     )
@@ -236,7 +263,7 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
         Expanded(
             child: Container(
                 padding:
-                    const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+                const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
                 decoration: BoxDecoration(
                     color: BACKGROUND_CONTAINERS_COLOR,
                     border: Border.all(color: Colors.black),
@@ -246,12 +273,12 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
                   children: [
                     Expanded(
                         child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      margin: const EdgeInsets.only(right: 10, left: 3),
-                      decoration: BoxDecoration(
-                          color: const Color(0xC0FFFFFF),
-                          borderRadius: BorderRadius.circular(5)),
-                    )),
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          margin: const EdgeInsets.only(right: 10, left: 3),
+                          decoration: BoxDecoration(
+                              color: const Color(0xC0FFFFFF),
+                              borderRadius: BorderRadius.circular(5)),
+                        )),
                     Image.asset('./images/plus.png', height: 24)
                   ],
                 )))
@@ -260,7 +287,10 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
   }
 
   Future<void> _showAddAnnouncementWidget(String group, Function notifyParent) {
-    final screenWidth = MediaQuery.of(context).size.width;
+    final screenWidth = MediaQuery
+        .of(context)
+        .size
+        .width;
     bool important = false;
     bool anonymous = false;
     bool processing = false;
@@ -324,7 +354,7 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
                       child: TextField(
                         controller: announcementController,
                         decoration:
-                            const InputDecoration(border: InputBorder.none),
+                        const InputDecoration(border: InputBorder.none),
                         textCapitalization: TextCapitalization.sentences,
                         style: const TextStyle(fontSize: FONT_SIZE_SMALL),
                         maxLines: 8,
@@ -351,7 +381,7 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
                             const Text(
                               'Oznacz jako ważne',
                               style:
-                                  TextStyle(fontSize: 10, fontFamily: 'Lexend'),
+                              TextStyle(fontSize: 10, fontFamily: 'Lexend'),
                             ),
                           ],
                         ),
@@ -373,7 +403,7 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
                             const Text(
                               'Post anonimowy',
                               style:
-                                  TextStyle(fontSize: 10, fontFamily: 'Lexend'),
+                              TextStyle(fontSize: 10, fontFamily: 'Lexend'),
                             ),
                           ],
                         ),
@@ -395,7 +425,8 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
                                     anonymous: anonymous,
                                     important: important,
                                     author:
-                                        '${widget.myUser.firstName} ${widget.myUser.lastName}',
+                                    '${widget.myUser.firstName} ${widget.myUser
+                                        .lastName}',
                                     content: announcementController.text,
                                     date: DateTime.now(),
                                   ).save(group);
@@ -424,27 +455,34 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
 
   Future<void> _deleteAnnouncement(Announcement announcement, String group) {
     final screenHeight =
-        MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top;
+        MediaQuery
+            .of(context)
+            .size
+            .height - MediaQuery
+            .of(context)
+            .padding
+            .top;
 
     ElevatedButton buttonOption(text) {
       bool processing = false;
       return ElevatedButton(
-          onPressed: () async => {
-                if (processing == false)
+          onPressed: () async =>
+          {
+            if (processing == false)
+              {
+                setState(() {
+                  processing = true;
+                }),
+                if (text == 'Usuń')
                   {
+                    await announcement.delete(group),
                     setState(() {
-                      processing = true;
-                    }),
-                    if (text == 'Usuń')
-                      {
-                        await announcement.delete(group),
-                        setState(() {
-                          _displayAnnouncements(group);
-                        })
-                      },
-                    Navigator.of(context).pop()
-                  }
-              },
+                      _displayAnnouncements(group);
+                    })
+                  },
+                Navigator.of(context).pop()
+              }
+          },
           style: ButtonStyle(
               foregroundColor: text == 'Usuń'
                   ? WidgetStateProperty.all<Color>(Colors.white)

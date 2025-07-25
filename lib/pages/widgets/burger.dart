@@ -25,6 +25,7 @@ class _BurgerMenuState extends State<BurgerMenu> {
     'Informator',
     'Kontakt',
     'Zdjęcia',
+    'Użytkownicy',
     'Pomoc'
   ];
 
@@ -35,6 +36,7 @@ class _BurgerMenuState extends State<BurgerMenu> {
     './images/information.png',
     './images/phone.png',
     './images/images.png',
+    './images/users.png',
     './images/about.png'
   ];
 
@@ -68,10 +70,9 @@ class _BurgerMenuState extends State<BurgerMenu> {
             title: Text(
               _titles[index],
               style: TextStyle(
-                fontSize: 15,
-                color: isSelected ? Colors.black : LIST_TILE_INACTIVE_COLOR,
-                fontFamily: 'Lexend'
-              ),
+                  fontSize: 15,
+                  color: isSelected ? Colors.black : LIST_TILE_INACTIVE_COLOR,
+                  fontFamily: 'Lexend'),
             ),
             onTap: () {
               widget.onItemTapped(index);
@@ -108,7 +109,8 @@ class _BurgerMenuState extends State<BurgerMenu> {
               return listTile(isSelected, index);
             }),
             const Spacer(),
-            listTile(widget.selectedIndex == 6 ? true : false, 6),
+            listTile(widget.selectedIndex == _titles.length - 1 ? true : false,
+                _titles.length - 1),
             Container(
                 padding: const EdgeInsets.symmetric(vertical: 12),
                 child: const Center(

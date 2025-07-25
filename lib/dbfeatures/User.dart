@@ -13,17 +13,23 @@ class MyUser {
   final String? color;
 
   MyUser(
-      {this.groupColor, this.secondColor, this.groupCity, this.color, this.group, required this.firstName, required this.lastName, required this.email,
-        required this.phone, required this.admin});
+      {this.groupColor,
+      this.secondColor,
+      this.groupCity,
+      this.color,
+      this.group,
+      required this.firstName,
+      required this.lastName,
+      required this.email,
+      required this.phone,
+      required this.admin});
 
   String _groupName() {
     return groupColor == null ? group! : '$groupColor - $groupCity';
   }
 
   Map<String, dynamic> necessaryToExist() {
-    return {
-      'exists': true
-    };
+    return {'exists': true};
   }
 
   Map<String, dynamic> toMapUser() {
@@ -80,17 +86,16 @@ class MyUser {
     }
   }
 
-  factory MyUser.fromMap(Map<String, dynamic> map){
+  factory MyUser.fromMap(Map<String, dynamic> map) {
     return MyUser(
         admin: map['Admin'],
         email: map['Email'],
         firstName: map['FirstName'],
         lastName: map['LastName'],
-        phone: map['Phone']
-    );
+        phone: map['Phone']);
   }
 
-  static Future <MyUser?> getUserData(String email, String group) async {
+  static Future<MyUser?> getUserData(String email, String group) async {
     try {
       DocumentSnapshot doc = await FirebaseFirestore.instance
           .collection('Pelgrim Groups')
@@ -98,18 +103,34 @@ class MyUser {
           .collection('Users')
           .doc(email.toLowerCase())
           .get();
-      if(doc.exists){
+      if (doc.exists) {
         return MyUser.fromMap(doc.data() as Map<String, dynamic>);
-      }
-      else{
+      } else {
         print('Użytkownik nie został znaleziony');
         return null;
       }
-    }
-    catch (e){
+    } catch (e) {
       print('Problem z załadowaniem danych użytkownika: $e');
       return null;
     }
   }
 
+  static Future<List<MyUser>> getAllUsers(String group) async {
+    try {
+      QuerySnapshot allUsersSnapshot = await FirebaseFirestore.instance
+          .collection('Pelgrim Groups')
+          .doc(group)
+          .collection('Users')
+          .get();
+
+      List<MyUser> allUsers = allUsersSnapshot.docs.map((doc) {
+        return MyUser.fromMap(doc.data() as Map<String, dynamic>);
+      }).toList();
+
+      return allUsers;
+    } catch (e) {
+      print('Błąd przy pobieraniu użytkowników: $e');
+      return [];
+    }
+  }
 }

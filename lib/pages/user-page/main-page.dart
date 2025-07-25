@@ -1,10 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:pelgrim/dbfeatures/User.dart';
+import 'package:pelgrim/pages/user-page/all-users-page/AllUsersPage.dart';
 import 'package:pelgrim/pages/user-page/announcements-page/announcements-page.dart';
 import 'package:pelgrim/pages/user-page/contact-page/contact-page.dart';
 import 'package:pelgrim/pages/user-page/help-page/help-page.dart';
-import 'package:pelgrim/pages/user-page/images-upload-page/images-page.dart';
+import 'package:pelgrim/pages/user-page/images-upload-page/images-upload-page.dart';
 import 'package:pelgrim/pages/user-page/informant-page/informant-page.dart';
 import 'package:pelgrim/pages/user-page/playing-now-page/playing-now-page.dart';
 import 'package:pelgrim/pages/user-page/playing-now-page/playing-now-topbar.dart';
@@ -34,7 +35,7 @@ class _MainPageState extends State<MainPage> {
   @override
   void initState() {
     super.initState();
-    print(widget.myUser.firstName);
+    // print(widget.myUser.firstName);
     _pages = [
       AnnouncementsPage(settings: widget.settings, myUser: widget.myUser),
       PlayingNowPage(settings: widget.settings),
@@ -44,10 +45,12 @@ class _MainPageState extends State<MainPage> {
           settings: widget.settings,
           admin: widget.myUser.admin,
           key: _songsPageKey),
-      InformantPage(settings: widget.settings),
-      ContactPage(settings: widget.settings),
-      ImagePage(settings: widget.settings),
+      InformantPage(settings: widget.settings, myUser: widget.myUser),
+      ContactPage(settings: widget.settings, myUser: widget.myUser),
+      ImagePage(settings: widget.settings, myUser: widget.myUser),
+      if(widget.myUser.admin) AllUsersPage(settings: widget.settings,),
       HelpPage(settings: widget.settings)
+
     ];
     _topbars = [
       CustomTopBar(settings: widget.settings, myUser: widget.myUser),
@@ -60,7 +63,8 @@ class _MainPageState extends State<MainPage> {
       CustomTopBar(settings: widget.settings, myUser: widget.myUser),
       CustomTopBar(settings: widget.settings, myUser: widget.myUser),
       CustomTopBar(settings: widget.settings, myUser: widget.myUser),
-      CustomTopBar(settings: widget.settings, myUser: widget.myUser),
+      if(widget.myUser.admin) CustomTopBar(settings: widget.settings, myUser: widget.myUser),
+      CustomTopBar(settings: widget.settings, myUser: widget.myUser)
     ];
   }
 

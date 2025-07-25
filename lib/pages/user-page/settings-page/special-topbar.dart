@@ -1,25 +1,22 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:pelgrim/dbfeatures/User.dart';
-import 'package:pelgrim/pages/user-page/settings-page/settings-page.dart';
 
-class SettingsTopBar extends StatefulWidget implements PreferredSizeWidget{
+class SpecialTopBar extends StatefulWidget implements PreferredSizeWidget{
   final Map<String, dynamic> settings;
   final MyUser? myUser;
 
-
-  const SettingsTopBar(
+  const SpecialTopBar(
       {super.key,
         required this.settings, required this.myUser});
 
   @override
-  State<SettingsTopBar> createState() => _SettingsTopBarState();
+  State<SpecialTopBar> createState() => _SpecialTopBarState();
 
   @override
   Size get preferredSize => const Size.fromHeight(80);
 }
 
-class _SettingsTopBarState extends State<SettingsTopBar> {
+class _SpecialTopBarState extends State<SpecialTopBar> {
 
   @override
   Widget build(BuildContext context) {

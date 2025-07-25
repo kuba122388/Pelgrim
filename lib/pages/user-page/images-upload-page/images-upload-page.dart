@@ -5,11 +5,14 @@ import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:pelgrim/consts.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:pelgrim/dbfeatures/User.dart';
+import 'package:pelgrim/pages/user-page/images-upload-page/all-images/all-images-page.dart';
 
 class ImagePage extends StatefulWidget {
   final Map<String, dynamic> settings;
+  final MyUser myUser;
 
-  const ImagePage({super.key, required this.settings});
+  const ImagePage({super.key, required this.settings, required this.myUser});
 
   @override
   State<ImagePage> createState() => _ImagePageState();
@@ -193,7 +196,7 @@ class _ImagePageState extends State<ImagePage> {
                                 colorBlendMode: BlendMode.srcIn),
                           ))),
                   InkWell(
-                    onTap: () async => {await _uploadImages()},
+                    onTap: () async => await _uploadImages(),
                     child: Container(
                       height: 50,
                       padding: const EdgeInsets.symmetric(horizontal: 30),
@@ -212,6 +215,30 @@ class _ImagePageState extends State<ImagePage> {
                       ),
                     ),
                   ),
+                  if (widget.myUser.admin)
+                    InkWell(
+                      onTap: () async => {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    AllImagesPage(settings: widget.settings)))
+                      },
+                      child: Container(
+                        height: 50,
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            boxShadow: const [BOX_SHADOW_CONTAINER],
+                            borderRadius: BorderRadius.circular(15)),
+                        child: Image.asset(
+                          "./images/images.png",
+                          width: 30,
+                          height: 30,
+                        ),
+                      ),
+                    ),
+
                   Visibility(
                       visible: _selectedImages.isNotEmpty,
                       child: InkWell(

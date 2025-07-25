@@ -1,56 +1,44 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class Contact{
-  String? docId;
-  final String role;
+class Contact {
   final String description;
 
-  Contact({required this.role, required this.description, this.docId});
+  Contact({required this.description});
 
-  Map<String, dynamic> toMap(){
-    return {
-      'Role': role,
-      'Description': description
-    };
-  }
-
-  Future<void> addContact (String group) {
-    return FirebaseFirestore.instance
-        .collection('Pelgrim Groups')
-        .doc(group)
-        .collection('Contacts')
-        .add(toMap());
-  }
-
-  Future<void> deleteContact (String group){
-    return FirebaseFirestore.instance
-        .collection('Pelgrim Groups')
-        .doc(group)
-        .collection('Contacts')
-        .doc()
-        .delete();
-  }
-
-  factory Contact.fromMap(Map<String, dynamic> map, docId){
+  factory Contact.fromMap(Map<String, dynamic> map) {
     return Contact(
-        docId: docId,
-        role: map['Role'] ?? '',
-        description: map['Description'] ?? '',
-
+      description: map['description'] ?? '',
     );
   }
 
-  static Future<List<Contact>> getContacts(String group) async{
-    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+  Map<String, dynamic> toMap() {
+    return {
+      'description': description,
+    };
+  }
+
+  static Future<Contact?> get(String group) async {
+    DocumentSnapshot doc = await FirebaseFirestore.instance
         .collection('Pelgrim Groups')
         .doc(group)
         .collection('Contacts')
+        .doc('MainContact')
         .get();
 
-    return querySnapshot.docs.map((doc) {
-      return Contact.fromMap(doc.data() as Map<String, dynamic>, doc.id);
-    }).toList();
+    if (!doc.exists) return null;
 
+    final data = doc.data() as Map<String, dynamic>;
+    return Contact.fromMap(data);
+  }
+
+
+  Future<void> save(String group) async {
+    await FirebaseFirestore.instance
+        .collection('Pelgrim Groups')
+        .doc(group)
+        .collection('Contacts')
+        .doc('MainContact')
+        .set(toMap());
   }
 
 }
