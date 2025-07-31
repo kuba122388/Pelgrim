@@ -27,8 +27,10 @@ class Auth{
           password: password
       );
     }
-    catch(e){
-      throw Exception(e);
+    on FirebaseAuthException {
+      rethrow;
+    } catch (e) {
+      throw Exception('Nieznany błąd: $e');
     }
   }
 

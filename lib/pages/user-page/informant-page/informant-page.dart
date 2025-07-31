@@ -77,7 +77,7 @@ class _InformantPageState extends State<InformantPage> {
           }
         }
       }
-    if(pickedImages.length>0) setState(() {});
+      if (pickedImages.length > 0) setState(() {});
     }
   }
 
@@ -119,7 +119,6 @@ class _InformantPageState extends State<InformantPage> {
     );
   }
 
-
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
@@ -141,6 +140,9 @@ class _InformantPageState extends State<InformantPage> {
                   return Center(child: Text('Błąd: ${snapshot.error}'));
                 } else if (snapshot.hasData && snapshot.data != null) {
                   final imageUrls = snapshot.data!;
+                  if (imageUrls.isEmpty) {
+                    return const Center(child: Text("Brak informatorów"));
+                  }
                   return ListView.builder(
                     itemCount: imageUrls.length,
                     itemBuilder: (context, index) {
@@ -149,7 +151,7 @@ class _InformantPageState extends State<InformantPage> {
                         child: Stack(
                           children: [
                             GestureDetector(
-                              onTap: () {  },
+                              onTap: () {},
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(12),
                                 child: Image.network(
@@ -160,14 +162,17 @@ class _InformantPageState extends State<InformantPage> {
                                 ),
                               ),
                             ),
-                            if (widget.myUser.admin) Positioned(
-                              top: 10,
-                              right: 10,
-                              child: GestureDetector(
-                                onTap: () => _deleteConfirmation(imageUrls[index]),
-                                child: Image.asset("./images/trash.png", width: 20, height: 20),
+                            if (widget.myUser.admin)
+                              Positioned(
+                                top: 10,
+                                right: 10,
+                                child: GestureDetector(
+                                  onTap: () =>
+                                      _deleteConfirmation(imageUrls[index]),
+                                  child: Image.asset("./images/trash.png",
+                                      width: 20, height: 20),
+                                ),
                               ),
-                            ),
                           ],
                         ),
                       );

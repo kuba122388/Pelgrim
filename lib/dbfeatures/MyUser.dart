@@ -68,18 +68,18 @@ class MyUser {
     try {
       await FirebaseFirestore.instance
           .collection('Pelgrim Groups')
-          .doc(group)
+          .doc(_groupName())
           .set(necessaryToExist());
       await FirebaseFirestore.instance
           .collection('Pelgrim Groups')
-          .doc(group)
+          .doc(_groupName())
           .collection('Settings')
           .add(toMapSettings());
       await FirebaseFirestore.instance
           .collection('Pelgrim Groups')
-          .doc(group)
-          .collection('Users')
           .doc(_groupName())
+          .collection('Users')
+          .doc(email)
           .set(toMapUser());
     } catch (e) {
       print('Wystąpił błąd: $e');

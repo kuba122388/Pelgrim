@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
@@ -74,13 +75,13 @@ class _RegisterUserState extends State<RegisterUser> {
         duration: Duration(milliseconds: 500),
         content: Center(
             child: Padding(
-              padding: EdgeInsets.symmetric(vertical: 4.0),
-              child: Text(
-                'Przygotowywanie',
-                style: TextStyle(fontSize: 16),
-                textAlign: TextAlign.center,
-              ),
-            ))));
+          padding: EdgeInsets.symmetric(vertical: 4.0),
+          child: Text(
+            'Przygotowywanie',
+            style: TextStyle(fontSize: 16),
+            textAlign: TextAlign.center,
+          ),
+        ))));
     try {
       if (_controllerFirstName.text == '' ||
           _controllerLastName.text == '' ||
@@ -90,13 +91,13 @@ class _RegisterUserState extends State<RegisterUser> {
             duration: Duration(milliseconds: 500),
             content: Center(
                 child: Padding(
-                  padding: EdgeInsets.symmetric(vertical: 4.0),
-                  child: Text(
-                    'Jedno z pól jest puste',
-                    style: TextStyle(fontSize: 16),
-                    textAlign: TextAlign.center,
-                  ),
-                ))));
+              padding: EdgeInsets.symmetric(vertical: 4.0),
+              child: Text(
+                'Jedno z pól jest puste',
+                style: TextStyle(fontSize: 16),
+                textAlign: TextAlign.center,
+              ),
+            ))));
         return;
       }
 
@@ -121,13 +122,13 @@ class _RegisterUserState extends State<RegisterUser> {
             duration: Duration(seconds: 3),
             content: Center(
                 child: Padding(
-                  padding: EdgeInsets.symmetric(vertical: 4.0),
-                  child: Text(
-                    'Poszło dalej',
-                    style: TextStyle(fontSize: 16),
-                    textAlign: TextAlign.center,
-                  ),
-                ))));
+              padding: EdgeInsets.symmetric(vertical: 4.0),
+              child: Text(
+                'Poszło dalej',
+                style: TextStyle(fontSize: 16),
+                textAlign: TextAlign.center,
+              ),
+            ))));
         await user.createUserAndGroup();
         await Future.delayed(const Duration(milliseconds: 1500));
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
@@ -152,13 +153,13 @@ class _RegisterUserState extends State<RegisterUser> {
             duration: Duration(milliseconds: 500),
             content: Center(
                 child: Padding(
-                  padding: EdgeInsets.symmetric(vertical: 4.0),
-                  child: Text(
-                    'Rejestracja przebiegła pomyślnie!',
-                    style: TextStyle(fontSize: 16),
-                    textAlign: TextAlign.center,
-                  ),
-                ))));
+              padding: EdgeInsets.symmetric(vertical: 4.0),
+              child: Text(
+                'Rejestracja przebiegła pomyślnie!',
+                style: TextStyle(fontSize: 16),
+                textAlign: TextAlign.center,
+              ),
+            ))));
         Navigator.pop(context);
         return;
       }
@@ -168,27 +169,46 @@ class _RegisterUserState extends State<RegisterUser> {
             duration: Duration(seconds: 3),
             content: Center(
                 child: Padding(
-                  padding: EdgeInsets.symmetric(vertical: 4.0),
-                  child: Text(
-                    'Błąd: Nie wybrałeś pielgrzymki',
-                    style: TextStyle(fontSize: 16),
-                    textAlign: TextAlign.center,
-                  ),
-                ))));
+              padding: EdgeInsets.symmetric(vertical: 4.0),
+              child: Text(
+                'Błąd: Nie wybrałeś pielgrzymki',
+                style: TextStyle(fontSize: 16),
+                textAlign: TextAlign.center,
+              ),
+            ))));
         return;
       }
-    } on Exception catch (e) {
+    } on FirebaseAuthException catch (e) {
+      String message;
+      print('CODE: ${e.code}');
+
+      switch (e.code) {
+        case 'weak-password':
+          message = 'Hasło jest za słabe (min. 6 znaków)';
+          break;
+        case 'invalid-email':
+          message = 'Niepoprawny adres e-mail';
+          break;
+        case 'email-already-in-use':
+          message = 'Ten e-mail jest już używany';
+          break;
+        default:
+          message = 'Błąd: ${e.message}';
+      }
+
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          duration: const Duration(seconds: 3),
-          content: Center(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 4.0),
-                child: Text(
-                  'Wystąpił problem $e',
-                  style: const TextStyle(fontSize: 16),
-                  textAlign: TextAlign.center,
-                ),
-              ))));
+        duration: const Duration(seconds: 3),
+        content: Center(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4.0),
+            child: Text(
+              message,
+              style: const TextStyle(fontSize: 16),
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ),
+      ));
     }
   }
 
@@ -201,34 +221,25 @@ class _RegisterUserState extends State<RegisterUser> {
   Future<void> _fetchPilgrimages() async {
     try {
       QuerySnapshot snapshot =
-      await FirebaseFirestore.instance.collection("Pelgrim Groups").get();
+          await FirebaseFirestore.instance.collection("Pelgrim Groups").get();
       List<String> fetchedPilgrimages =
-      snapshot.docs.map((doc) => doc.id).toList();
+          snapshot.docs.map((doc) => doc.id).toList();
 
       setState(() {
         _pilgrimageList = fetchedPilgrimages;
       });
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Center(
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Center(
               child: Text('Wystąpił problem z załadowaniem pielgrzymek'))));
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery
-        .of(context)
-        .size
-        .width;
+    final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight =
-        MediaQuery
-            .of(context)
-            .size
-            .height - MediaQuery
-            .of(context)
-            .padding
-            .top;
+        MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top;
 
     return Scaffold(
         body: SafeArea(
@@ -266,7 +277,7 @@ class _RegisterUserState extends State<RegisterUser> {
                                           color: Colors.white,
                                         ),
                                         child:
-                                        _registrationContent(screenHeight),
+                                            _registrationContent(screenHeight),
                                       ),
                                       ElevatedButton(
                                           style: ButtonStyle(
@@ -276,11 +287,11 @@ class _RegisterUserState extends State<RegisterUser> {
                                                         LOGIN_CONTAINER_SIZE,
                                                     50)),
                                             elevation:
-                                            const WidgetStatePropertyAll(
-                                                5.0),
+                                                const WidgetStatePropertyAll(
+                                                    5.0),
                                             backgroundColor:
-                                            const WidgetStatePropertyAll(
-                                                Colors.white),
+                                                const WidgetStatePropertyAll(
+                                                    Colors.white),
                                           ),
                                           onPressed: () {
                                             createUserWithEmailAndPassword();
@@ -289,7 +300,7 @@ class _RegisterUserState extends State<RegisterUser> {
                                             children: [
                                               Container(
                                                 alignment:
-                                                Alignment.centerRight,
+                                                    Alignment.centerRight,
                                                 child: Image.asset(
                                                   'images/arrow-right.png',
                                                   height: 20,
@@ -336,7 +347,7 @@ class _RegisterUserState extends State<RegisterUser> {
                     fontWeight: FontWeight.bold)),
             GestureDetector(
                 onTap: () =>
-                {FocusScope.of(context).unfocus(), Navigator.pop(context)},
+                    {FocusScope.of(context).unfocus(), Navigator.pop(context)},
                 child: Image.asset(
                   './images/close.png',
                   width: 25,
@@ -362,7 +373,7 @@ class _RegisterUserState extends State<RegisterUser> {
                                     right: 10, bottom: 10),
                                 isExpanded: true,
                                 isDense:
-                                _selectedPilgrimage == null ? true : false,
+                                    _selectedPilgrimage == null ? true : false,
                                 menuMaxHeight: screenHeight * 0.3,
                                 style: const TextStyle(
                                     fontFamily: 'Lexend',
@@ -427,7 +438,7 @@ class _RegisterUserState extends State<RegisterUser> {
                                         },
                                         child: Row(
                                             mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
+                                                MainAxisAlignment.spaceBetween,
                                             children: [
                                               const Text(
                                                 'Wybierz kolor grupy',
@@ -441,10 +452,10 @@ class _RegisterUserState extends State<RegisterUser> {
                                                 decoration: BoxDecoration(
                                                     color: pickerColor,
                                                     border: pickerColor ==
-                                                        const Color(
-                                                            0xffffffff)
+                                                            const Color(
+                                                                0xffffffff)
                                                         ? Border.all(
-                                                        color: Colors.black)
+                                                            color: Colors.black)
                                                         : null),
                                               ),
                                             ])),
@@ -453,10 +464,9 @@ class _RegisterUserState extends State<RegisterUser> {
                                       visible: isRegister ? true : false,
                                       child: Padding(
                                           padding: EdgeInsets.only(
-                                              bottom: MediaQuery
-                                                  .of(context)
-                                                  .viewInsets
-                                                  .bottom /
+                                              bottom: MediaQuery.of(context)
+                                                      .viewInsets
+                                                      .bottom /
                                                   4)))
                                 ],
                               )),
@@ -464,15 +474,13 @@ class _RegisterUserState extends State<RegisterUser> {
                               visible: isRegister ? false : true,
                               child: Padding(
                                   padding: EdgeInsets.only(
-                                      bottom: MediaQuery
-                                          .of(context)
-                                          .viewInsets
-                                          .bottom /
+                                      bottom: MediaQuery.of(context)
+                                              .viewInsets
+                                              .bottom /
                                           5)))
                         ])))),
         GestureDetector(
-            onTap: () =>
-                setState(() {
+            onTap: () => setState(() {
                   FocusScope.of(context).unfocus();
                   isRegister = !isRegister;
                 }),
@@ -521,8 +529,8 @@ class _RegisterUserState extends State<RegisterUser> {
         });
   }
 
-  Widget _entryField(TextEditingController controller, hide, text, action,
-      context) {
+  Widget _entryField(
+      TextEditingController controller, hide, text, action, context) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Text(
         text,
@@ -532,16 +540,13 @@ class _RegisterUserState extends State<RegisterUser> {
         padding: const EdgeInsets.only(bottom: 12, right: 10),
         child: TextField(
           keyboardType:
-          text == 'Nr tel' ? TextInputType.phone : TextInputType.text,
+              text == 'Nr tel' ? TextInputType.phone : TextInputType.text,
           textCapitalization: text == 'Hasło' || text == 'E-mail'
               ? TextCapitalization.none
               : TextCapitalization.sentences,
           textInputAction: action,
           scrollPadding:
-          EdgeInsets.only(bottom: MediaQuery
-              .of(context)
-              .viewInsets
-              .bottom),
+              EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
           obscureText: hide == true ? true : false,
           controller: controller,
           style: const TextStyle(
@@ -580,14 +585,8 @@ class Picture extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery
-        .of(context)
-        .size
-        .width;
-    final screenHeight = MediaQuery
-        .of(context)
-        .size
-        .height;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
 
     return Positioned(
       top: screenHeight * top,
@@ -617,12 +616,14 @@ class WavePainter extends CustomPainter {
           size.width * 0.25,
           size.height * (BACKGROUND_WAVES_IMAGE + 0.05),
           size.width * 0.5,
-          size.height * BACKGROUND_WAVES_IMAGE)..quadraticBezierTo(
+          size.height * BACKGROUND_WAVES_IMAGE)
+      ..quadraticBezierTo(
           size.width * 0.75,
           size.height * (BACKGROUND_WAVES_IMAGE - 0.05),
           size.width,
           size.height * (BACKGROUND_WAVES_IMAGE - 0.05))
-      ..lineTo(size.width, size.height)..lineTo(0, size.height)
+      ..lineTo(size.width, size.height)
+      ..lineTo(0, size.height)
       ..close();
 
     canvas.drawPath(path, paint);

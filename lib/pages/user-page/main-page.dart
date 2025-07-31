@@ -65,6 +65,7 @@ class _MainPageState extends State<MainPage> {
       CustomTopBar(settings: widget.settings, myUser: widget.myUser),
       CustomTopBar(settings: widget.settings, myUser: widget.myUser),
       CustomTopBar(settings: widget.settings, myUser: widget.myUser),
+      CustomTopBar(settings: widget.settings, myUser: widget.myUser),
       if(widget.myUser.admin) CustomTopBar(settings: widget.settings, myUser: widget.myUser),
       CustomTopBar(settings: widget.settings, myUser: widget.myUser)
     ];
