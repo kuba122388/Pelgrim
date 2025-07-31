@@ -19,6 +19,7 @@ const Color APPROVED_GRADIENT_BOTTOM = Color(0xFF31768A);
 
 //USER PAGE
 const Color FONT_BLACK_COLOR = Color(0xBB000000);
+const Color FONT_GREY_COLOR = Color(0x99000000);
 const Color BACKGROUND_CONTAINERS_COLOR = Color.fromRGBO(217, 217, 217, 1);
 
 const Shadow APP_TEXT_SHADOW =

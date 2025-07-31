@@ -6,7 +6,7 @@ class MyUser {
   final String email;
   final String phone;
   late final String? group;
-  final bool admin;
+  bool admin;
   final String? groupColor;
   final String? secondColor;
   final String? groupCity;
@@ -68,11 +68,11 @@ class MyUser {
     try {
       await FirebaseFirestore.instance
           .collection('Pelgrim Groups')
-          .doc(_groupName())
+          .doc(group)
           .set(necessaryToExist());
       await FirebaseFirestore.instance
           .collection('Pelgrim Groups')
-          .doc(_groupName())
+          .doc(group)
           .collection('Settings')
           .add(toMapSettings());
       await FirebaseFirestore.instance
@@ -133,4 +133,20 @@ class MyUser {
       return [];
     }
   }
+
+  Future<void> grantAdmin(bool grant, String group) async{
+    admin = grant;
+    try{
+      print(toMapUser());
+      await FirebaseFirestore.instance
+          .collection('Pelgrim Groups')
+          .doc(group)
+          .collection('Users')
+          .doc(email)
+          .set(toMapUser());
+    } catch (e) {
+      print("Problem z podnoszeniem uprawnień");
+    }
+  }
+
 }

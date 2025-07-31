@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:pelgrim/auth.dart';
 import 'package:pelgrim/consts.dart';
-import 'package:pelgrim/dbfeatures/User.dart';
+import 'package:pelgrim/dbfeatures/MyUser.dart';
 import 'package:pelgrim/pages/register-page/register-topbar.dart';
 import 'package:pelgrim/pages/widgets/background.dart';
 
@@ -106,10 +106,10 @@ class _RegisterUserState extends State<RegisterUser> {
           pickerColor != const Color(0xffffffff)) {
         MyUser user = MyUser(
             admin: isRegister,
-            email: _controllerEmail.text.toLowerCase(),
-            firstName: _controllerFirstName.text,
-            lastName: _controllerLastName.text,
-            phone: _controllerPhone.text,
+            email: _controllerEmail.text.toLowerCase().trimRight(),
+            firstName: _controllerFirstName.text.trimRight(),
+            lastName: _controllerLastName.text.trimRight(),
+            phone: _controllerPhone.text.trimRight(),
             color: stringToColor(pickerColor).toString(),
             secondColor: stringToColor(_getSecondColor(pickerColor)),
             groupCity: _controllerGroupCity.text,

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pelgrim/consts.dart';
 import 'package:pelgrim/dbfeatures/Contact.dart';
-import 'package:pelgrim/dbfeatures/User.dart';
+import 'package:pelgrim/dbfeatures/MyUser.dart';
 
 class ContactPage extends StatefulWidget {
   final Map<String, dynamic> settings;

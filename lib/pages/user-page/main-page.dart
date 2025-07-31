@@ -1,9 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:pelgrim/dbfeatures/User.dart';
+import 'package:pelgrim/dbfeatures/MyUser.dart';
 import 'package:pelgrim/pages/user-page/all-users-page/AllUsersPage.dart';
 import 'package:pelgrim/pages/user-page/announcements-page/announcements-page.dart';
 import 'package:pelgrim/pages/user-page/contact-page/contact-page.dart';
+import 'package:pelgrim/pages/user-page/group-duties-page/group-duties-page.dart';
 import 'package:pelgrim/pages/user-page/help-page/help-page.dart';
 import 'package:pelgrim/pages/user-page/images-upload-page/images-upload-page.dart';
 import 'package:pelgrim/pages/user-page/informant-page/informant-page.dart';
@@ -45,10 +46,11 @@ class _MainPageState extends State<MainPage> {
           settings: widget.settings,
           admin: widget.myUser.admin,
           key: _songsPageKey),
+      GroupDutiesPage(settings: widget.settings, myUser: widget.myUser),
       InformantPage(settings: widget.settings, myUser: widget.myUser),
       ContactPage(settings: widget.settings, myUser: widget.myUser),
       ImagePage(settings: widget.settings, myUser: widget.myUser),
-      if(widget.myUser.admin) AllUsersPage(settings: widget.settings,),
+      if(widget.myUser.admin) AllUsersPage(settings: widget.settings, myUser: widget.myUser,),
       HelpPage(settings: widget.settings)
 
     ];
@@ -82,7 +84,7 @@ class _MainPageState extends State<MainPage> {
           ? _topbars[_selectedIndex] as PreferredSizeWidget
           : _loading(),
       drawer: BurgerMenu(
-          onItemTapped: _onItemTapped, selectedIndex: _selectedIndex),
+          onItemTapped: _onItemTapped, selectedIndex: _selectedIndex, currentUser: widget.myUser),
       body: _pages.isNotEmpty
           ? _pages[_selectedIndex]
           : const CircularProgressIndicator(),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pelgrim/auth.dart';
 import 'package:pelgrim/consts.dart';
-import 'package:pelgrim/dbfeatures/User.dart';
+import 'package:pelgrim/dbfeatures/MyUser.dart';
 import 'package:pelgrim/main.dart';
 import 'package:pelgrim/pages/user-page/settings-page/special-topbar.dart';
 
@@ -156,7 +156,6 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   Future<void> _signOut(BuildContext context) async {
-    print(Auth().currentUser);
     await Auth().signOut();
     Future.delayed(const Duration(milliseconds: 1500));
     Navigator.pushAndRemoveUntil(

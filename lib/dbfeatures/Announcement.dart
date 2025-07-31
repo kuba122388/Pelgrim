@@ -38,7 +38,7 @@ class Announcement{
   factory Announcement.fromMap(Map<String, dynamic> map, docId){
     return Announcement(
         docId: docId,
-        author: map['Author'] ?? '',
+        author: (map['Author'] ?? '').replaceAll(RegExp(r'\s+'), ' ').trim(),
         content: map['Content'] ?? '',
         date: map['Date'].toDate() ?? '',
         important: map['Important'],

@@ -5,7 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:pelgrim/consts.dart';
-import 'package:pelgrim/dbfeatures/User.dart';
+import 'package:pelgrim/dbfeatures/MyUser.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 
@@ -160,7 +160,7 @@ class _InformantPageState extends State<InformantPage> {
                                 ),
                               ),
                             ),
-                            Positioned(
+                            if (widget.myUser.admin) Positioned(
                               top: 10,
                               right: 10,
                               child: GestureDetector(

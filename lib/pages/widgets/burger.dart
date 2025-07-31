@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:pelgrim/consts.dart';
+import 'package:pelgrim/dbfeatures/MyUser.dart';
 
 class BurgerMenu extends StatefulWidget implements PreferredSizeWidget {
   final Function(int) onItemTapped;
   final int selectedIndex;
+  final MyUser currentUser;
 
   const BurgerMenu(
-      {super.key, required this.onItemTapped, required this.selectedIndex});
+      {super.key, required this.onItemTapped, required this.selectedIndex, required this.currentUser});
 
   @override
   _BurgerMenuState createState() => _BurgerMenuState();
@@ -18,25 +20,27 @@ class BurgerMenu extends StatefulWidget implements PreferredSizeWidget {
 class _BurgerMenuState extends State<BurgerMenu> {
   static double imgSize = 22;
 
-  final List<String> _titles = [
+  late final List<String> _titles = [
     'Ogłoszenia',
     'Aktualnie grane',
     'Lista piosenek',
+    'Służby i dyżury',
     'Informator',
     'Kontakt',
     'Zdjęcia',
-    'Użytkownicy',
+    if(widget.currentUser.admin)'Użytkownicy',
     'Pomoc'
   ];
 
-  final List<String> _imagePaths = [
+  late final List<String> _imagePaths = [
     './images/announcement.png',
     './images/sound.png',
     './images/list.png',
+    './images/handshake.png',
     './images/information.png',
     './images/phone.png',
     './images/images.png',
-    './images/users.png',
+    if(widget.currentUser.admin)'./images/users.png',
     './images/about.png'
   ];
 

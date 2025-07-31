@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:pelgrim/dbfeatures/Announcement.dart';
-import 'package:pelgrim/dbfeatures/User.dart';
+import 'package:pelgrim/dbfeatures/MyUser.dart';
 import 'package:pelgrim/consts.dart';
 
 class AnnouncementsPage extends StatefulWidget {
@@ -151,6 +151,14 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
             return SingleChildScrollView(
                 child: Column(
                   children: announcements.map((announcement) {
+                    final formattedDate =
+                        '${announcement.date.day.toString().padLeft(2, '0')}.'
+                        '${announcement.date.month.toString().padLeft(2, '0')}.'
+                        '${announcement.date.year} '
+                        '${announcement.date.hour.toString().padLeft(2, '0')}:'
+                        '${announcement.date.minute.toString().padLeft(2, '0')}:'
+                        '${announcement.date.second.toString().padLeft(2, '0')}';
+
                     return Visibility(
                         visible: important == true
                             ? announcement.important
@@ -183,14 +191,7 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
                                     Padding(
                                         padding: const EdgeInsets.only(
                                             right: 10),
-                                        child: Text(
-                                          '${announcement.date
-                                              .day}.${announcement.date
-                                              .month}.${announcement.date
-                                              .year} ${announcement.date
-                                              .hour}:${announcement.date
-                                              .minute}:${announcement.date
-                                              .second}',
+                                        child: Text(formattedDate,
                                           style: const TextStyle(
                                               fontSize: 8,
                                               fontFamily: 'Lexend'
