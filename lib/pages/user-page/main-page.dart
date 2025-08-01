@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:pelgrim/dbfeatures/MyUser.dart';
+import 'package:pelgrim/models/MyUser.dart';
 import 'package:pelgrim/pages/user-page/all-users-page/AllUsersPage.dart';
 import 'package:pelgrim/pages/user-page/announcements-page/announcements-page.dart';
 import 'package:pelgrim/pages/user-page/contact-page/contact-page.dart';

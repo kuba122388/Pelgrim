@@ -1,9 +1,10 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:pelgrim/main.dart';
 import 'package:pelgrim/consts.dart';
 
 class Background extends StatelessWidget{
+  const Background({super.key});
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;

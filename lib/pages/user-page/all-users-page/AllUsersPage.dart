@@ -1,7 +1,6 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:pelgrim/consts.dart';
-import 'package:pelgrim/dbfeatures/MyUser.dart';
+import 'package:pelgrim/models/MyUser.dart';
 
 class AllUsersPage extends StatefulWidget {
   final Map<String, dynamic> settings;
@@ -64,7 +63,6 @@ class _AllUsersPageState extends State<AllUsersPage> {
   Widget build(BuildContext context) {
     final group =
         '${widget.settings['groupColor']} - ${widget.settings['groupCity']}';
-    final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
 
     return Column(

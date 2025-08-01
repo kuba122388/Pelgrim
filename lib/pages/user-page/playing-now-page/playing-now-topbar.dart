@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:pelgrim/dbfeatures/MyUser.dart';
+import 'package:pelgrim/models/MyUser.dart';
 import 'package:pelgrim/pages/user-page/settings-page/settings-page.dart';
 
 class PlayingNowTopbar extends StatefulWidget implements PreferredSizeWidget {

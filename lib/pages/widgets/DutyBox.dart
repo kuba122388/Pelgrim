@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:pelgrim/dbfeatures/Duty.dart';
-import 'package:pelgrim/dbfeatures/MyUser.dart';
+import 'package:pelgrim/models/Duty.dart';
+import 'package:pelgrim/models/MyUser.dart';
 
 class DutyBox extends StatefulWidget {
   final Duty duty;

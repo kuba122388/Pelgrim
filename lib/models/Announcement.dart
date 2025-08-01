@@ -56,7 +56,7 @@ class Announcement{
           .snapshots()
           .map((querySnapshot) {
         return querySnapshot.docs.map((doc) {
-          return Announcement.fromMap(doc.data() as Map<String, dynamic>, doc.id);
+          return Announcement.fromMap(doc.data(), doc.id);
         }).toList();
       });
     } catch (e) {

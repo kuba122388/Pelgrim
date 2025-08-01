@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:pelgrim/auth.dart';
 import 'package:pelgrim/consts.dart';
-import 'package:pelgrim/dbfeatures/MyUser.dart';
+import 'package:pelgrim/models/MyUser.dart';
 import 'package:pelgrim/pages/register-page/register-topbar.dart';
 import 'package:pelgrim/pages/widgets/background.dart';
 
@@ -249,7 +249,7 @@ class _RegisterUserState extends State<RegisterUser> {
                 },
                 child: Stack(
                   children: [
-                    Background(),
+                    const Background(),
                     SingleChildScrollView(
                         physics: const NeverScrollableScrollPhysics(),
                         child: Container(

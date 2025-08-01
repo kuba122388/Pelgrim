@@ -1,11 +1,10 @@
 import 'dart:io';
 
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:pelgrim/consts.dart';
-import 'package:pelgrim/dbfeatures/MyUser.dart';
+import 'package:pelgrim/models/MyUser.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 
@@ -44,42 +43,40 @@ class _InformantPageState extends State<InformantPage> {
 
   Future<void> _pickAndSendImages() async {
     final ImagePicker picker = ImagePicker();
-    final List<XFile>? pickedImages = await picker.pickMultiImage();
+    final List<XFile> pickedImages = await picker.pickMultiImage();
 
-    if (pickedImages != null) {
-      int i = 0;
-      for (var image in pickedImages) {
-        i += 1;
-        if (!_selectedImages
-            .any((selectedImage) => selectedImage.name == image.name)) {
-          try {
-            final file = File(image.path);
-            final bytes = await file.readAsBytes();
+    int i = 0;
+    for (var image in pickedImages) {
+      i += 1;
+      if (!_selectedImages
+          .any((selectedImage) => selectedImage.name == image.name)) {
+        try {
+          final file = File(image.path);
+          final bytes = await file.readAsBytes();
 
-            await decodeImageFromList(bytes);
-            final fileName =
-                '${DateTime.now().millisecondsSinceEpoch}_${image.name}';
-            final ref = FirebaseStorage.instance
-                .ref()
-                .child(group)
-                .child('Informant')
-                .child(fileName);
+          await decodeImageFromList(bytes);
+          final fileName =
+              '${DateTime.now().millisecondsSinceEpoch}_${image.name}';
+          final ref = FirebaseStorage.instance
+              .ref()
+              .child(group)
+              .child('Informant')
+              .child(fileName);
 
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                duration: const Duration(milliseconds: 1500),
-                content: Center(
-                    child: Text(
-                        'Przesyłanie zdjęcia $i/${pickedImages.length}'))));
-            await ref.putFile(file);
-          } catch (e) {
-            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                content: Center(child: Text('Wystąpił problem'))));
-          }
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              duration: const Duration(milliseconds: 1500),
+              content: Center(
+                  child: Text(
+                      'Przesyłanie zdjęcia $i/${pickedImages.length}'))));
+          await ref.putFile(file);
+        } catch (e) {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+              content: Center(child: Text('Wystąpił problem'))));
         }
       }
-      if (pickedImages.length > 0) setState(() {});
     }
-  }
+    if (pickedImages.isNotEmpty) setState(() {});
+    }
 
   Future<void> _deleteConfirmation(String imageUrl) async {
     showDialog(

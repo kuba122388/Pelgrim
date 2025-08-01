@@ -40,7 +40,7 @@ class _LoginPageState extends State<LoginPage> {
               height: screenHeight,
               child: Stack(
               children: [
-                Background(),
+                const Background(),
                 Positioned(
                   width: screenWidth,
                   top: screenHeight * 0.87,

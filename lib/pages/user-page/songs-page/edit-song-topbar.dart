@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pelgrim/dbfeatures/MyUser.dart';
+import 'package:pelgrim/models/MyUser.dart';
 
 class EditSongTopbar extends StatefulWidget implements PreferredSizeWidget {
   final Map<String, dynamic> settings;

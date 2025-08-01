@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pelgrim/dbfeatures/MyUser.dart';
+import 'package:pelgrim/models/MyUser.dart';
 import 'package:pelgrim/pages/user-page/settings-page/settings-page.dart';
 
 class CustomTopBar extends StatefulWidget implements PreferredSizeWidget{

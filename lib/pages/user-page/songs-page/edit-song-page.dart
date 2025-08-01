@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pelgrim/consts.dart';
-import 'package:pelgrim/dbfeatures/Song.dart';
+import 'package:pelgrim/models/Song.dart';
 import 'package:pelgrim/pages/user-page/songs-page/edit-song-topbar.dart';
 
 class EditSongPage extends StatefulWidget {

@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:pelgrim/dbfeatures/Announcement.dart';
-import 'package:pelgrim/dbfeatures/MyUser.dart';
+import 'package:pelgrim/models/Announcement.dart';
+import 'package:pelgrim/models/MyUser.dart';
 import 'package:pelgrim/consts.dart';
 
 class AnnouncementsPage extends StatefulWidget {

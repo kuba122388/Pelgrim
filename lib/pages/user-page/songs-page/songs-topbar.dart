@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pelgrim/dbfeatures/MyUser.dart';
+import 'package:pelgrim/models/MyUser.dart';
 import 'package:pelgrim/pages/user-page/settings-page/settings-page.dart';
 import 'package:pelgrim/pages/user-page/songs-page/add-song-page.dart';
 import 'package:pelgrim/pages/user-page/songs-page/songs-page.dart';

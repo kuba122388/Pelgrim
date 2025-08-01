@@ -1,8 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:pelgrim/consts.dart';
-import 'package:pelgrim/dbfeatures/Song.dart';
-import 'package:pelgrim/dbfeatures/MyUser.dart';
+import 'package:pelgrim/models/Song.dart';
+import 'package:pelgrim/models/MyUser.dart';
 import 'package:pelgrim/pages/user-page/settings-page/settings-page.dart';
 import 'package:pelgrim/pages/user-page/songs-page/edit-song-page.dart';
 

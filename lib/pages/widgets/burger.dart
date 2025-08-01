@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pelgrim/consts.dart';
-import 'package:pelgrim/dbfeatures/MyUser.dart';
+import 'package:pelgrim/models/MyUser.dart';
 
 class BurgerMenu extends StatefulWidget implements PreferredSizeWidget {
   final Function(int) onItemTapped;

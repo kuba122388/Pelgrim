@@ -5,7 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:pelgrim/consts.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:pelgrim/dbfeatures/MyUser.dart';
+import 'package:pelgrim/models/MyUser.dart';
 import 'package:pelgrim/pages/user-page/images-upload-page/all-images/all-images-page.dart';
 
 class ImagePage extends StatefulWidget {
@@ -26,27 +26,25 @@ class _ImagePageState extends State<ImagePage> {
 
   Future<void> _pickImages() async {
     final ImagePicker picker = ImagePicker();
-    final List<XFile>? pickedImages = await picker.pickMultiImage();
+    final List<XFile> pickedImages = await picker.pickMultiImage();
 
-    if (pickedImages != null) {
-      for (var image in pickedImages) {
-        if (!_selectedImages
-            .any((selectedImage) => selectedImage.name == image.name)) {
-          try {
-            final file = File(image.path);
-            final bytes = await file.readAsBytes();
+    for (var image in pickedImages) {
+      if (!_selectedImages
+          .any((selectedImage) => selectedImage.name == image.name)) {
+        try {
+          final file = File(image.path);
+          final bytes = await file.readAsBytes();
 
-            await decodeImageFromList(bytes);
-            _selectedImages.add(image);
-          } catch (e) {
-            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                content: Center(child: Text('Wystąpił problem'))));
-          }
+          await decodeImageFromList(bytes);
+          _selectedImages.add(image);
+        } catch (e) {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+              content: Center(child: Text('Wystąpił problem'))));
         }
       }
-      setState(() {});
     }
-  }
+    setState(() {});
+    }
 
   Future<void> _uploadImages() async {
     if (processing == true) return;

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pelgrim/auth.dart';
 import 'package:pelgrim/consts.dart';
-import 'package:pelgrim/dbfeatures/MyUser.dart';
+import 'package:pelgrim/models/MyUser.dart';
 import 'package:pelgrim/main.dart';
 import 'package:pelgrim/pages/user-page/settings-page/special-topbar.dart';
 
