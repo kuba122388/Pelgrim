@@ -4,6 +4,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:pelgrim/consts.dart';
+import 'package:pelgrim/firebase_options.dart';
 import 'package:pelgrim/pages/login-page/login-approved.dart';
 import 'package:pelgrim/pages/login-page/login-page.dart';
 
@@ -14,11 +15,16 @@ Future<void> main() async {
     DeviceOrientation.portraitUp,
   ]);
 
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
 
   await FirebaseAppCheck.instance.activate(
     androidProvider: AndroidProvider.debug,
+    webProvider: ReCaptchaV3Provider('6Lc3WJorAAAAANDI1jyxM-gm95pJpVDYwfwxmZB4'),
   );
+
 
   runApp(const MyApp());
 }

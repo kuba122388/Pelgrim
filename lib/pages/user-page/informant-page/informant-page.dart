@@ -66,17 +66,17 @@ class _InformantPageState extends State<InformantPage> {
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
               duration: const Duration(milliseconds: 1500),
               content: Center(
-                  child: Text(
-                      'Przesyłanie zdjęcia $i/${pickedImages.length}'))));
+                  child:
+                      Text('Przesyłanie zdjęcia $i/${pickedImages.length}'))));
           await ref.putFile(file);
         } catch (e) {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-              content: Center(child: Text('Wystąpił problem'))));
+          ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Center(child: Text('Wystąpił problem'))));
         }
       }
     }
     if (pickedImages.isNotEmpty) setState(() {});
-    }
+  }
 
   Future<void> _deleteConfirmation(String imageUrl) async {
     showDialog(
@@ -148,12 +148,22 @@ class _InformantPageState extends State<InformantPage> {
                         child: Stack(
                           children: [
                             GestureDetector(
-                              onTap: () {},
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => ImageGalleryPage(
+                                      imageUrls: imageUrls,
+                                      initialIndex: index,
+                                    ),
+                                  ),
+                                );
+                              },
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(12),
                                 child: Image.network(
                                   imageUrls[index],
-                                  fit: BoxFit.cover,
+                                  fit: BoxFit.fitWidth,
                                   width: double.infinity,
                                   height: 200,
                                 ),
