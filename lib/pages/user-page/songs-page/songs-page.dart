@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pelgrim/consts.dart';
+import 'package:pelgrim/core/const/consts.dart';
 import 'package:pelgrim/models/Song.dart';
 import 'package:pelgrim/pages/user-page/songs-page/songs-detail-page.dart';
 

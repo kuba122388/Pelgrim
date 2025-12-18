@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:pelgrim/auth.dart';
-import 'package:pelgrim/consts.dart';
+import 'package:pelgrim/core/const/consts.dart';
 import 'package:pelgrim/models/MyUser.dart';
-import 'package:pelgrim/main.dart';
 import 'package:pelgrim/pages/user-page/settings-page/special-topbar.dart';
+import 'package:pelgrim/pages/welcome-page/welcome_page.dart';
 
 class SettingsPage extends StatefulWidget {
   final Map<String, dynamic> settings;
@@ -160,7 +160,7 @@ class _SettingsPageState extends State<SettingsPage> {
     Future.delayed(const Duration(milliseconds: 1500));
     Navigator.pushAndRemoveUntil(
       context,
-      MaterialPageRoute(builder: (context) => const CustomBackground()),
+      MaterialPageRoute(builder: (context) => const WelcomePage()),
       (Route<dynamic> route) => false,
     );
   }

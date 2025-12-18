@@ -3,7 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:pelgrim/auth.dart';
 import 'package:pelgrim/models/MyUser.dart';
-import 'package:pelgrim/consts.dart';
+import 'package:pelgrim/core/const/consts.dart';
 import 'package:pelgrim/pages/login-page/login-page.dart';
 import 'package:pelgrim/pages/user-page/main-page.dart';
 

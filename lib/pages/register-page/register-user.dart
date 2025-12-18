@@ -4,10 +4,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:pelgrim/auth.dart';
-import 'package:pelgrim/consts.dart';
+import 'package:pelgrim/core/const/consts.dart';
 import 'package:pelgrim/models/MyUser.dart';
 import 'package:pelgrim/pages/register-page/register-topbar.dart';
-import 'package:pelgrim/pages/widgets/background.dart';
+import 'package:pelgrim/pages/widgets/welcome_background.dart';
 
 class RegisterUser extends StatefulWidget {
   const RegisterUser({super.key});
@@ -131,8 +131,8 @@ class _RegisterUserState extends State<RegisterUser> {
             ))));
         await user.createUserAndGroup();
         await Future.delayed(const Duration(milliseconds: 1500));
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            content: Center(child: Text('Operacja przebiegła pomyślnie!'))));
+        ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Center(child: Text('Operacja przebiegła pomyślnie!'))));
         Navigator.pop(context);
         return;
       }
@@ -220,26 +220,22 @@ class _RegisterUserState extends State<RegisterUser> {
 
   Future<void> _fetchPilgrimages() async {
     try {
-      QuerySnapshot snapshot =
-          await FirebaseFirestore.instance.collection("Pelgrim Groups").get();
-      List<String> fetchedPilgrimages =
-          snapshot.docs.map((doc) => doc.id).toList();
+      QuerySnapshot snapshot = await FirebaseFirestore.instance.collection("Pelgrim Groups").get();
+      List<String> fetchedPilgrimages = snapshot.docs.map((doc) => doc.id).toList();
 
       setState(() {
         _pilgrimageList = fetchedPilgrimages;
       });
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Center(
-              child: Text('Wystąpił problem z załadowaniem pielgrzymek'))));
+          content: Center(child: Text('Wystąpił problem z załadowaniem pielgrzymek'))));
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight =
-        MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top;
+    final screenHeight = MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top;
 
     return Scaffold(
         body: SafeArea(
@@ -249,7 +245,9 @@ class _RegisterUserState extends State<RegisterUser> {
                 },
                 child: Stack(
                   children: [
-                    const Background(),
+                    const WelcomeBackground(
+                      elevated: true,
+                    ),
                     SingleChildScrollView(
                         physics: const NeverScrollableScrollPhysics(),
                         child: Container(
@@ -267,31 +265,22 @@ class _RegisterUserState extends State<RegisterUser> {
                                         width: screenWidth * 0.8,
                                         height: screenHeight * 0.65,
                                         margin: EdgeInsets.only(
-                                            top: screenHeight * 0.15,
-                                            bottom: screenHeight * 0.03),
-                                        padding: const EdgeInsets.only(
-                                            top: 15, left: 20, right: 20),
+                                            top: screenHeight * 0.15, bottom: screenHeight * 0.03),
+                                        padding:
+                                            const EdgeInsets.only(top: 15, left: 20, right: 20),
                                         decoration: const BoxDecoration(
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(25)),
+                                          borderRadius: BorderRadius.all(Radius.circular(25)),
                                           color: Colors.white,
                                         ),
-                                        child:
-                                            _registrationContent(screenHeight),
+                                        child: _registrationContent(screenHeight),
                                       ),
                                       ElevatedButton(
                                           style: ButtonStyle(
                                             fixedSize: WidgetStateProperty.all(
-                                                Size(
-                                                    screenWidth *
-                                                        LOGIN_CONTAINER_SIZE,
-                                                    50)),
-                                            elevation:
-                                                const WidgetStatePropertyAll(
-                                                    5.0),
+                                                Size(screenWidth * LOGIN_CONTAINER_SIZE, 50)),
+                                            elevation: const WidgetStatePropertyAll(5.0),
                                             backgroundColor:
-                                                const WidgetStatePropertyAll(
-                                                    Colors.white),
+                                                const WidgetStatePropertyAll(Colors.white),
                                           ),
                                           onPressed: () {
                                             createUserWithEmailAndPassword();
@@ -299,8 +288,7 @@ class _RegisterUserState extends State<RegisterUser> {
                                           child: Stack(
                                             children: [
                                               Container(
-                                                alignment:
-                                                    Alignment.centerRight,
+                                                alignment: Alignment.centerRight,
                                                 child: Image.asset(
                                                   'images/arrow-right.png',
                                                   height: 20,
@@ -341,13 +329,9 @@ class _RegisterUserState extends State<RegisterUser> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             const Text('Rejestracja',
-                style: TextStyle(
-                    fontSize: 24,
-                    fontFamily: 'Lexend',
-                    fontWeight: FontWeight.bold)),
+                style: TextStyle(fontSize: 24, fontFamily: 'Lexend', fontWeight: FontWeight.bold)),
             GestureDetector(
-                onTap: () =>
-                    {FocusScope.of(context).unfocus(), Navigator.pop(context)},
+                onTap: () => {FocusScope.of(context).unfocus(), Navigator.pop(context)},
                 child: Image.asset(
                   './images/close.png',
                   width: 25,
@@ -363,122 +347,88 @@ class _RegisterUserState extends State<RegisterUser> {
                 controller: _scrollController,
                 child: SingleChildScrollView(
                     controller: _scrollController,
-                    child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Visibility(
-                              visible: !isRegister,
-                              child: DropdownButtonFormField(
-                                padding: const EdgeInsets.only(
-                                    right: 10, bottom: 10),
-                                isExpanded: true,
-                                isDense:
-                                    _selectedPilgrimage == null ? true : false,
-                                menuMaxHeight: screenHeight * 0.3,
-                                style: const TextStyle(
-                                    fontFamily: 'Lexend',
-                                    fontSize: 18,
-                                    color: Colors.black),
-                                hint: const Text('Wybierz pielgrzymke'),
-                                value: _selectedPilgrimage,
-                                items: _pilgrimageList.map((String pilgrimage) {
-                                  return DropdownMenuItem(
-                                    value: pilgrimage,
-                                    child: Text(
-                                      pilgrimage,
-                                      softWrap: true,
-                                    ),
-                                  );
-                                }).toList(),
-                                onChanged: (String? newValue) {
-                                  setState(() {
-                                    _selectedPilgrimage = newValue;
-                                  });
-                                },
-                              )),
-                          _entryField(_controllerFirstName, false, "Imie",
-                              TextInputAction.next, context),
-                          _entryField(_controllerLastName, false, "Nazwisko",
-                              TextInputAction.next, context),
-                          _entryField(_controllerEmail, false, "E-mail",
-                              TextInputAction.next, context),
-                          _entryField(_controllerPassword, true, "Hasło",
-                              TextInputAction.next, context),
-                          _entryField(
-                              _controllerPhone,
-                              false,
-                              "Nr tel",
-                              isRegister
-                                  ? TextInputAction.next
-                                  : TextInputAction.done,
-                              context),
-                          Visibility(
-                              visible: isRegister,
-                              child: Column(
-                                children: [
-                                  _entryField(
-                                      _controllerGroupColor,
-                                      false,
-                                      "Kolor pielgrzymki",
-                                      TextInputAction.next,
-                                      context),
-                                  _entryField(
-                                      _controllerGroupCity,
-                                      false,
-                                      "Miejscowość grupy",
-                                      TextInputAction.done,
-                                      context),
-                                  Container(
-                                    padding: const EdgeInsets.only(
-                                        top: 5, bottom: 5, right: 10),
-                                    child: GestureDetector(
-                                        onTap: () {
-                                          FocusScope.of(context).unfocus();
-                                          _colorPicker();
-                                        },
-                                        child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              const Text(
-                                                'Wybierz kolor grupy',
-                                                style: TextStyle(
-                                                    fontFamily: 'Lexend',
-                                                    fontSize: 20),
-                                              ),
-                                              Container(
-                                                width: 30,
-                                                height: 30,
-                                                decoration: BoxDecoration(
-                                                    color: pickerColor,
-                                                    border: pickerColor ==
-                                                            const Color(
-                                                                0xffffffff)
-                                                        ? Border.all(
-                                                            color: Colors.black)
-                                                        : null),
-                                              ),
-                                            ])),
-                                  ),
-                                  Visibility(
-                                      visible: isRegister ? true : false,
-                                      child: Padding(
-                                          padding: EdgeInsets.only(
-                                              bottom: MediaQuery.of(context)
-                                                      .viewInsets
-                                                      .bottom /
-                                                  4)))
-                                ],
-                              )),
-                          Visibility(
-                              visible: isRegister ? false : true,
-                              child: Padding(
-                                  padding: EdgeInsets.only(
-                                      bottom: MediaQuery.of(context)
-                                              .viewInsets
-                                              .bottom /
-                                          5)))
-                        ])))),
+                    child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                      Visibility(
+                          visible: !isRegister,
+                          child: DropdownButtonFormField(
+                            padding: const EdgeInsets.only(right: 10, bottom: 10),
+                            isExpanded: true,
+                            isDense: _selectedPilgrimage == null ? true : false,
+                            menuMaxHeight: screenHeight * 0.3,
+                            style: const TextStyle(
+                                fontFamily: 'Lexend', fontSize: 18, color: Colors.black),
+                            hint: const Text('Wybierz pielgrzymke'),
+                            value: _selectedPilgrimage,
+                            items: _pilgrimageList.map((String pilgrimage) {
+                              return DropdownMenuItem(
+                                value: pilgrimage,
+                                child: Text(
+                                  pilgrimage,
+                                  softWrap: true,
+                                ),
+                              );
+                            }).toList(),
+                            onChanged: (String? newValue) {
+                              setState(() {
+                                _selectedPilgrimage = newValue;
+                              });
+                            },
+                          )),
+                      _entryField(
+                          _controllerFirstName, false, "Imie", TextInputAction.next, context),
+                      _entryField(
+                          _controllerLastName, false, "Nazwisko", TextInputAction.next, context),
+                      _entryField(_controllerEmail, false, "E-mail", TextInputAction.next, context),
+                      _entryField(
+                          _controllerPassword, true, "Hasło", TextInputAction.next, context),
+                      _entryField(_controllerPhone, false, "Nr tel",
+                          isRegister ? TextInputAction.next : TextInputAction.done, context),
+                      Visibility(
+                          visible: isRegister,
+                          child: Column(
+                            children: [
+                              _entryField(_controllerGroupColor, false, "Kolor pielgrzymki",
+                                  TextInputAction.next, context),
+                              _entryField(_controllerGroupCity, false, "Miejscowość grupy",
+                                  TextInputAction.done, context),
+                              Container(
+                                padding: const EdgeInsets.only(top: 5, bottom: 5, right: 10),
+                                child: GestureDetector(
+                                    onTap: () {
+                                      FocusScope.of(context).unfocus();
+                                      _colorPicker();
+                                    },
+                                    child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          const Text(
+                                            'Wybierz kolor grupy',
+                                            style: TextStyle(fontFamily: 'Lexend', fontSize: 20),
+                                          ),
+                                          Container(
+                                            width: 30,
+                                            height: 30,
+                                            decoration: BoxDecoration(
+                                                color: pickerColor,
+                                                border: pickerColor == const Color(0xffffffff)
+                                                    ? Border.all(color: Colors.black)
+                                                    : null),
+                                          ),
+                                        ])),
+                              ),
+                              Visibility(
+                                  visible: isRegister ? true : false,
+                                  child: Padding(
+                                      padding: EdgeInsets.only(
+                                          bottom: MediaQuery.of(context).viewInsets.bottom / 4)))
+                            ],
+                          )),
+                      Visibility(
+                          visible: isRegister ? false : true,
+                          child: Padding(
+                              padding: EdgeInsets.only(
+                                  bottom: MediaQuery.of(context).viewInsets.bottom / 5)))
+                    ])))),
         GestureDetector(
             onTap: () => setState(() {
                   FocusScope.of(context).unfocus();
@@ -529,8 +479,7 @@ class _RegisterUserState extends State<RegisterUser> {
         });
   }
 
-  Widget _entryField(
-      TextEditingController controller, hide, text, action, context) {
+  Widget _entryField(TextEditingController controller, hide, text, action, context) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Text(
         text,
@@ -539,14 +488,12 @@ class _RegisterUserState extends State<RegisterUser> {
       Padding(
         padding: const EdgeInsets.only(bottom: 12, right: 10),
         child: TextField(
-          keyboardType:
-              text == 'Nr tel' ? TextInputType.phone : TextInputType.text,
+          keyboardType: text == 'Nr tel' ? TextInputType.phone : TextInputType.text,
           textCapitalization: text == 'Hasło' || text == 'E-mail'
               ? TextCapitalization.none
               : TextCapitalization.sentences,
           textInputAction: action,
-          scrollPadding:
-              EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+          scrollPadding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
           obscureText: hide == true ? true : false,
           controller: controller,
           style: const TextStyle(
@@ -556,12 +503,9 @@ class _RegisterUserState extends State<RegisterUser> {
           decoration: InputDecoration(
             hintText: text,
             isDense: true,
-            focusedBorder: const UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.black)),
-            border: const UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.black)),
-            enabledBorder: const UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.black)),
+            focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.black)),
+            border: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.black)),
+            enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.black)),
           ),
         ),
       ),
@@ -612,16 +556,10 @@ class WavePainter extends CustomPainter {
 
     Path path = Path()
       ..moveTo(0, size.height * (BACKGROUND_WAVES_IMAGE + 0.05))
-      ..quadraticBezierTo(
-          size.width * 0.25,
-          size.height * (BACKGROUND_WAVES_IMAGE + 0.05),
-          size.width * 0.5,
-          size.height * BACKGROUND_WAVES_IMAGE)
-      ..quadraticBezierTo(
-          size.width * 0.75,
-          size.height * (BACKGROUND_WAVES_IMAGE - 0.05),
-          size.width,
-          size.height * (BACKGROUND_WAVES_IMAGE - 0.05))
+      ..quadraticBezierTo(size.width * 0.25, size.height * (BACKGROUND_WAVES_IMAGE + 0.05),
+          size.width * 0.5, size.height * BACKGROUND_WAVES_IMAGE)
+      ..quadraticBezierTo(size.width * 0.75, size.height * (BACKGROUND_WAVES_IMAGE - 0.05),
+          size.width, size.height * (BACKGROUND_WAVES_IMAGE - 0.05))
       ..lineTo(size.width, size.height)
       ..lineTo(0, size.height)
       ..close();

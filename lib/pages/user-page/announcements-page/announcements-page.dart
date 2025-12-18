@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:pelgrim/models/Announcement.dart';
 import 'package:pelgrim/models/MyUser.dart';
-import 'package:pelgrim/consts.dart';
+import 'package:pelgrim/core/const/consts.dart';
 
 class AnnouncementsPage extends StatefulWidget {
   final Map<String, dynamic> settings;
