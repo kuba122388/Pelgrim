@@ -3,8 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:pelgrim/auth.dart';
 import 'package:pelgrim/core/const/consts.dart';
 import 'package:pelgrim/pages/login-page/login-approved.dart';
+import 'package:pelgrim/pages/login-page/widgets/labeled_text_field.dart';
 import 'package:pelgrim/pages/register-page/register-user.dart';
 import 'package:pelgrim/pages/widgets/welcome_background.dart';
+
+import '../../core/const/app_sizes.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -27,7 +30,8 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top;
+    final screenHeight = MediaQuery.of(context).size.height;
+    final screenStatusBarHeight = MediaQuery.of(context).padding.top;
 
     return Scaffold(
       resizeToAvoidBottomInset: true,
@@ -39,152 +43,98 @@ class _LoginPageState extends State<LoginPage> {
           child: SingleChildScrollView(
             child: SizedBox(
               width: screenWidth,
-              height: screenHeight,
+              height: screenHeight - screenStatusBarHeight,
               child: Stack(
                 children: [
-                  const WelcomeBackground(
-                    elevated: true,
-                  ),
-                  Positioned(
-                    width: screenWidth,
-                    top: screenHeight * 0.88,
-                    child: Center(
-                      child: ElevatedButton(
-                        style: ButtonStyle(
-                          fixedSize:
-                              WidgetStateProperty.all(Size(screenWidth * LOGIN_CONTAINER_SIZE, 50)),
-                          elevation: const WidgetStatePropertyAll(5.0),
-                          backgroundColor: const WidgetStatePropertyAll(Colors.white),
-                        ),
-                        onPressed: () {
-                          signInWithEmailAndPassword();
-                          FocusScope.of(context).unfocus();
-                        },
-                        child: Stack(
+                  const WelcomeBackground(elevated: true),
+                  Positioned.fill(
+                    child: SafeArea(
+                      child: SingleChildScrollView(
+                        child: Column(
                           children: [
-                            Container(
-                              alignment: Alignment.centerRight,
-                              child: Image.asset(
-                                'images/arrow-right.png',
-                                height: 20,
-                              ),
-                            ),
-                            Container(
-                              alignment: Alignment.center,
-                              child: const Text(
-                                'Zaloguj',
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 20,
-                                  fontFamily: 'Lexend',
-                                ),
+                            SizedBox(height: screenHeight * AppSizes.loginPositionFactor),
+                            SizedBox(
+                              width: screenWidth * LOGIN_CONTAINER_SIZE,
+                              child: Column(
+                                children: [
+                                  LabeledTextField(
+                                    text: "E-mail",
+                                    controller: _controllerEmail,
+                                    action: TextInputAction.next,
+                                  ),
+                                  LabeledTextField(
+                                    text: "Hasło",
+                                    controller: _controllerPassword,
+                                    hide: true,
+                                    action: TextInputAction.done,
+                                  ),
+                                  Align(
+                                    alignment: Alignment.centerRight,
+                                    child: InkWell(
+                                      onTap: () => Navigator.push(
+                                        context,
+                                        PageRouteBuilder(
+                                          pageBuilder: (context, animation, secondaryAnimation) =>
+                                              const RegisterUser(),
+                                          transitionsBuilder:
+                                              (context, animation, secondaryAnimation, child) {
+                                            return FadeTransition(opacity: animation, child: child);
+                                          },
+                                        ),
+                                      ),
+                                      child: const Text(
+                                        'Nie masz konta?',
+                                        style: TextStyle(
+                                          fontSize: 15.0,
+                                          color: LOGIN_ALTERNATE_OPTION,
+                                          decoration: TextDecoration.underline,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 40),
+                                  ElevatedButton(
+                                    style: ButtonStyle(
+                                      fixedSize: WidgetStateProperty.all(
+                                          Size(screenWidth * LOGIN_CONTAINER_SIZE, 50)),
+                                      backgroundColor: const WidgetStatePropertyAll(Colors.white),
+                                      elevation: const WidgetStatePropertyAll(5.0),
+                                    ),
+                                    onPressed: () {
+                                      signInWithEmailAndPassword();
+                                      FocusScope.of(context).unfocus();
+                                    },
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        const SizedBox(
+                                          width: 20,
+                                        ),
+                                        const Expanded(
+                                          child: Center(
+                                            child: Text(
+                                              'Zaloguj',
+                                              style: TextStyle(
+                                                color: Colors.black,
+                                                fontSize: 20,
+                                                fontFamily: 'Lexend',
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        Image.asset(
+                                          'images/arrow-right.png',
+                                          width: 25,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                           ],
                         ),
                       ),
-                    ),
-                  ),
-                  Positioned(
-                    width: screenWidth,
-                    top: screenHeight * 0.58,
-                    child: Column(
-                      children: [
-                        Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                          Container(
-                            constraints:
-                                BoxConstraints(minWidth: screenWidth * LOGIN_CONTAINER_SIZE),
-                            child: const Text(
-                              'E-mail',
-                              style: TextStyle(
-                                  fontSize: 24,
-                                  fontFamily: 'Asap',
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                  decoration: TextDecoration.none,
-                                  shadows: [
-                                    Shadow(
-                                        color: LOGIN_SHADOW_TEXT,
-                                        blurRadius: 4,
-                                        offset: LOGIN_SHADOW_OFFSET)
-                                  ]),
-                            ),
-                          ),
-                        ]),
-                        Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                          Center(
-                            child: Container(
-                                constraints: BoxConstraints(
-                                    minWidth: screenWidth * LOGIN_CONTAINER_SIZE,
-                                    maxWidth: screenWidth * LOGIN_CONTAINER_SIZE),
-                                child: _entryField(_controllerEmail, false, TextInputAction.next)),
-                          ),
-                        ]),
-                        Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                          Container(
-                            constraints:
-                                BoxConstraints(minWidth: screenWidth * LOGIN_CONTAINER_SIZE),
-                            child: const Text(
-                              'Hasło',
-                              style: TextStyle(
-                                  fontSize: 24,
-                                  fontFamily: 'Asap',
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                  decoration: TextDecoration.none,
-                                  shadows: [
-                                    Shadow(
-                                        color: LOGIN_SHADOW_TEXT,
-                                        blurRadius: 4,
-                                        offset: LOGIN_SHADOW_OFFSET)
-                                  ]),
-                            ),
-                          ),
-                        ]),
-                        Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                          Center(
-                            child: Container(
-                                constraints: BoxConstraints(
-                                    minWidth: screenWidth * LOGIN_CONTAINER_SIZE,
-                                    maxWidth: screenWidth * LOGIN_CONTAINER_SIZE),
-                                child:
-                                    _entryField(_controllerPassword, true, TextInputAction.done)),
-                          ),
-                        ]),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Container(
-                              constraints:
-                                  BoxConstraints(minWidth: screenWidth * LOGIN_CONTAINER_SIZE),
-                              alignment: Alignment.centerRight,
-                              padding: const EdgeInsets.only(top: 10),
-                              child: InkWell(
-                                onTap: () => Navigator.push(
-                                  context,
-                                  PageRouteBuilder(
-                                    pageBuilder: (context, animation, secondaryAnimation) =>
-                                        const RegisterUser(),
-                                    transitionsBuilder:
-                                        (context, animation, secondaryAnimation, child) {
-                                      return FadeTransition(opacity: animation, child: child);
-                                    },
-                                  ),
-                                ),
-                                child: const Text(
-                                  'Nie masz konta?',
-                                  style: TextStyle(
-                                    fontSize: 16.0,
-                                    color: LOGIN_ALTERNATE_OPTION,
-                                    decoration: TextDecoration.underline,
-                                    decorationColor: LOGIN_ALTERNATE_OPTION,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
                     ),
                   ),
                 ],
@@ -221,98 +171,20 @@ class _LoginPageState extends State<LoginPage> {
         Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(
-                builder: (context) => LoginApproved(
-                      email: _controllerEmail.text,
-                    )),
+              builder: (context) => LoginApproved(
+                email: _controllerEmail.text,
+              ),
+            ),
             (route) => false);
       }
 
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        behavior: SnackBarBehavior.floating,
-        content: Text("Nieprawidłowy E-mail lub hasło", textAlign: TextAlign.center),
-        duration: Duration(milliseconds: 2000),
-      ));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          behavior: SnackBarBehavior.floating,
+          content: Text("Nieprawidłowy E-mail lub hasło", textAlign: TextAlign.center),
+          duration: Duration(milliseconds: 2000),
+        ),
+      );
     }
-  }
-
-  Widget _entryField(TextEditingController controller, bool hide, TextInputAction action) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 14),
-      child: TextField(
-        textInputAction: action,
-        obscureText: hide == true ? true : false,
-        controller: controller,
-        style: const TextStyle(
-          color: Colors.white,
-          fontSize: 18.0,
-        ),
-        decoration: const InputDecoration(
-          isDense: true,
-          focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.black)),
-          border: UnderlineInputBorder(borderSide: BorderSide(color: Colors.black)),
-          enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.black)),
-        ),
-      ),
-    );
-  }
-}
-
-class Picture extends StatelessWidget {
-  final String img;
-  final double top;
-  final double left;
-  final double width;
-
-  const Picture({
-    super.key,
-    required this.img,
-    required this.top,
-    required this.left,
-    required this.width,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
-
-    return Positioned(
-      top: screenHeight * top,
-      left: screenWidth * left,
-      child: Image.asset(
-        'images/$img',
-        width: width == 0 ? null : screenWidth * width,
-      ),
-    );
-  }
-}
-
-class WavePainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    Paint paint = Paint()
-      ..shader = const LinearGradient(
-        colors: [LOGIN_BG_PRIMARY_COLOR, LOGIN_BG_SECONDARY_COLOR],
-        begin: Alignment.topCenter,
-        end: Alignment.bottomCenter,
-      ).createShader(Rect.fromLTWH(0, 0, size.width, size.height))
-      ..style = PaintingStyle.fill;
-
-    Path path = Path()
-      ..moveTo(0, size.height * (BACKGROUND_WAVES_IMAGE + 0.05))
-      ..quadraticBezierTo(size.width * 0.25, size.height * (BACKGROUND_WAVES_IMAGE + 0.05),
-          size.width * 0.5, size.height * BACKGROUND_WAVES_IMAGE)
-      ..quadraticBezierTo(size.width * 0.75, size.height * (BACKGROUND_WAVES_IMAGE - 0.05),
-          size.width, size.height * (BACKGROUND_WAVES_IMAGE - 0.05))
-      ..lineTo(size.width, size.height)
-      ..lineTo(0, size.height)
-      ..close();
-
-    canvas.drawPath(path, paint);
-  }
-
-  @override
-  bool shouldRepaint(CustomPainter oldDelegate) {
-    return false;
   }
 }

@@ -17,14 +17,15 @@ abstract class AppSizes {
   static const double pathTopSmall = 0.45;
   static const double pathTopBig = 0.45;
 
-  static const double buttonBottomFactor = 0.80;
+  static const double buttonBottomFactor = 0.79;
+  static const double loginPositionFactor = 0.52;
 
-  static const double buttonWidthFactor = 0.75;
+  static const double buttonWidthFactor = 0.80;
   static const double wandererWidth = 0.25;
   static const double firstBushWidth = 0.6;
   static const double secondBushWidth = 0.3;
 
-  static const double elevationIndicator = 0.08;
+  static const double elevationIndicator = 0.12;
 
   // WavePainter
   static const double waveBasePosition = 1.05;
