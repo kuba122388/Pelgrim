@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pelgrim/core/const/consts.dart';
-import 'package:pelgrim/models/MyUser.dart';
+import 'package:pelgrim/models/my_user.dart';
 
 class BurgerMenu extends StatefulWidget implements PreferredSizeWidget {
   final Function(int) onItemTapped;
@@ -8,7 +8,10 @@ class BurgerMenu extends StatefulWidget implements PreferredSizeWidget {
   final MyUser currentUser;
 
   const BurgerMenu(
-      {super.key, required this.onItemTapped, required this.selectedIndex, required this.currentUser});
+      {super.key,
+      required this.onItemTapped,
+      required this.selectedIndex,
+      required this.currentUser});
 
   @override
   _BurgerMenuState createState() => _BurgerMenuState();
@@ -28,7 +31,7 @@ class _BurgerMenuState extends State<BurgerMenu> {
     'Informator',
     'Kontakt',
     'Zdjęcia',
-    if(widget.currentUser.admin)'Użytkownicy',
+    if (widget.currentUser.admin) 'Użytkownicy',
     'Pomoc'
   ];
 
@@ -40,7 +43,7 @@ class _BurgerMenuState extends State<BurgerMenu> {
     './images/information.png',
     './images/phone.png',
     './images/images.png',
-    if(widget.currentUser.admin)'./images/users.png',
+    if (widget.currentUser.admin) './images/users.png',
     './images/about.png'
   ];
 
@@ -54,10 +57,7 @@ class _BurgerMenuState extends State<BurgerMenu> {
           margin: const EdgeInsets.symmetric(horizontal: 10),
           decoration: BoxDecoration(
               border: Border(
-                  bottom: BorderSide(
-                      color: isSelected
-                          ? Colors.black
-                          : LIST_TILE_INACTIVE_COLOR))),
+                  bottom: BorderSide(color: isSelected ? Colors.black : LIST_TILE_INACTIVE_COLOR))),
           child: ListTile(
             selected: isSelected,
             contentPadding: const EdgeInsets.symmetric(horizontal: 10),
@@ -93,14 +93,11 @@ class _BurgerMenuState extends State<BurgerMenu> {
                 width: double.infinity,
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(15),
-                    border:
-                        const Border(bottom: BorderSide(color: Colors.black))),
+                    border: const Border(bottom: BorderSide(color: Colors.black))),
                 child: Row(children: [
                   Padding(
                       padding: EdgeInsets.only(
-                          left: screenWidth * 0.062,
-                          top: statusBar + 9,
-                          bottom: 20),
+                          left: screenWidth * 0.062, top: statusBar + 9, bottom: 20),
                       child: InkWell(
                           onTap: () => Navigator.of(context).pop(),
                           child: Image.asset(
@@ -113,16 +110,13 @@ class _BurgerMenuState extends State<BurgerMenu> {
               return listTile(isSelected, index);
             }),
             const Spacer(),
-            listTile(widget.selectedIndex == _titles.length - 1 ? true : false,
-                _titles.length - 1),
+            listTile(widget.selectedIndex == _titles.length - 1 ? true : false, _titles.length - 1),
             Container(
                 padding: const EdgeInsets.symmetric(vertical: 12),
                 child: const Center(
                     child: Text('Icons by Icons8',
                         style: TextStyle(
-                            fontFamily: 'Lexend',
-                            color: LIST_TILE_INACTIVE_COLOR,
-                            fontSize: 10))))
+                            fontFamily: 'Lexend', color: LIST_TILE_INACTIVE_COLOR, fontSize: 10))))
           ],
         ));
   }

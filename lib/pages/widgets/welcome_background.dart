@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:pelgrim/core/const/app_colors.dart';
 import 'package:pelgrim/core/const/app_sizes.dart';
-import 'package:pelgrim/pages/login-page/login-page.dart';
 import 'package:pelgrim/core/const/app_styles.dart';
+import 'package:pelgrim/pages/register/register_user.dart';
+import 'package:pelgrim/pages/welcome/widgets/background_gradient.dart';
 
 class WelcomeBackground extends StatelessWidget {
   final bool elevated;
@@ -22,7 +23,7 @@ class WelcomeBackground extends StatelessWidget {
 
     return Stack(
       children: [
-        const _BackgroundGradient(),
+        const BackgroundGradient(),
         Positioned.fill(
           child: CustomPaint(painter: WavePainter()),
         ),
@@ -66,33 +67,16 @@ class WelcomeBackground extends StatelessWidget {
                   width: 0,
                 ),
                 const Picture(
-                    img: 'wanderer.png',
-                    top: AppSizes.wandererTop,
-                    left: 0.1,
-                    width: AppSizes.wandererWidth),
+                  img: 'wanderer.png',
+                  top: AppSizes.wandererTop,
+                  left: 0.1,
+                  width: AppSizes.wandererWidth,
+                ),
               ],
             ),
           ),
         ),
       ],
-    );
-  }
-}
-
-class _BackgroundGradient extends StatelessWidget {
-  const _BackgroundGradient();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [AppColors.approvedGradientBottom, AppColors.approvedGradientTop],
-          stops: [0.0, 0.8],
-        ),
-      ),
     );
   }
 }
