@@ -1,12 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:pelgrim/core/const/consts.dart';
+import 'package:pelgrim/domain/models/group_info.dart';
+import 'package:pelgrim/domain/models/my_user.dart';
+import 'package:pelgrim/providers/user_provider.dart';
+import 'package:provider/provider.dart';
 
 class HelpPage extends StatefulWidget {
-  final Map<String, dynamic> settings;
-
-  const HelpPage({super.key, required this.settings});
+  const HelpPage({super.key});
 
   @override
   State<HelpPage> createState() => _HelpPageState();
@@ -15,7 +16,6 @@ class HelpPage extends StatefulWidget {
 class _HelpPageState extends State<HelpPage> {
   TextEditingController titleController = TextEditingController();
   TextEditingController contentController = TextEditingController();
-  User? user = FirebaseAuth.instance.currentUser;
   bool processing = false;
 
   @override
@@ -25,46 +25,40 @@ class _HelpPageState extends State<HelpPage> {
     contentController.dispose();
   }
 
-  Future<void> sendMsg() async {
+  Future<void> sendMsg(String groupName, String userEmail) async {
     if (processing == true) return;
     setState(() {
       processing = true;
     });
 
     if (titleController.text == '' || contentController.text == '') {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        duration: Duration(seconds: 2),
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          duration: Duration(seconds: 2),
           content: Center(
-              child: Padding(
-        padding: EdgeInsets.symmetric(vertical: 4.0),
-        child: Text('Temat lub opis zgłoszenia jest pusty',
-            style: TextStyle(fontSize: 16)),
-      ))));
+            child: Padding(
+              padding: EdgeInsets.symmetric(vertical: 4.0),
+              child: Text(
+                'Temat lub opis zgłoszenia jest pusty',
+                style: TextStyle(fontSize: 16),
+              ),
+            ),
+          ),
+        ),
+      );
       setState(() {
         processing = false;
       });
       return;
     }
 
-    if (user == null) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          duration: Duration(seconds: 2),
-          padding: EdgeInsets.symmetric(vertical: 4.0),
-          content: Center(
-              child: Text('Problem z wysyłaniem - nieznany użytkownik',
-                  style: TextStyle(fontSize: 16)))));
-      setState(() {
-        processing = false;
-      });
-      return;
-    }
+    userEmail = userEmail.replaceAll(RegExp(r'[@.]'), '_');
 
     try {
       await FirebaseFirestore.instance
           .collection('Problems')
-          .doc(
-              '${widget.settings['groupColor']} - ${widget.settings['groupCity']}')
-          .collection('Uid: ${user!.uid}')
+          .doc(groupName)
+          .collection(userEmail)
           .add(<String, dynamic>{
         'Title': titleController.text,
         'Content': contentController.text,
@@ -75,29 +69,35 @@ class _HelpPageState extends State<HelpPage> {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           duration: Duration(seconds: 2),
           padding: EdgeInsets.symmetric(vertical: 4.0),
-          content: Center(
-              child: Text('Wiadomość wysłano pomyślnie!',
-                  style: TextStyle(fontSize: 16)))));
+          content:
+              Center(child: Text('Wiadomość wysłano pomyślnie!', style: TextStyle(fontSize: 16)))));
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           duration: const Duration(seconds: 2),
           padding: const EdgeInsets.symmetric(vertical: 4.0),
           content: Center(
-              child: Text('Problem z wysyłaniem - $e',
-                  style: const TextStyle(fontSize: 16)))));
+              child: Text('Problem z wysyłaniem - $e', style: const TextStyle(fontSize: 16)))));
+    } finally {
+      setState(() {
+        processing = false;
+      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final UserProvider userProvider = context.read<UserProvider>();
+
+    final MyUser myUser = userProvider.user!;
+    final GroupInfo groupInfo = userProvider.groupInfo!;
+
     final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight =
-        MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top;
+    final screenHeight = MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top;
 
     return GestureDetector(
-        onTap: () => FocusScope.of(context).unfocus(),
-        child: Center(
-            child: SingleChildScrollView(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Center(
+        child: SingleChildScrollView(
           child: Container(
             margin: const EdgeInsets.all(20),
             padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
@@ -126,12 +126,10 @@ class _HelpPageState extends State<HelpPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Padding(
-                      padding: EdgeInsets.only(
-                          left: 22, bottom: screenHeight * 0.02),
+                      padding: EdgeInsets.only(left: 22, bottom: screenHeight * 0.02),
                       child: const Text(
                         'Temat',
-                        style: TextStyle(
-                            fontFamily: 'Lexend', fontSize: FONT_SIZE_BIG),
+                        style: TextStyle(fontFamily: 'Lexend', fontSize: FONT_SIZE_BIG),
                       ),
                     ),
                     Container(
@@ -146,10 +144,8 @@ class _HelpPageState extends State<HelpPage> {
                         textCapitalization: TextCapitalization.sentences,
                         controller: titleController,
                         decoration: const InputDecoration(
-                            border: InputBorder.none,
-                            hintText: 'Wpisz temat zgłoszenia'),
-                        style: const TextStyle(
-                            fontSize: FONT_SIZE_MEDIUM, fontFamily: 'Lexend'),
+                            border: InputBorder.none, hintText: 'Wpisz temat zgłoszenia'),
+                        style: const TextStyle(fontSize: FONT_SIZE_MEDIUM, fontFamily: 'Lexend'),
                       ),
                     ),
                   ],
@@ -158,20 +154,17 @@ class _HelpPageState extends State<HelpPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Padding(
-                      padding: EdgeInsets.only(
-                          left: 22, bottom: screenHeight * 0.02),
+                      padding: EdgeInsets.only(left: 22, bottom: screenHeight * 0.02),
                       child: const Text(
                         'Treść',
-                        style: TextStyle(
-                            fontFamily: 'Lexend', fontSize: FONT_SIZE_BIG),
+                        style: TextStyle(fontFamily: 'Lexend', fontSize: FONT_SIZE_BIG),
                       ),
                     ),
                     Container(
                       width: screenWidth * 0.75,
                       height: screenHeight * 0.25,
                       margin: EdgeInsets.only(bottom: screenHeight * 0.03),
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 22, vertical: 10),
+                      padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 10),
                       decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(25),
@@ -183,10 +176,8 @@ class _HelpPageState extends State<HelpPage> {
                         expands: true,
                         controller: contentController,
                         decoration: const InputDecoration(
-                            border: InputBorder.none,
-                            hintText: 'Opisz swój problem'),
-                        style: const TextStyle(
-                            fontSize: FONT_SIZE_MEDIUM, fontFamily: 'Lexend'),
+                            border: InputBorder.none, hintText: 'Opisz swój problem'),
+                        style: const TextStyle(fontSize: FONT_SIZE_MEDIUM, fontFamily: 'Lexend'),
                       ),
                     ),
                   ],
@@ -195,30 +186,29 @@ class _HelpPageState extends State<HelpPage> {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     InkWell(
-                        onTap: () => sendMsg(),
-                        child: Container(
-                            width: screenWidth * 0.3,
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 7, horizontal: 10),
-                            decoration: BoxDecoration(
-                                boxShadow: const [BOX_SHADOW_CONTAINER],
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(10)),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              children: [
-                                const Padding(
-                                  padding: EdgeInsets.only(left: 8),
-                                  child: Text(
-                                    'Wyślij',
-                                    style: TextStyle(
-                                        fontFamily: 'Lexend',
-                                        fontSize: FONT_SIZE_MEDIUM),
-                                  ),
-                                ),
-                                Image.asset('./images/send.png', width: 20)
-                              ],
-                            )))
+                      onTap: () => sendMsg(groupInfo.groupName, myUser.email),
+                      child: Container(
+                        width: screenWidth * 0.3,
+                        padding: const EdgeInsets.symmetric(vertical: 7, horizontal: 10),
+                        decoration: BoxDecoration(
+                            boxShadow: const [BOX_SHADOW_CONTAINER],
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(10)),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            const Padding(
+                              padding: EdgeInsets.only(left: 8),
+                              child: Text(
+                                'Wyślij',
+                                style: TextStyle(fontFamily: 'Lexend', fontSize: FONT_SIZE_MEDIUM),
+                              ),
+                            ),
+                            Image.asset('./images/send.png', width: 20)
+                          ],
+                        ),
+                      ),
+                    ),
                   ],
                 ),
                 const Spacer(),
@@ -227,9 +217,7 @@ class _HelpPageState extends State<HelpPage> {
                   children: [
                     Text(
                       'Autor aplikacji: Jakub Bak\nTel: 516-378-064',
-                      style: TextStyle(
-                          fontFamily: 'Lexend',
-                          color: LIST_TILE_INACTIVE_COLOR),
+                      style: TextStyle(fontFamily: 'Lexend', color: LIST_TILE_INACTIVE_COLOR),
                       textAlign: TextAlign.end,
                     ),
                   ],
@@ -237,6 +225,8 @@ class _HelpPageState extends State<HelpPage> {
               ],
             ),
           ),
-        )));
+        ),
+      ),
+    );
   }
 }

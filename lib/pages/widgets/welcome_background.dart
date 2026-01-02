@@ -7,12 +7,12 @@ import 'package:pelgrim/pages/welcome/widgets/background_gradient.dart';
 
 class WelcomeBackground extends StatelessWidget {
   final bool elevated;
-  final double overlayOpacity;
+  final String heroTag;
 
   const WelcomeBackground({
     super.key,
     this.elevated = false,
-    this.overlayOpacity = 0,
+    this.heroTag = "Default Welcome",
   });
 
   @override
@@ -52,7 +52,7 @@ class WelcomeBackground extends StatelessWidget {
         Transform.translate(
           offset: Offset(0, -elevationOffset),
           child: Hero(
-            tag: "Login Hero",
+            tag: heroTag,
             child: Stack(
               children: [
                 const Picture(img: 'mountains.png', top: AppSizes.mountainsTop, left: 0, width: 0),

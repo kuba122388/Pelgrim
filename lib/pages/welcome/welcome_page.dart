@@ -17,7 +17,10 @@ class WelcomePage extends StatelessWidget {
       body: SafeArea(
         child: Stack(
           children: [
-            const WelcomeBackground(elevated: false),
+            const WelcomeBackground(
+              elevated: false,
+              heroTag: "Welcome",
+            ),
             Positioned(
               width: screenWidth,
               top: screenHeight * AppSizes.buttonBottomFactor,

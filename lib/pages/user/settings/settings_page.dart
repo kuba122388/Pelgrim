@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:pelgrim/auth.dart';
 import 'package:pelgrim/core/const/consts.dart';
-import 'package:pelgrim/models/my_user.dart';
+import 'package:pelgrim/domain/models/group_info.dart';
+import 'package:pelgrim/domain/models/my_user.dart';
 import 'package:pelgrim/pages/user/settings/special_topbar.dart';
 import 'package:pelgrim/pages/welcome/welcome_page.dart';
+import 'package:pelgrim/providers/user_provider.dart';
+import 'package:provider/provider.dart';
 
 class SettingsPage extends StatefulWidget {
-  final Map<String, dynamic> settings;
-  final MyUser? myUser;
-
-  const SettingsPage({super.key, required this.settings, required this.myUser});
+  const SettingsPage({super.key});
 
   @override
   State<SettingsPage> createState() => _SettingsPageState();
@@ -18,10 +18,13 @@ class SettingsPage extends StatefulWidget {
 class _SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
+    final MyUser myUser = context.read<UserProvider>().user!;
+    final GroupInfo groupInfo = context.read<UserProvider>().groupInfo!;
+
     final screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-        appBar: SpecialTopBar(myUser: widget.myUser, settings: widget.settings),
+        appBar: const SpecialTopBar(),
         body: SingleChildScrollView(
           child: Center(
             child: Column(
@@ -47,25 +50,27 @@ class _SettingsPageState extends State<SettingsPage> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      _dataField('Imie', widget.myUser?.firstName, context),
-                      _dataField('Nazwisko', widget.myUser?.lastName, context),
-                      _dataField('E-mail', widget.myUser?.email, context),
-                      _dataField('Nr tel', widget.myUser?.phone, context),
+                      _dataField('Imie', myUser.firstName, context),
+                      _dataField('Nazwisko', myUser.lastName, context),
+                      _dataField('E-mail', myUser.email, context),
+                      _dataField('Nr tel', myUser.phone, context),
                       _dataField(
                         'Status',
-                        widget.myUser?.admin == false ? 'Pielgrzym' : 'Pielgrzym moderator',
+                        myUser.admin == false ? 'Pielgrzym' : 'Pielgrzym moderator',
                         context,
                       ),
-                      _dataFieldLast('Pielgrzymka', widget.settings['groupColor'], context),
+                      _dataFieldLast('Pielgrzymka', groupInfo.groupColor, context),
                       Row(
                         children: [
                           Padding(
                             padding: const EdgeInsets.only(bottom: 15),
-                            child: Text(widget.settings['groupCity'],
-                                style: const TextStyle(
-                                  color: LIST_TILE_INACTIVE_COLOR,
-                                  fontSize: 18,
-                                )),
+                            child: Text(
+                              groupInfo.groupCity,
+                              style: const TextStyle(
+                                color: LIST_TILE_INACTIVE_COLOR,
+                                fontSize: 18,
+                              ),
+                            ),
                           )
                         ],
                       )

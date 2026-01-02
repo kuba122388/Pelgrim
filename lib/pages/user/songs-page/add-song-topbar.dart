@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:pelgrim/models/my_user.dart';
+import 'package:pelgrim/domain/models/group_info.dart';
+import 'package:pelgrim/domain/models/my_user.dart';
+import 'package:pelgrim/providers/user_provider.dart';
+import 'package:provider/provider.dart';
 
 class AddSongTopBar extends StatefulWidget implements PreferredSizeWidget {
-  final Map<String, dynamic> settings;
   final Future<void> Function() onAccept;
 
-  const AddSongTopBar({super.key, required this.settings, required this.onAccept});
+  const AddSongTopBar({super.key, required this.onAccept});
 
   @override
   State<AddSongTopBar> createState() => _AddSongTopBarState();
@@ -20,14 +22,16 @@ class _AddSongTopBarState extends State<AddSongTopBar> {
 
   @override
   Widget build(BuildContext context) {
+    final GroupInfo groupInfo = context.read<UserProvider>().groupInfo!;
+
     final screenWidth = MediaQuery.of(context).size.width;
     final statusBar = MediaQuery.of(context).padding.top;
     final screenHeight = MediaQuery.of(context).size.height - statusBar;
 
-    String title = widget.settings['groupColor'];
-    String subtitle = widget.settings['groupCity'];
-    Color firstColor = Color(int.parse(widget.settings['color'], radix: 16));
-    Color secondColor = Color(int.parse(widget.settings['secondColor'], radix: 16));
+    String title = groupInfo.groupColor;
+    String subtitle = groupInfo.groupCity;
+    Color firstColor = groupInfo.color;
+    Color secondColor = groupInfo.secondColor;
 
     return PreferredSize(
         preferredSize: const Size.fromHeight(80),

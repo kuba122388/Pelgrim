@@ -2,12 +2,13 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:pelgrim/domain/models/group_info.dart';
 import 'package:pelgrim/pages/user/settings/special_topbar.dart';
+import 'package:pelgrim/providers/user_provider.dart';
+import 'package:provider/provider.dart';
 
 class AllImagesPage extends StatefulWidget {
-  final Map<String, dynamic> settings;
-
-  const AllImagesPage({super.key, required this.settings});
+  const AllImagesPage({super.key});
 
   @override
   State<AllImagesPage> createState() => _AllImagesPageState();
@@ -16,8 +17,10 @@ class AllImagesPage extends StatefulWidget {
 class _AllImagesPageState extends State<AllImagesPage> {
   @override
   Widget build(BuildContext context) {
+    final GroupInfo groupInfo = context.read<UserProvider>().groupInfo!;
+
     return Scaffold(
-      appBar: SpecialTopBar(settings: widget.settings, myUser: null),
+      appBar: const SpecialTopBar(),
       body: Column(
         children: [
           const Padding(
@@ -28,7 +31,7 @@ class _AllImagesPageState extends State<AllImagesPage> {
           ),
           Expanded(
             child: FutureBuilder<List<String>>(
-              future: _loadAllImageUrls(),
+              future: _loadAllImageUrls(groupInfo.groupName),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
@@ -84,9 +87,8 @@ class _AllImagesPageState extends State<AllImagesPage> {
     );
   }
 
-  Future<List<String>> _loadAllImageUrls() async {
-    final group = '${widget.settings['groupColor']} - ${widget.settings['groupCity']}';
-    final storageRef = FirebaseStorage.instance.ref().child(group).child('Images');
+  Future<List<String>> _loadAllImageUrls(String groupName) async {
+    final storageRef = FirebaseStorage.instance.ref().child(groupName).child('Images');
     final ListResult result = await storageRef.listAll();
 
     List<String> urls = [];

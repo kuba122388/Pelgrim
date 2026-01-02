@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:pelgrim/models/my_user.dart';
+import 'package:pelgrim/domain/models/group_info.dart';
 import 'package:pelgrim/pages/user/settings/settings_page.dart';
+import 'package:pelgrim/providers/user_provider.dart';
+import 'package:provider/provider.dart';
 
 class CustomTopBar extends StatefulWidget implements PreferredSizeWidget {
-  final Map<String, dynamic> settings;
-  final MyUser myUser;
-
-  const CustomTopBar({super.key, required this.settings, required this.myUser});
+  const CustomTopBar({super.key});
 
   @override
   State<CustomTopBar> createState() => _CustomTopBarState();
@@ -18,14 +17,16 @@ class CustomTopBar extends StatefulWidget implements PreferredSizeWidget {
 class _CustomTopBarState extends State<CustomTopBar> {
   @override
   Widget build(BuildContext context) {
+    final GroupInfo groupInfo = context.read<UserProvider>().groupInfo!;
+
     final screenWidth = MediaQuery.of(context).size.width;
     final statusBar = MediaQuery.of(context).padding.top;
     final screenHeight = MediaQuery.of(context).size.height - statusBar;
 
-    String title = widget.settings['groupColor'];
-    String subtitle = widget.settings['groupCity'];
-    Color firstColor = Color(int.parse(widget.settings['color'], radix: 16));
-    Color secondColor = Color(int.parse(widget.settings['secondColor'], radix: 16));
+    String title = groupInfo.groupColor;
+    String subtitle = groupInfo.groupCity;
+    Color firstColor = groupInfo.color;
+    Color secondColor = groupInfo.secondColor;
 
     return PreferredSize(
       preferredSize: const Size.fromHeight(80),
@@ -76,8 +77,7 @@ class _CustomTopBarState extends State<CustomTopBar> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => SettingsPage(
-                                      settings: widget.settings, myUser: widget.myUser),
+                                  builder: (context) => const SettingsPage(),
                                 ),
                               ),
                             },

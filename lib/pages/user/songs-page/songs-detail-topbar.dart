@@ -1,23 +1,17 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:pelgrim/core/const/consts.dart';
-import 'package:pelgrim/models/song.dart';
-import 'package:pelgrim/models/my_user.dart';
+import 'package:pelgrim/domain/models/group_info.dart';
+import 'package:pelgrim/domain/models/song.dart';
 import 'package:pelgrim/pages/user/settings/settings_page.dart';
 import 'package:pelgrim/pages/user/songs-page/edit-song-page.dart';
+import 'package:pelgrim/providers/user_provider.dart';
+import 'package:provider/provider.dart';
 
 class SongsDetailTopbar extends StatefulWidget implements PreferredSizeWidget {
-  final Map<String, dynamic> settings;
   final Song song;
-  final bool admin;
   final VoidCallback edit;
 
-  const SongsDetailTopbar(
-      {super.key,
-      required this.settings,
-      required this.song,
-      required this.edit,
-      required this.admin});
+  const SongsDetailTopbar({super.key, required this.song, required this.edit});
 
   @override
   State<SongsDetailTopbar> createState() => _SongsDetailTopbarState();
@@ -27,19 +21,19 @@ class SongsDetailTopbar extends StatefulWidget implements PreferredSizeWidget {
 }
 
 class _SongsDetailTopbarState extends State<SongsDetailTopbar> {
-  late MyUser? myUser;
-
   @override
   Widget build(BuildContext context) {
+    final GroupInfo groupInfo = context.read<UserProvider>().groupInfo!;
+    final bool isAdmin = context.read<UserProvider>().user!.admin;
+
     final screenWidth = MediaQuery.of(context).size.width;
     final statusBar = MediaQuery.of(context).padding.top;
     final screenHeight = MediaQuery.of(context).size.height - statusBar;
 
-    String? email;
-    String title = widget.settings['groupColor'];
-    String subtitle = widget.settings['groupCity'];
-    Color firstColor = Color(int.parse(widget.settings['color'], radix: 16));
-    Color secondColor = Color(int.parse(widget.settings['secondColor'], radix: 16));
+    String title = groupInfo.groupColor;
+    String subtitle = groupInfo.groupCity;
+    Color firstColor = groupInfo.color;
+    Color secondColor = groupInfo.secondColor;
 
     return PreferredSize(
         preferredSize: const Size.fromHeight(80),
@@ -68,14 +62,16 @@ class _SongsDetailTopbarState extends State<SongsDetailTopbar> {
                           onTap: () => {Navigator.of(context).pop(true)},
                           child: Image.asset('./images/back-arrow-2.png', width: 25)),
                       Visibility(
-                          visible: widget.admin,
+                          visible: isAdmin,
                           child: InkWell(
                             onTap: () async {
                               bool? edited = await Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) =>
-                                        EditSongPage(song: widget.song, settings: widget.settings)),
+                                  builder: (context) => EditSongPage(
+                                    song: widget.song,
+                                  ),
+                                ),
                               );
                               if (edited == true) {
                                 widget.edit();
@@ -84,9 +80,9 @@ class _SongsDetailTopbarState extends State<SongsDetailTopbar> {
                             child: Image.asset('./images/edit.png', width: 25),
                           )),
                       Container(
-                          constraints: BoxConstraints(minWidth: screenWidth * 0.35),
-                          child: Center(
-                              child: Text(
+                        constraints: BoxConstraints(minWidth: screenWidth * 0.35),
+                        child: Center(
+                          child: Text(
                             title,
                             style: TextStyle(
                               color: secondColor == const Color(0xFFFFFFFF)
@@ -96,9 +92,11 @@ class _SongsDetailTopbarState extends State<SongsDetailTopbar> {
                               fontWeight: FontWeight.bold,
                             ),
                             maxLines: 1,
-                          ))),
+                          ),
+                        ),
+                      ),
                       Visibility(
-                          visible: widget.admin,
+                          visible: isAdmin,
                           child: InkWell(
                             onTap: () {
                               showDialog(
@@ -154,26 +152,16 @@ class _SongsDetailTopbarState extends State<SongsDetailTopbar> {
                             ),
                           )),
                       InkWell(
-                          onTap: () async => {
-                                email = FirebaseAuth.instance.currentUser?.email,
-                                if (email != null)
-                                  {
-                                    myUser = await MyUser.getUserData(email!, '$title - $subtitle'),
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => SettingsPage(
-                                                settings: widget.settings, myUser: myUser)))
-                                  }
-                                else
-                                  {
-                                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                                        content: Center(
-                                            child:
-                                                Text('Problem z uwierzytelnianiem użytkownika'))))
-                                  }
-                              },
-                          child: Image.asset('./images/settings.png', width: 25)),
+                        onTap: () async => {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const SettingsPage(),
+                            ),
+                          ),
+                        },
+                        child: Image.asset('./images/settings.png', width: 25),
+                      ),
                     ],
                   ),
                 ),

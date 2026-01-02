@@ -1,15 +1,15 @@
 import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:pelgrim/models/announcement.dart';
-import 'package:pelgrim/models/my_user.dart';
+import 'package:pelgrim/domain/models/announcement.dart';
+import 'package:pelgrim/domain/models/group_info.dart';
+import 'package:pelgrim/domain/models/my_user.dart';
 import 'package:pelgrim/core/const/consts.dart';
+import 'package:pelgrim/providers/user_provider.dart';
+import 'package:provider/provider.dart';
 
 class AnnouncementsPage extends StatefulWidget {
-  final Map<String, dynamic> settings;
-  final MyUser myUser;
-
-  const AnnouncementsPage({super.key, required this.settings, required this.myUser});
+  const AnnouncementsPage({super.key});
 
   @override
   State<AnnouncementsPage> createState() => _AnnouncementsPageState();
@@ -25,7 +25,11 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final group = '${widget.settings['groupColor']} - ${widget.settings['groupCity']}';
+    final UserProvider userProvider = context.read<UserProvider>();
+
+    final GroupInfo groupInfo = userProvider.groupInfo!;
+    final MyUser myUser = userProvider.user!;
+
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top;
 
@@ -38,21 +42,26 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
         child: Column(
           children: [
             Padding(
-                padding: EdgeInsets.only(top: screenHeight * 0.02, bottom: screenHeight * 0.01),
-                child: const Text('Dodaj Ogłoszenie',
-                    style: TextStyle(
-                        fontFamily: 'Lexend',
-                        fontWeight: FontWeight.bold,
-                        color: FONT_BLACK_COLOR,
-                        fontSize: 18,
-                        shadows: [APP_TEXT_SHADOW]))),
+              padding: EdgeInsets.only(top: screenHeight * 0.02, bottom: screenHeight * 0.01),
+              child: const Text(
+                'Dodaj Ogłoszenie',
+                style: TextStyle(
+                  fontFamily: 'Lexend',
+                  fontWeight: FontWeight.bold,
+                  color: FONT_BLACK_COLOR,
+                  fontSize: 18,
+                  shadows: [APP_TEXT_SHADOW],
+                ),
+              ),
+            ),
             Expanded(
               child: SizedBox(
                 width: screenWidth * 0.85,
                 child: Column(
                   children: [
                     InkWell(
-                        onTap: () => {_showAddAnnouncementWidget(group, refresh)},
+                        onTap: () =>
+                            {_showAddAnnouncementWidget(groupInfo.groupName, myUser, refresh)},
                         child: _addAnnouncement(screenWidth, screenHeight)),
                     SizedBox(height: screenHeight * 0.01),
                     Container(
@@ -98,7 +107,7 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
                             ],
                           ),
                           const SizedBox(height: 10),
-                          Expanded(child: _displayAnnouncements(group)),
+                          Expanded(child: _displayAnnouncements(groupInfo.groupName, myUser)),
                         ],
                       ),
                     )
@@ -112,25 +121,25 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
     ));
   }
 
-  StreamBuilder<List<Announcement>> _displayAnnouncements(String group) {
+  StreamBuilder<List<Announcement>> _displayAnnouncements(String group, MyUser myUser) {
     return StreamBuilder<List<Announcement>>(
-        stream: Announcement.loadAnnouncementsAsStream(group),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Błąd: ${snapshot.error}'));
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(
-              child: Text(
-                'Brak ogłoszeń',
-                style: TextStyle(fontFamily: 'Lexend', color: FONT_BLACK_COLOR),
-              ),
-            );
-          } else {
-            List<Announcement> announcements = snapshot.data!;
-            return SingleChildScrollView(
-                child: Column(
+      stream: Announcement.loadAnnouncementsAsStream(group),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return Center(child: Text('Błąd: ${snapshot.error}'));
+        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return const Center(
+            child: Text(
+              'Brak ogłoszeń',
+              style: TextStyle(fontFamily: 'Lexend', color: FONT_BLACK_COLOR),
+            ),
+          );
+        } else {
+          List<Announcement> announcements = snapshot.data!;
+          return SingleChildScrollView(
+            child: Column(
               children: announcements.map((announcement) {
                 final formattedDate = '${announcement.date.day.toString().padLeft(2, '0')}.'
                     '${announcement.date.month.toString().padLeft(2, '0')}.'
@@ -140,78 +149,90 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
                     '${announcement.date.second.toString().padLeft(2, '0')}';
 
                 return Visibility(
-                    visible: important == true ? announcement.important : true,
-                    child: Container(
-                        padding: const EdgeInsets.all(15),
-                        margin: const EdgeInsets.only(bottom: 10),
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.black),
-                          borderRadius: BorderRadius.circular(10),
-                          color: Colors.white,
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                  visible: important == true ? announcement.important : true,
+                  child: Container(
+                    padding: const EdgeInsets.all(15),
+                    margin: const EdgeInsets.only(bottom: 10),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.black),
+                      borderRadius: BorderRadius.circular(10),
+                      color: Colors.white,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Wrap(
+                          crossAxisAlignment: WrapCrossAlignment.center,
                           children: [
-                            Wrap(
-                              crossAxisAlignment: WrapCrossAlignment.center,
-                              children: [
-                                Padding(
-                                    padding: const EdgeInsets.only(right: 5),
-                                    child: Text(
-                                      announcement.anonymous == false
-                                          ? announcement.author
-                                          : 'Autor Anonimowy',
-                                      style: const TextStyle(fontFamily: 'Lexend'),
-                                    )),
-                                Padding(
-                                    padding: const EdgeInsets.only(right: 10),
-                                    child: Text(
-                                      formattedDate,
-                                      style: const TextStyle(fontSize: 8, fontFamily: 'Lexend'),
-                                    )),
-                                Visibility(
-                                    visible: announcement.important,
-                                    child: const Text(
-                                      'WAŻNE!',
-                                      style: TextStyle(
-                                          fontSize: 10,
-                                          color: Colors.red,
-                                          fontWeight: FontWeight.bold),
-                                    ))
-                              ],
+                            Padding(
+                              padding: const EdgeInsets.only(right: 5),
+                              child: Text(
+                                announcement.anonymous == false
+                                    ? announcement.author
+                                    : 'Autor Anonimowy',
+                                style: const TextStyle(fontFamily: 'Lexend'),
+                              ),
                             ),
-                            Row(
-                              children: [
-                                Flexible(
-                                    child: Padding(
-                                        padding: const EdgeInsets.only(top: 5, bottom: 10),
-                                        child: Text(
-                                          announcement.content,
-                                          style: const TextStyle(fontSize: FONT_SIZE_SMALL),
-                                          softWrap: true,
-                                        )))
-                              ],
+                            Padding(
+                              padding: const EdgeInsets.only(right: 10),
+                              child: Text(
+                                formattedDate,
+                                style: const TextStyle(fontSize: 8, fontFamily: 'Lexend'),
+                              ),
                             ),
                             Visibility(
-                                visible: announcement.author ==
-                                            '${widget.myUser.firstName} ${widget.myUser.lastName}' ||
-                                        widget.myUser.admin
-                                    ? true
-                                    : false,
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    InkWell(
-                                        onTap: () => _deleteAnnouncement(announcement, group),
-                                        child: Image.asset('./images/trash.png', width: 15))
-                                  ],
-                                ))
+                              visible: announcement.important,
+                              child: const Text(
+                                'WAŻNE!',
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  color: Colors.red,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
                           ],
-                        )));
+                        ),
+                        Row(
+                          children: [
+                            Flexible(
+                              child: Padding(
+                                padding: const EdgeInsets.only(top: 5, bottom: 10),
+                                child: Text(
+                                  announcement.content,
+                                  style: const TextStyle(fontSize: FONT_SIZE_SMALL),
+                                  softWrap: true,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        Visibility(
+                          visible:
+                              announcement.author == '${myUser.firstName} ${myUser.lastName}' ||
+                                      myUser.admin
+                                  ? true
+                                  : false,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              InkWell(
+                                onTap: () => _deleteAnnouncement(announcement, myUser, group),
+                                child: Image.asset('./images/trash.png', width: 15),
+                              )
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
               }).toList(),
-            ));
-          }
-        });
+            ),
+          );
+        }
+      },
+    );
   }
 
   Row _addAnnouncement(screenWidth, screenHeight) {
@@ -241,7 +262,7 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
     );
   }
 
-  Future<void> _showAddAnnouncementWidget(String group, Function notifyParent) {
+  Future<void> _showAddAnnouncementWidget(String group, MyUser myUser, Function notifyParent) {
     final screenWidth = MediaQuery.of(context).size.width;
     bool important = false;
     bool anonymous = false;
@@ -373,7 +394,7 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
                                   await Announcement(
                                     anonymous: anonymous,
                                     important: important,
-                                    author: '${widget.myUser.firstName} ${widget.myUser.lastName}',
+                                    author: '${myUser.firstName} ${myUser.lastName}',
                                     content: announcementController.text,
                                     date: DateTime.now(),
                                   ).save(group);
@@ -398,7 +419,7 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
     );
   }
 
-  Future<void> _deleteAnnouncement(Announcement announcement, String group) {
+  Future<void> _deleteAnnouncement(Announcement announcement, MyUser myUser, String group) {
     final screenHeight = MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top;
 
     ElevatedButton buttonOption(text) {
@@ -414,22 +435,26 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
                       {
                         await announcement.delete(group),
                         setState(() {
-                          _displayAnnouncements(group);
+                          _displayAnnouncements(group, myUser);
                         })
                       },
                     Navigator.of(context).pop()
                   }
               },
           style: ButtonStyle(
-              foregroundColor: text == 'Usuń'
-                  ? WidgetStateProperty.all<Color>(Colors.white)
-                  : WidgetStateProperty.all<Color>(FONT_BLACK_COLOR),
-              backgroundColor: text == 'Usuń'
-                  ? const WidgetStatePropertyAll<Color>(Colors.red)
-                  : const WidgetStatePropertyAll<Color>(Colors.white),
-              padding:
-                  WidgetStateProperty.all<EdgeInsets>(const EdgeInsets.symmetric(horizontal: 20)),
-              textStyle: WidgetStateProperty.all<TextStyle>(const TextStyle(fontFamily: 'Lexend'))),
+            foregroundColor: text == 'Usuń'
+                ? WidgetStateProperty.all<Color>(Colors.white)
+                : WidgetStateProperty.all<Color>(FONT_BLACK_COLOR),
+            backgroundColor: text == 'Usuń'
+                ? const WidgetStatePropertyAll<Color>(Colors.red)
+                : const WidgetStatePropertyAll<Color>(Colors.white),
+            padding: WidgetStateProperty.all<EdgeInsets>(
+              const EdgeInsets.symmetric(horizontal: 20),
+            ),
+            textStyle: WidgetStateProperty.all<TextStyle>(
+              const TextStyle(fontFamily: 'Lexend'),
+            ),
+          ),
           child: SizedBox(width: 60, child: Center(child: Text(text))));
     }
 
@@ -447,33 +472,34 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
             fontFamily: 'Lexend',
           ),
           content: Container(
-              constraints: BoxConstraints(minHeight: screenHeight * 0.15),
-              child: IntrinsicHeight(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 20),
-                      child: Text(
-                        '"${announcement.content}"',
-                        style: const TextStyle(
-                          fontFamily: 'Lexend',
-                          fontSize: 14,
-                        ),
+            constraints: BoxConstraints(minHeight: screenHeight * 0.15),
+            child: IntrinsicHeight(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 20),
+                    child: Text(
+                      '"${announcement.content}"',
+                      style: const TextStyle(
+                        fontFamily: 'Lexend',
+                        fontSize: 14,
                       ),
                     ),
-                    const Spacer(),
-                    Align(
-                      alignment: Alignment.bottomCenter,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [buttonOption('Anuluj'), buttonOption('Usuń')],
-                      ),
+                  ),
+                  const Spacer(),
+                  Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [buttonOption('Anuluj'), buttonOption('Usuń')],
                     ),
-                  ],
-                ),
-              )),
+                  ),
+                ],
+              ),
+            ),
+          ),
         );
       },
     );

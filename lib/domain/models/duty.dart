@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:pelgrim/models/my_user.dart';
+import 'package:pelgrim/domain/models/my_user.dart';
 
 class Duty {
   String id;
@@ -20,7 +20,7 @@ class Duty {
     return {
       'Title': title,
       'MaxVolunteers': maxVolunteers,
-      'Volunteers': volunteers.map((v) => v.toMapUser()).toList(),
+      'Volunteers': volunteers.map((v) => v.toMap()).toList(),
       'CreatedAt': createdAt,
     };
   }

@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:pelgrim/core/const/consts.dart';
-import 'package:pelgrim/models/song.dart';
+import 'package:pelgrim/domain/models/group_info.dart';
+import 'package:pelgrim/domain/models/song.dart';
 import 'package:pelgrim/pages/user/songs-page/add-song-topbar.dart';
+import 'package:pelgrim/providers/user_provider.dart';
+import 'package:provider/provider.dart';
 
 class AddSongPage extends StatefulWidget {
-  final Map<String, dynamic> settings;
-
-  const AddSongPage({super.key, required this.settings});
+  const AddSongPage({super.key});
 
   @override
   State<AddSongPage> createState() => _AddSongPageState();
@@ -25,12 +26,12 @@ class _AddSongPageState extends State<AddSongPage> {
 
   @override
   Widget build(BuildContext context) {
+    final GroupInfo groupInfo = context.read<UserProvider>().groupInfo!;
+
     final screenWidth = MediaQuery.of(context).size.width;
     final statusBar = MediaQuery.of(context).padding.top;
     final screenHeight = MediaQuery.of(context).size.height - statusBar;
     final keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
-
-    final group = '${widget.settings['groupColor']} - ${widget.settings['groupCity']}';
 
     Future<void> addSong(group) async {
       if (titleController.text == '' || lyricsController.text == '') {
@@ -55,7 +56,7 @@ class _AddSongPageState extends State<AddSongPage> {
 
     return Scaffold(
         resizeToAvoidBottomInset: true,
-        appBar: AddSongTopBar(settings: widget.settings, onAccept: () => addSong(group)),
+        appBar: AddSongTopBar(onAccept: () => addSong(groupInfo.groupName)),
         body: GestureDetector(
           behavior: HitTestBehavior.translucent,
           onTap: () {

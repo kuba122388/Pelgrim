@@ -5,9 +5,9 @@ class Contact {
 
   Contact({required this.description});
 
-  factory Contact.fromMap(Map<String, dynamic> map) {
+  factory Contact.fromJson(Map<String, dynamic> json) {
     return Contact(
-      description: map['description'] ?? '',
+      description: json['description'] ?? '',
     );
   }
 
@@ -28,9 +28,8 @@ class Contact {
     if (!doc.exists) return null;
 
     final data = doc.data() as Map<String, dynamic>;
-    return Contact.fromMap(data);
+    return Contact.fromJson(data);
   }
-
 
   Future<void> save(String group) async {
     await FirebaseFirestore.instance
@@ -40,5 +39,4 @@ class Contact {
         .doc('MainContact')
         .set(toMap());
   }
-
 }

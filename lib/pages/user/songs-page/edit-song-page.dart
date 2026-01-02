@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:pelgrim/core/const/consts.dart';
-import 'package:pelgrim/models/song.dart';
+import 'package:pelgrim/domain/models/group_info.dart';
+import 'package:pelgrim/domain/models/song.dart';
 import 'package:pelgrim/pages/user/songs-page/edit-song-topbar.dart';
+import 'package:pelgrim/providers/user_provider.dart';
+import 'package:provider/provider.dart';
 
 class EditSongPage extends StatefulWidget {
-  final Map<String, dynamic> settings;
   final Song song;
 
-  const EditSongPage({super.key, required this.song, required this.settings});
+  const EditSongPage({super.key, required this.song});
 
   @override
   State<EditSongPage> createState() => _EditSongPageState();
@@ -30,7 +32,7 @@ class _EditSongPageState extends State<EditSongPage> {
     final screenHeight = MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top;
     final keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
 
-    final group = '${widget.settings['groupColor']} - ${widget.settings['groupCity']}';
+    final GroupInfo groupInfo = context.read<UserProvider>().groupInfo!;
 
     Future<void> editSong(group) async {
       Song song = Song(
@@ -45,7 +47,7 @@ class _EditSongPageState extends State<EditSongPage> {
     }
 
     return Scaffold(
-        appBar: EditSongTopbar(settings: widget.settings, onAccept: () => editSong(group)),
+        appBar: EditSongTopbar(onAccept: () => editSong(groupInfo.groupName)),
         body: GestureDetector(
           behavior: HitTestBehavior.translucent,
           onTap: () {

@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:pelgrim/core/const/consts.dart';
-import 'package:pelgrim/models/song.dart';
+import 'package:pelgrim/domain/models/group_info.dart';
+import 'package:pelgrim/domain/models/song.dart';
+import 'package:pelgrim/providers/user_provider.dart';
+import 'package:provider/provider.dart';
 
 class PlayingNowPage extends StatefulWidget {
-  final Map<String, dynamic> settings;
-
-  const PlayingNowPage({super.key, required this.settings});
+  const PlayingNowPage({super.key});
 
   @override
   State<PlayingNowPage> createState() => _PlayingNowPageState();
@@ -18,7 +19,9 @@ class _PlayingNowPageState extends State<PlayingNowPage> {
   @override
   void initState() {
     super.initState();
-    _group = '${widget.settings['groupColor']} - ${widget.settings['groupCity']}';
+
+    final GroupInfo groupInfo = context.read<UserProvider>().groupInfo!;
+    _group = groupInfo.groupName;
     song = Song.playingNow(_group);
   }
 

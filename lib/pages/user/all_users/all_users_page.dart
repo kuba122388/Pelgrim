@@ -1,18 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:pelgrim/core/const/consts.dart';
-import 'package:pelgrim/models/my_user.dart';
+import 'package:pelgrim/domain/models/my_user.dart';
+import 'package:pelgrim/providers/user_provider.dart';
+import 'package:pelgrim/services/user_service.dart';
+import 'package:pelgrim/core/di/service_locator.dart';
+import 'package:provider/provider.dart';
 
 class AllUsersPage extends StatefulWidget {
-  final Map<String, dynamic> settings;
-  final MyUser myUser;
-
-  const AllUsersPage({super.key, required this.settings, required this.myUser});
+  const AllUsersPage({super.key});
 
   @override
   State<AllUsersPage> createState() => _AllUsersPageState();
 }
 
 class _AllUsersPageState extends State<AllUsersPage> {
+  final UserService _userService = sl<UserService>();
+
   List<MyUser> users = [];
   List<MyUser> filteredUsers = [];
   TextEditingController searchEngineController = TextEditingController();
@@ -22,8 +25,10 @@ class _AllUsersPageState extends State<AllUsersPage> {
   @override
   void initState() {
     super.initState();
-    final group = '${widget.settings['groupColor']} - ${widget.settings['groupCity']}';
-    MyUser.getAllUsers(group).then((allUsers) {
+
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+
+    _userService.getAllUsersByGroup(userProvider.groupInfo!.groupName).then((allUsers) {
       setState(() {
         users = allUsers;
         filterUsers();
@@ -60,7 +65,9 @@ class _AllUsersPageState extends State<AllUsersPage> {
 
   @override
   Widget build(BuildContext context) {
-    final group = '${widget.settings['groupColor']} - ${widget.settings['groupCity']}';
+    final myUser = Provider.of<UserProvider>(context, listen: false).user!;
+    final groupName = Provider.of<UserProvider>(context, listen: false).groupInfo!.groupName;
+
     final screenWidth = MediaQuery.of(context).size.width;
 
     return Column(
@@ -85,8 +92,10 @@ class _AllUsersPageState extends State<AllUsersPage> {
               contentPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
               floatingLabelBehavior: FloatingLabelBehavior.never,
               fillColor: Colors.white,
-              label: Text('Wyszukaj użytkownika',
-                  style: TextStyle(color: Colors.black.withOpacity(0.4), fontSize: 14)),
+              label: Text(
+                'Wyszukaj użytkownika',
+                style: TextStyle(color: Colors.black.withOpacity(0.4), fontSize: 14),
+              ),
               border: const OutlineInputBorder(borderSide: BorderSide.none),
             ),
           ),
@@ -103,76 +112,88 @@ class _AllUsersPageState extends State<AllUsersPage> {
                         itemBuilder: (context, index) {
                           final user = filteredUsers[index];
                           return GestureDetector(
-                              onTap: () async {
-                                await showDialog(
-                                  context: context,
-                                  builder: (ctx) => AlertDialog(
-                                    title: const Text('Uprawnienia'),
-                                    content: Text(
-                                        'Jakie uprawnienia chcesz przydzielić użytkownikowi ${user.firstName}?'),
-                                    actions: [
-                                      TextButton(
-                                        onPressed: () async {
-                                          if (user.email == widget.myUser.email) {
-                                            ScaffoldMessenger.of(context).showSnackBar(
-                                                const SnackBar(
-                                                    content: Center(
-                                                        child: Text(
-                                                            'Nie możesz zabrać sobie uprawnień!'))));
-                                            return;
-                                          }
-                                          if (user.admin) {
-                                            await user.grantAdmin(false, group);
-                                            ScaffoldMessenger.of(context)
-                                                .showSnackBar(const SnackBar(
-                                                    content: Center(
-                                              child: Text(
-                                                  'Pomyślnie przyznano uprawnienia użytkownika!'),
-                                            )));
-                                          }
-                                          Navigator.of(ctx).pop(false);
-                                        },
-                                        child: const Text('Użytkownik'),
-                                      ),
-                                      ElevatedButton(
-                                        onPressed: () async {
-                                          if (!user.admin) {
-                                            await user.grantAdmin(true, group);
-                                            ScaffoldMessenger.of(context)
-                                                .showSnackBar(const SnackBar(
-                                                    content: Center(
-                                              child: Text(
-                                                  'Pomyślnie przyznano uprawnienia administratora!'),
-                                            )));
-                                          }
-                                          Navigator.of(ctx).pop(true);
-                                        },
-                                        child: const Text('Administrator'),
-                                      ),
-                                    ],
+                            onTap: () async {
+                              await showDialog(
+                                context: context,
+                                builder: (ctx) => AlertDialog(
+                                  title: const Text('Uprawnienia'),
+                                  content: Text(
+                                      'Jakie uprawnienia chcesz przydzielić użytkownikowi ${user.firstName}?'),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () async {
+                                        if (user.email == myUser.email) {
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            const SnackBar(
+                                              content: Center(
+                                                child: Text('Nie możesz zabrać sobie uprawnień!'),
+                                              ),
+                                            ),
+                                          );
+                                          return;
+                                        }
+                                        if (user.admin) {
+                                          await _userService.grantAdmin(
+                                              false, user.email, groupName);
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            const SnackBar(
+                                              content: Center(
+                                                child: Text(
+                                                    'Pomyślnie przyznano uprawnienia użytkownika!'),
+                                              ),
+                                            ),
+                                          );
+                                        }
+                                        Navigator.of(ctx).pop(false);
+                                      },
+                                      child: const Text('Użytkownik'),
+                                    ),
+                                    ElevatedButton(
+                                      onPressed: () async {
+                                        if (!user.admin) {
+                                          await _userService.grantAdmin(
+                                              true, user.email, groupName);
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            const SnackBar(
+                                              content: Center(
+                                                child: Text(
+                                                    'Pomyślnie przyznano uprawnienia administratora!'),
+                                              ),
+                                            ),
+                                          );
+                                        }
+                                        Navigator.of(ctx).pop(true);
+                                      },
+                                      child: const Text('Administrator'),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                            child: Container(
+                              margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(20),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.25),
+                                    blurRadius: 4,
+                                    spreadRadius: 2,
+                                    offset: const Offset(0, 0),
                                   ),
-                                );
-                              },
-                              child: Container(
-                                  margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
-                                  decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.circular(20),
-                                      boxShadow: [
-                                        BoxShadow(
-                                            color: Colors.black.withOpacity(0.25),
-                                            blurRadius: 4,
-                                            spreadRadius: 2,
-                                            offset: const Offset(0, 0))
-                                      ]),
-                                  width: screenWidth * 0.8,
-                                  child: Padding(
-                                    padding:
-                                        const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                                    child: userInfo(user),
-                                  )));
+                                ],
+                              ),
+                              width: screenWidth * 0.8,
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                                child: userInfo(user),
+                              ),
+                            ),
+                          );
                         },
-                      )),
+                      ),
+                    ),
         ),
       ],
     );

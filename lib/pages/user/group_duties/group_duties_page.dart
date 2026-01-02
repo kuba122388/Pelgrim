@@ -1,37 +1,36 @@
 import 'package:flutter/material.dart';
-import 'package:pelgrim/models/duty.dart';
-import 'package:pelgrim/models/my_user.dart';
+import 'package:pelgrim/domain/models/duty.dart';
+import 'package:pelgrim/domain/models/group_info.dart';
+import 'package:pelgrim/domain/models/my_user.dart';
 import 'package:pelgrim/pages/widgets/duty_box.dart';
+import 'package:pelgrim/providers/user_provider.dart';
+import 'package:provider/provider.dart';
 
 class GroupDutiesPage extends StatefulWidget {
-  final Map<String, dynamic> settings;
-  final MyUser myUser;
-
-  const GroupDutiesPage({
-    super.key,
-    required this.settings,
-    required this.myUser,
-  });
+  const GroupDutiesPage({super.key});
 
   @override
   State<GroupDutiesPage> createState() => _GroupDutiesPageState();
 }
 
 class _GroupDutiesPageState extends State<GroupDutiesPage> {
-  late String group = '${widget.settings['groupColor']} - ${widget.settings['groupCity']}';
-
   void _refresh() {
     setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
+    final UserProvider userProvider = context.read<UserProvider>();
+
+    final GroupInfo groupInfo = userProvider.groupInfo!;
+    final MyUser myUser = userProvider.user!;
+
     return Stack(
       children: [
         Padding(
           padding: const EdgeInsets.all(20),
           child: FutureBuilder<List<Duty>>(
-            future: Duty.loadDuties(group),
+            future: Duty.loadDuties(groupInfo.groupName),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());
@@ -48,8 +47,8 @@ class _GroupDutiesPageState extends State<GroupDutiesPage> {
                 itemBuilder: (context, index) {
                   return DutyBox(
                     duty: data[index],
-                    currentUser: widget.myUser,
-                    group: group,
+                    currentUser: myUser,
+                    group: groupInfo.groupName,
                     onRefresh: _refresh,
                   );
                 },
@@ -57,12 +56,12 @@ class _GroupDutiesPageState extends State<GroupDutiesPage> {
             },
           ),
         ),
-        if (widget.myUser.admin)
+        if (myUser.admin)
           Positioned(
             bottom: 16,
             right: 16,
             child: ElevatedButton.icon(
-              onPressed: () => _showAddDutyDialog(context),
+              onPressed: () => _showAddDutyDialog(context, groupInfo.groupName),
               icon: const Icon(Icons.add),
               label: const Text("Dodaj zadanie"),
               style: ElevatedButton.styleFrom(
@@ -77,7 +76,7 @@ class _GroupDutiesPageState extends State<GroupDutiesPage> {
     );
   }
 
-  void _showAddDutyDialog(BuildContext context) {
+  void _showAddDutyDialog(BuildContext context, String groupName) {
     final titleController = TextEditingController();
     int maxPeople = 1;
 
@@ -131,7 +130,7 @@ class _GroupDutiesPageState extends State<GroupDutiesPage> {
                   title: title,
                   maxVolunteers: maxPeople,
                 );
-                await newDuty.addDuty(group);
+                await newDuty.addDuty(groupName);
                 Navigator.of(context).pop();
                 setState(() {});
               },

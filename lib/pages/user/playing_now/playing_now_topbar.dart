@@ -1,12 +1,12 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:pelgrim/models/my_user.dart';
+import 'package:pelgrim/domain/models/group_info.dart';
+import 'package:pelgrim/domain/models/my_user.dart';
 import 'package:pelgrim/pages/user/settings/settings_page.dart';
+import 'package:pelgrim/providers/user_provider.dart';
+import 'package:provider/provider.dart';
 
 class PlayingNowTopbar extends StatefulWidget implements PreferredSizeWidget {
-  final Map<String, dynamic> settings;
-
-  const PlayingNowTopbar({super.key, required this.settings});
+  const PlayingNowTopbar({super.key});
 
   @override
   State<PlayingNowTopbar> createState() => _PlayingNowTopbarState();
@@ -20,15 +20,16 @@ class _PlayingNowTopbarState extends State<PlayingNowTopbar> {
 
   @override
   Widget build(BuildContext context) {
+    final GroupInfo groupInfo = context.read<UserProvider>().groupInfo!;
+
     final screenWidth = MediaQuery.of(context).size.width;
     final statusBar = MediaQuery.of(context).padding.top;
     final screenHeight = MediaQuery.of(context).size.height - statusBar;
 
-    String? email;
-    String title = widget.settings['groupColor'];
-    String subtitle = widget.settings['groupCity'];
-    Color firstColor = Color(int.parse(widget.settings['color'], radix: 16));
-    Color secondColor = Color(int.parse(widget.settings['secondColor'], radix: 16));
+    String title = groupInfo.groupColor;
+    String subtitle = groupInfo.groupCity;
+    Color firstColor = groupInfo.color;
+    Color secondColor = groupInfo.secondColor;
 
     return PreferredSize(
         preferredSize: const Size.fromHeight(80),
@@ -74,23 +75,12 @@ class _PlayingNowTopbarState extends State<PlayingNowTopbar> {
                       const SizedBox(width: 30),
                       InkWell(
                           onTap: () async => {
-                                email = FirebaseAuth.instance.currentUser?.email,
-                                if (email != null)
-                                  {
-                                    myUser = await MyUser.getUserData(email!, '$title - $subtitle'),
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => SettingsPage(
-                                                settings: widget.settings, myUser: myUser)))
-                                  }
-                                else
-                                  {
-                                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                                        content: Center(
-                                            child:
-                                                Text('Problem z uwierzytelnieniem użytkownika'))))
-                                  }
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => SettingsPage(),
+                                  ),
+                                ),
                               },
                           child: Image.asset('./images/settings.png', width: 25)),
                     ],

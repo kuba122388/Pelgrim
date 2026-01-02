@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:pelgrim/models/duty.dart';
-import 'package:pelgrim/models/my_user.dart';
+import 'package:pelgrim/domain/models/duty.dart';
+import 'package:pelgrim/domain/models/my_user.dart';
 
 class DutyBox extends StatefulWidget {
   final Duty duty;
@@ -58,7 +58,7 @@ class _DutyBoxState extends State<DutyBox> {
         .collection('Duties')
         .doc(duty.id)
         .update({
-      'Volunteers': duty.volunteers.map((u) => u.toMapUser()).toList(),
+      'Volunteers': duty.volunteers.map((u) => u.toMap()).toList(),
     });
   }
 

@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:pelgrim/models/my_user.dart';
+import 'package:pelgrim/domain/models/group_info.dart';
 import 'package:pelgrim/pages/user/settings/settings_page.dart';
 import 'package:pelgrim/pages/user/songs-page/add-song-page.dart';
 import 'package:pelgrim/pages/user/songs-page/songs-page.dart';
+import 'package:pelgrim/providers/user_provider.dart';
+import 'package:provider/provider.dart';
 
 class SongsTopBar extends StatefulWidget implements PreferredSizeWidget {
-  final Map<String, dynamic> settings;
   final GlobalKey<SongsPageState> songsPageKey;
-  final MyUser myUser;
 
-  const SongsTopBar(
-      {super.key, required this.settings, required this.songsPageKey, required this.myUser});
+  const SongsTopBar({
+    super.key,
+    required this.songsPageKey,
+  });
 
   @override
   State<SongsTopBar> createState() => _SongsTopBarState();
@@ -22,103 +24,113 @@ class SongsTopBar extends StatefulWidget implements PreferredSizeWidget {
 class _SongsTopBarState extends State<SongsTopBar> {
   @override
   Widget build(BuildContext context) {
+    final UserProvider userProvider = context.read<UserProvider>();
+
+    final GroupInfo groupInfo = userProvider.groupInfo!;
+    final bool isAdmin = userProvider.user!.admin;
+
     final screenWidth = MediaQuery.of(context).size.width;
     final statusBar = MediaQuery.of(context).padding.top;
     final screenHeight = MediaQuery.of(context).size.height - statusBar;
 
-    String title = widget.settings['groupColor'];
-    String subtitle = widget.settings['groupCity'];
-    Color firstColor = Color(int.parse(widget.settings['color'], radix: 16));
-    Color secondColor = Color(int.parse(widget.settings['secondColor'], radix: 16));
+    String title = groupInfo.groupColor;
+    String subtitle = groupInfo.groupCity;
+    Color firstColor = groupInfo.color;
+    Color secondColor = groupInfo.secondColor;
 
     return PreferredSize(
-        preferredSize: const Size.fromHeight(80),
-        child: ClipPath(
-          clipper: TopBarClipper(),
-          child: Container(
-            width: screenWidth,
-            height: screenHeight * 0.1 + statusBar,
-            padding: EdgeInsets.only(top: statusBar + 8),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [firstColor, secondColor],
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-              ),
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                SizedBox(
-                  width: screenWidth * 0.9,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      InkWell(
-                          onTap: () => {
-                                Scaffold.of(context).openDrawer(),
-                              },
-                          child: Image.asset('./images/burger-bar.png', width: 25)),
-                      Visibility(
-                          visible: widget.myUser.admin,
-                          child: const SizedBox(
-                            width: 25,
-                          )),
-                      SizedBox(
-                          width: screenWidth * 0.4,
-                          child: Center(
-                              child: Text(
-                            title,
-                            style: TextStyle(
-                              color: secondColor == const Color(0xFFFFFFFF)
-                                  ? Colors.black
-                                  : Colors.white,
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            maxLines: 1,
-                          ))),
-                      InkWell(
-                        onTap: () async {
-                          bool? songAdded = await Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => AddSongPage(settings: widget.settings)));
-                          if (songAdded == true) {
-                            await Future.delayed(const Duration(milliseconds: 250), () {
-                              setState(() {
-                                widget.songsPageKey.currentState?.loadsongs();
-                              });
-                            });
-                          }
-                        },
-                        child: Visibility(
-                            visible: widget.myUser.admin,
-                            child: Image.asset('./images/plus.png', width: 25)),
-                      ),
-                      InkWell(
-                          onTap: () async => {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => SettingsPage(
-                                            settings: widget.settings, myUser: widget.myUser)))
-                              },
-                          child: Image.asset('./images/settings.png', width: 25)),
-                    ],
-                  ),
-                ),
-                Text(
-                  subtitle,
-                  style: TextStyle(
-                    color: secondColor == const Color(0xFFFFFFFF) ? Colors.black : Colors.white,
-                    fontSize: 16,
-                  ),
-                ),
-              ],
+      preferredSize: const Size.fromHeight(80),
+      child: ClipPath(
+        clipper: TopBarClipper(),
+        child: Container(
+          width: screenWidth,
+          height: screenHeight * 0.1 + statusBar,
+          padding: EdgeInsets.only(top: statusBar + 8),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [firstColor, secondColor],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
             ),
           ),
-        ));
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              SizedBox(
+                width: screenWidth * 0.9,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    InkWell(
+                        onTap: () => {
+                              Scaffold.of(context).openDrawer(),
+                            },
+                        child: Image.asset('./images/burger-bar.png', width: 25)),
+                    Visibility(
+                      visible: isAdmin,
+                      child: const SizedBox(
+                        width: 25,
+                      ),
+                    ),
+                    SizedBox(
+                      width: screenWidth * 0.4,
+                      child: Center(
+                        child: Text(
+                          title,
+                          style: TextStyle(
+                            color: secondColor == const Color(0xFFFFFFFF)
+                                ? Colors.black
+                                : Colors.white,
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          maxLines: 1,
+                        ),
+                      ),
+                    ),
+                    InkWell(
+                      onTap: () async {
+                        bool? songAdded = await Navigator.push(
+                            context, MaterialPageRoute(builder: (context) => const AddSongPage()));
+                        if (songAdded == true) {
+                          await Future.delayed(const Duration(milliseconds: 250), () {
+                            setState(() {
+                              widget.songsPageKey.currentState?.loadsongs();
+                            });
+                          });
+                        }
+                      },
+                      child: Visibility(
+                        visible: isAdmin,
+                        child: Image.asset('./images/plus.png', width: 25),
+                      ),
+                    ),
+                    InkWell(
+                      onTap: () async => {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const SettingsPage(),
+                          ),
+                        ),
+                      },
+                      child: Image.asset('./images/settings.png', width: 25),
+                    ),
+                  ],
+                ),
+              ),
+              Text(
+                subtitle,
+                style: TextStyle(
+                  color: secondColor == const Color(0xFFFFFFFF) ? Colors.black : Colors.white,
+                  fontSize: 16,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
 

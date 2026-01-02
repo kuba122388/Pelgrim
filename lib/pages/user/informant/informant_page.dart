@@ -4,15 +4,13 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:pelgrim/core/const/consts.dart';
-import 'package:pelgrim/models/my_user.dart';
+import 'package:pelgrim/providers/user_provider.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
+import 'package:provider/provider.dart';
 
 class InformantPage extends StatefulWidget {
-  final Map<String, dynamic> settings;
-  final MyUser myUser;
-
-  const InformantPage({super.key, required this.settings, required this.myUser});
+  const InformantPage({super.key});
 
   @override
   State<InformantPage> createState() => _InformantPageState();
@@ -20,19 +18,28 @@ class InformantPage extends StatefulWidget {
 
 class _InformantPageState extends State<InformantPage> {
   final List<XFile> _selectedImages = [];
-  late String group = '${widget.settings['groupColor']} - ${widget.settings['groupCity']}';
+  late String _groupName;
+  late Future<List<String>> _imagesFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _groupName = context.read<UserProvider>().groupInfo!.groupName;
+    _imagesFuture = getAllImageUrls();
+  }
+
+  void _refreshImages() {
+    setState(() {
+      _imagesFuture = getAllImageUrls();
+    });
+  }
 
   Future<List<String>> getAllImageUrls() async {
     try {
-      Reference folderRef = FirebaseStorage.instance.ref().child(group).child('Informant');
+      Reference folderRef = FirebaseStorage.instance.ref().child(_groupName).child('Informant');
       ListResult result = await folderRef.listAll();
-      List<String> imageUrls = [];
-      for (var item in result.items) {
-        String url = await item.getDownloadURL();
-        imageUrls.add(url);
-      }
 
-      return imageUrls;
+      return await Future.wait(result.items.map((item) => item.getDownloadURL()));
     } catch (e) {
       return [];
     }
@@ -53,7 +60,7 @@ class _InformantPageState extends State<InformantPage> {
           await decodeImageFromList(bytes);
           final fileName = '${DateTime.now().millisecondsSinceEpoch}_${image.name}';
           final ref =
-              FirebaseStorage.instance.ref().child(group).child('Informant').child(fileName);
+              FirebaseStorage.instance.ref().child(_groupName).child('Informant').child(fileName);
 
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
               duration: const Duration(milliseconds: 1500),
@@ -65,7 +72,7 @@ class _InformantPageState extends State<InformantPage> {
         }
       }
     }
-    if (pickedImages.isNotEmpty) setState(() {});
+    if (pickedImages.isNotEmpty) _refreshImages();
   }
 
   Future<void> _deleteConfirmation(String imageUrl) async {
@@ -96,6 +103,7 @@ class _InformantPageState extends State<InformantPage> {
                     const SnackBar(content: Text('Błąd podczas usuwania')),
                   );
                 }
+                _refreshImages();
                 Navigator.of(context).pop();
               },
               child: const Text('Usuń', style: TextStyle(color: Colors.red)),
@@ -108,6 +116,8 @@ class _InformantPageState extends State<InformantPage> {
 
   @override
   Widget build(BuildContext context) {
+    final myUser = context.watch<UserProvider>().user!;
+
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
 
@@ -119,7 +129,7 @@ class _InformantPageState extends State<InformantPage> {
         children: [
           Expanded(
             child: FutureBuilder<List<String>>(
-              future: getAllImageUrls(),
+              future: _imagesFuture,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
@@ -159,10 +169,10 @@ class _InformantPageState extends State<InformantPage> {
                                 ),
                               ),
                             ),
-                            if (widget.myUser.admin)
+                            if (myUser.admin)
                               Positioned(
-                                top: 10,
-                                right: 10,
+                                top: 20,
+                                right: 20,
                                 child: GestureDetector(
                                   onTap: () => _deleteConfirmation(imageUrls[index]),
                                   child: Image.asset("./images/trash.png", width: 20, height: 20),
@@ -179,28 +189,32 @@ class _InformantPageState extends State<InformantPage> {
               },
             ),
           ),
-          if (widget.myUser.admin)
+          if (myUser.admin)
             Padding(
               padding: const EdgeInsets.only(top: 30),
-              child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                InkWell(
-                  onTap: () => _pickAndSendImages(),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 40),
-                    decoration: BoxDecoration(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  InkWell(
+                    onTap: () => _pickAndSendImages(),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 40),
+                      decoration: BoxDecoration(
                         color: Colors.white,
                         boxShadow: const [BOX_SHADOW_CONTAINER],
-                        borderRadius: BorderRadius.circular(15)),
-                    child: const Center(
-                      child: Text(
-                        'Dodaj informatory',
-                        style: TextStyle(fontFamily: 'Lexend', fontSize: 18),
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      child: const Center(
+                        child: Text(
+                          'Dodaj informatory',
+                          style: TextStyle(fontFamily: 'Lexend', fontSize: 18),
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ]),
-            )
+                ],
+              ),
+            ),
         ],
       ),
     );

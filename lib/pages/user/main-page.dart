@@ -1,6 +1,5 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:pelgrim/models/my_user.dart';
+import 'package:pelgrim/domain/models/my_user.dart';
 import 'package:pelgrim/pages/user/all_users/all_users_page.dart';
 import 'package:pelgrim/pages/user/announcements/announcements_page.dart';
 import 'package:pelgrim/pages/user/contact/contact_page.dart';
@@ -14,62 +13,52 @@ import 'package:pelgrim/pages/user/songs-page/songs-page.dart';
 import 'package:pelgrim/pages/user/songs-page/songs-topbar.dart';
 import 'package:pelgrim/pages/widgets/burger.dart';
 import 'package:pelgrim/pages/widgets/topbar.dart';
+import 'package:provider/provider.dart';
+
+import '../../providers/user_provider.dart';
 
 class MainPage extends StatefulWidget {
-  final Map<String, dynamic> settings;
-  final MyUser myUser;
-
-  const MainPage({super.key, required this.settings, required this.myUser});
+  const MainPage({super.key});
 
   @override
   State<MainPage> createState() => _MainPageState();
 }
 
 class _MainPageState extends State<MainPage> {
-  User? user = FirebaseAuth.instance.currentUser;
-  bool important = false;
   int _selectedIndex = 0;
   late List<Widget> _pages;
-  late List<Widget> _topbars;
+  late List<Widget> _topBars;
   final GlobalKey<SongsPageState> _songsPageKey = GlobalKey<SongsPageState>();
 
   @override
   void initState() {
     super.initState();
-    // print(widget.myUser.firstName);
+
+    final isAdmin = context.read<UserProvider>().user!.admin;
+
     _pages = [
-      AnnouncementsPage(settings: widget.settings, myUser: widget.myUser),
-      PlayingNowPage(settings: widget.settings),
-      SongsPage(
-          group: '${widget.settings['groupColor']} - ${widget.settings['groupCity']}',
-          settings: widget.settings,
-          admin: widget.myUser.admin,
-          key: _songsPageKey),
-      GroupDutiesPage(settings: widget.settings, myUser: widget.myUser),
-      InformantPage(settings: widget.settings, myUser: widget.myUser),
-      ContactPage(settings: widget.settings, myUser: widget.myUser),
-      ImagePage(settings: widget.settings, myUser: widget.myUser),
-      if (widget.myUser.admin)
-        AllUsersPage(
-          settings: widget.settings,
-          myUser: widget.myUser,
-        ),
-      HelpPage(settings: widget.settings)
+      const AnnouncementsPage(),
+      const PlayingNowPage(),
+      SongsPage(key: _songsPageKey),
+      const GroupDutiesPage(),
+      const InformantPage(),
+      const ContactPage(),
+      const ImagePage(),
+      if (isAdmin) const AllUsersPage(),
+      const HelpPage()
     ];
-    _topbars = [
-      CustomTopBar(settings: widget.settings, myUser: widget.myUser),
-      PlayingNowTopbar(settings: widget.settings),
+    _topBars = [
+      const CustomTopBar(),
+      const PlayingNowTopbar(),
       SongsTopBar(
-        settings: widget.settings,
         songsPageKey: _songsPageKey,
-        myUser: widget.myUser,
       ),
-      CustomTopBar(settings: widget.settings, myUser: widget.myUser),
-      CustomTopBar(settings: widget.settings, myUser: widget.myUser),
-      CustomTopBar(settings: widget.settings, myUser: widget.myUser),
-      CustomTopBar(settings: widget.settings, myUser: widget.myUser),
-      if (widget.myUser.admin) CustomTopBar(settings: widget.settings, myUser: widget.myUser),
-      CustomTopBar(settings: widget.settings, myUser: widget.myUser)
+      const CustomTopBar(),
+      const CustomTopBar(),
+      const CustomTopBar(),
+      const CustomTopBar(),
+      if (isAdmin) const CustomTopBar(),
+      const CustomTopBar()
     ];
   }
 
@@ -82,10 +71,12 @@ class _MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
+    final MyUser? myUser = context.watch<UserProvider>().user;
+
     return Scaffold(
-      appBar: _topbars.isNotEmpty ? _topbars[_selectedIndex] as PreferredSizeWidget : _loading(),
+      appBar: _topBars.isNotEmpty ? _topBars[_selectedIndex] as PreferredSizeWidget : _loading(),
       drawer: BurgerMenu(
-          onItemTapped: _onItemTapped, selectedIndex: _selectedIndex, currentUser: widget.myUser),
+          onItemTapped: _onItemTapped, selectedIndex: _selectedIndex, currentUser: myUser!),
       body: _pages.isNotEmpty ? _pages[_selectedIndex] : const CircularProgressIndicator(),
     );
   }

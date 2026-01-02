@@ -1,6 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:pelgrim/auth.dart';
 import 'package:pelgrim/core/const/consts.dart';
 import 'package:pelgrim/pages/login/login_approved.dart';
 import 'package:pelgrim/pages/login/widgets/labeled_text_field.dart';
@@ -9,6 +8,7 @@ import 'package:pelgrim/pages/widgets/custom_navigate_button.dart';
 import 'package:pelgrim/pages/widgets/welcome_background.dart';
 
 import '../../core/const/app_sizes.dart';
+import '../../services/auth_service.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -20,6 +20,7 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final TextEditingController _controllerEmail = TextEditingController();
   final TextEditingController _controllerPassword = TextEditingController();
+  final AuthService _authService = AuthService();
 
   @override
   void dispose() {
@@ -47,7 +48,10 @@ class _LoginPageState extends State<LoginPage> {
               height: screenHeight - screenStatusBarHeight,
               child: Stack(
                 children: [
-                  const WelcomeBackground(elevated: true),
+                  const WelcomeBackground(
+                    elevated: true,
+                    heroTag: "Welcome",
+                  ),
                   Positioned.fill(
                     child: Column(
                       children: [
@@ -137,24 +141,28 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> signInWithEmailAndPassword() async {
-    try {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
         behavior: SnackBarBehavior.floating,
         content: Text("Logowanie...", textAlign: TextAlign.center),
         duration: Duration(milliseconds: 1500),
-      ));
+      ),
+    );
 
-      await Auth().signInWithEmailAndPassword(
-          email: _controllerEmail.text, password: _controllerPassword.text);
+    try {
+      await _authService.signIn(_controllerEmail.text, _controllerPassword.text);
 
       await Future.delayed(const Duration(milliseconds: 1400));
+
+      if (!mounted) return;
 
       Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(
-              builder: (context) => LoginApproved(
-                    email: _controllerEmail.text,
-                  )),
+            builder: (context) => LoginApproved(
+              email: _controllerEmail.text,
+            ),
+          ),
           (route) => false);
     } on FirebaseAuthException catch (e) {
       if (e.code == 'network-request-failed') {

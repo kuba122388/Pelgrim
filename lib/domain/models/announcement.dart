@@ -1,16 +1,22 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class Announcement{
-  String? docId;
+class Announcement {
+  final String? id;
   final String author;
   final String content;
   final DateTime date;
   final bool important;
   final bool anonymous;
 
-  Announcement({this.docId, required this.author, required this.content, required this.date, required this.important, required this.anonymous});
+  Announcement(
+      {this.id,
+      required this.author,
+      required this.content,
+      required this.date,
+      required this.important,
+      required this.anonymous});
 
-  Map<String, dynamic> toMap(){
+  Map<String, dynamic> toMap() {
     return {
       'Author': author,
       'Content': content,
@@ -20,30 +26,31 @@ class Announcement{
     };
   }
 
-  Future<void> save (String group) async{
-    FirebaseFirestore.instance.collection('Pelgrim Groups')
+  Future<void> save(String group) async {
+    FirebaseFirestore.instance
+        .collection('Pelgrim Groups')
         .doc(group)
         .collection('Announcements')
         .add(toMap());
   }
 
-  Future<void> delete(String group) async{
-    await FirebaseFirestore.instance.collection('Pelgrim Groups')
+  Future<void> delete(String group) async {
+    await FirebaseFirestore.instance
+        .collection('Pelgrim Groups')
         .doc(group)
         .collection('Announcements')
-        .doc(docId)
+        .doc(id)
         .delete();
-    }
+  }
 
-  factory Announcement.fromMap(Map<String, dynamic> map, docId){
+  factory Announcement.fromJson(Map<String, dynamic> json, String docId) {
     return Announcement(
-        docId: docId,
-        author: (map['Author'] ?? '').replaceAll(RegExp(r'\s+'), ' ').trim(),
-        content: map['Content'] ?? '',
-        date: map['Date'].toDate() ?? '',
-        important: map['Important'],
-        anonymous: map['Anonymous']
-    );
+        id: docId,
+        author: (json['Author'] ?? '').replaceAll(RegExp(r'\s+'), ' ').trim(),
+        content: json['Content'] ?? '',
+        date: json['Date'].toDate() ?? '',
+        important: json['Important'],
+        anonymous: json['Anonymous']);
   }
 
   static Stream<List<Announcement>> loadAnnouncementsAsStream(String group) {
@@ -56,7 +63,7 @@ class Announcement{
           .snapshots()
           .map((querySnapshot) {
         return querySnapshot.docs.map((doc) {
-          return Announcement.fromMap(doc.data(), doc.id);
+          return Announcement.fromJson(doc.data(), doc.id);
         }).toList();
       });
     } catch (e) {
@@ -64,6 +71,4 @@ class Announcement{
       return Stream.value([]);
     }
   }
-
-
 }

@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:pelgrim/core/const/consts.dart';
-import 'package:pelgrim/models/song.dart';
+import 'package:pelgrim/domain/models/song.dart';
 import 'package:pelgrim/pages/user/songs-page/songs-detail-page.dart';
+import 'package:pelgrim/providers/user_provider.dart';
+import 'package:provider/provider.dart';
 
 class SongsPage extends StatefulWidget {
-  final String group;
-  final Map<String, dynamic> settings;
-  final bool admin;
-
-  const SongsPage({super.key, required this.group, required this.settings, required this.admin});
+  const SongsPage({super.key});
 
   @override
   State<SongsPage> createState() => SongsPageState();
@@ -20,6 +18,8 @@ class SongsPageState extends State<SongsPage> {
   List<Song> filteredSongs = [];
   bool isLoading = true;
 
+  late String _groupName;
+
   String capitalize(String s) => s[0].toUpperCase() + s.substring(1);
 
   void loadsongs() {
@@ -28,14 +28,10 @@ class SongsPageState extends State<SongsPage> {
       isLoading = true;
     });
 
-    Song.loadSongs(widget.group).then((songs) {
+    Song.loadSongs(_groupName).then((songs) {
       setState(() {
         allSongs = songs;
-        for (int i = 0; i < allSongs.length; i++) {
-          allSongs[i].title = '${i + 1}. ${capitalize(allSongs[i].title)}';
-        }
         filterSongs();
-        if (!mounted) return;
         isLoading = false;
       });
     }).catchError((error) {
@@ -49,6 +45,8 @@ class SongsPageState extends State<SongsPage> {
   @override
   void initState() {
     super.initState();
+    _groupName = context.read<UserProvider>().groupInfo!.groupName;
+
     loadsongs();
 
     searchEngineController.addListener(() {
@@ -75,9 +73,9 @@ class SongsPageState extends State<SongsPage> {
 
   @override
   Widget build(BuildContext context) {
-    List<String> input;
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top;
+
     return SafeArea(
       child: SizedBox(
         height: screenHeight,
@@ -104,8 +102,10 @@ class SongsPageState extends State<SongsPage> {
                   contentPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
                   floatingLabelBehavior: FloatingLabelBehavior.never,
                   fillColor: Colors.white,
-                  label: Text('Tutaj wyszukaj piosenki',
-                      style: TextStyle(color: Colors.black.withOpacity(0.4), fontSize: 14)),
+                  label: Text(
+                    'Tutaj wyszukaj piosenki',
+                    style: TextStyle(color: Colors.black.withOpacity(0.4), fontSize: 14),
+                  ),
                   border: const OutlineInputBorder(borderSide: BorderSide.none),
                 ),
               ),
@@ -122,51 +122,47 @@ class SongsPageState extends State<SongsPage> {
                       : SingleChildScrollView(
                           child: Column(
                             children: filteredSongs.map((song) {
+                              int originalIndex = allSongs.indexOf(song) + 1;
+                              String displayTitle = "$originalIndex. ${capitalize(song.title)}";
+
                               return GestureDetector(
-                                  onTap: () async {
-                                    input = song.title.split(' ');
-                                    await Navigator.of(context).push(
-                                      MaterialPageRoute(
-                                          builder: (context) => SongsDetailPage(
-                                              song: Song(
-                                                  title: input.sublist(1).join(' '),
-                                                  lyrics: song.lyrics,
-                                                  docId: song.docId),
-                                              settings: widget.settings,
-                                              admin: widget.admin)),
-                                    );
-                                    await Future.delayed(const Duration(milliseconds: 250), () {
-                                      setState(() {
-                                        loadsongs();
-                                      });
-                                    });
-                                  },
-                                  child: Container(
-                                      margin:
-                                          const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
-                                      decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          borderRadius: BorderRadius.circular(20),
-                                          boxShadow: [
-                                            BoxShadow(
-                                                color: Colors.black.withOpacity(0.25),
-                                                blurRadius: 4,
-                                                spreadRadius: 2,
-                                                offset: const Offset(0, 0))
-                                          ]),
-                                      width: screenWidth * 0.8,
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 10, horizontal: 20),
-                                        child: Text(
-                                          song.title,
-                                          style: const TextStyle(
-                                            fontSize: 16,
-                                            fontFamily: 'Lexend',
-                                            color: FONT_BLACK_COLOR,
-                                          ),
-                                        ),
-                                      )));
+                                onTap: () async {
+                                  await Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (context) => SongsDetailPage(
+                                        song: song,
+                                      ),
+                                    ),
+                                  );
+                                },
+                                child: Container(
+                                  margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(20),
+                                    boxShadow: [
+                                      BoxShadow(
+                                          color: Colors.black.withOpacity(0.25),
+                                          blurRadius: 4,
+                                          spreadRadius: 2,
+                                          offset: const Offset(0, 0))
+                                    ],
+                                  ),
+                                  width: screenWidth * 0.8,
+                                  child: Padding(
+                                    padding:
+                                        const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                                    child: Text(
+                                      displayTitle,
+                                      style: const TextStyle(
+                                        fontSize: 16,
+                                        fontFamily: 'Lexend',
+                                        color: FONT_BLACK_COLOR,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              );
                             }).toList(),
                           ),
                         ),

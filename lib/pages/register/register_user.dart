@@ -3,11 +3,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
-import 'package:pelgrim/auth.dart';
 import 'package:pelgrim/core/const/consts.dart';
-import 'package:pelgrim/models/my_user.dart';
+import 'package:pelgrim/domain/models/group_info.dart';
+import 'package:pelgrim/domain/models/my_user.dart';
 import 'package:pelgrim/pages/register/register_topbar.dart';
 import 'package:pelgrim/pages/widgets/welcome_background.dart';
+import 'package:pelgrim/services/auth_service.dart';
+import 'package:pelgrim/core/di/service_locator.dart';
 
 class RegisterUser extends StatefulWidget {
   const RegisterUser({super.key});
@@ -17,6 +19,8 @@ class RegisterUser extends StatefulWidget {
 }
 
 class _RegisterUserState extends State<RegisterUser> {
+  final AuthService _authService = sl();
+
   bool isRegister = false;
   final TextEditingController _controllerFirstName = TextEditingController();
   final TextEditingController _controllerLastName = TextEditingController();
@@ -71,111 +75,134 @@ class _RegisterUserState extends State<RegisterUser> {
   }
 
   Future<void> createUserWithEmailAndPassword() async {
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        duration: Duration(milliseconds: 500),
-        content: Center(
-            child: Padding(
-          padding: EdgeInsets.symmetric(vertical: 4.0),
-          child: Text(
-            'Przygotowywanie',
-            style: TextStyle(fontSize: 16),
-            textAlign: TextAlign.center,
-          ),
-        ))));
     try {
       if (_controllerFirstName.text == '' ||
           _controllerLastName.text == '' ||
           _controllerPhone.text == '' ||
           _controllerEmail.text == '') {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
             duration: Duration(milliseconds: 500),
             content: Center(
-                child: Padding(
+              child: Padding(
+                padding: EdgeInsets.symmetric(vertical: 4.0),
+                child: Text(
+                  'Jedno z pól jest puste',
+                  style: TextStyle(fontSize: 16),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ),
+          ),
+        );
+        return;
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          duration: Duration(milliseconds: 500),
+          content: Center(
+            child: Padding(
               padding: EdgeInsets.symmetric(vertical: 4.0),
               child: Text(
-                'Jedno z pól jest puste',
+                'Tworzenie konta...',
                 style: TextStyle(fontSize: 16),
                 textAlign: TextAlign.center,
               ),
-            ))));
-        return;
-      }
+            ),
+          ),
+        ),
+      );
 
       if (isRegister &&
           _controllerGroupColor.text != '' &&
           _controllerGroupCity.text != '' &&
           pickerColor != const Color(0xffffffff)) {
         MyUser user = MyUser(
-            admin: isRegister,
-            email: _controllerEmail.text.toLowerCase().trimRight(),
-            firstName: _controllerFirstName.text.trimRight(),
-            lastName: _controllerLastName.text.trimRight(),
-            phone: _controllerPhone.text.trimRight(),
-            color: stringToColor(pickerColor).toString(),
-            secondColor: stringToColor(_getSecondColor(pickerColor)),
-            groupCity: _controllerGroupCity.text,
-            groupColor: _controllerGroupColor.text);
+          admin: isRegister,
+          email: _controllerEmail.text.toLowerCase().trimRight(),
+          firstName: _controllerFirstName.text.trimRight(),
+          lastName: _controllerLastName.text.trimRight(),
+          phone: _controllerPhone.text.trimRight(),
+        );
 
-        await Auth().createUserWithEmailAndPassword(
-            email: _controllerEmail.text, password: _controllerPassword.text);
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            duration: Duration(seconds: 3),
-            content: Center(
-                child: Padding(
-              padding: EdgeInsets.symmetric(vertical: 4.0),
-              child: Text(
-                'Poszło dalej',
-                style: TextStyle(fontSize: 16),
-                textAlign: TextAlign.center,
-              ),
-            ))));
-        await user.createUserAndGroup();
+        GroupInfo groupInfo = GroupInfo(
+          color: pickerColor,
+          secondColor: _getSecondColor(pickerColor),
+          groupCity: _controllerGroupCity.text,
+          groupColor: _controllerGroupColor.text,
+        );
+
+        await _authService.registerAdminWithGroup(
+          user: user,
+          password: _controllerPassword.text,
+          group: groupInfo,
+        );
+
         await Future.delayed(const Duration(milliseconds: 1500));
         ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Center(child: Text('Operacja przebiegła pomyślnie!'))));
+          const SnackBar(
+            content: Center(
+              child: Text('Operacja przebiegła pomyślnie!'),
+            ),
+          ),
+        );
+        if (!mounted) return;
         Navigator.pop(context);
         return;
       }
 
-      if (_selectedPilgrimage != null) {
+      if (_selectedPilgrimage?.isNotEmpty ?? false) {
         MyUser user = MyUser(
-            admin: isRegister,
-            email: _controllerEmail.text.toLowerCase(),
-            firstName: _controllerFirstName.text,
-            lastName: _controllerLastName.text,
-            phone: _controllerPhone.text,
-            group: _selectedPilgrimage);
-        await Auth().createUserWithEmailAndPassword(
-            email: _controllerEmail.text, password: _controllerPassword.text);
-        await user.createUser();
+          admin: isRegister,
+          email: _controllerEmail.text.toLowerCase(),
+          firstName: _controllerFirstName.text,
+          lastName: _controllerLastName.text,
+          phone: _controllerPhone.text,
+        );
+
+        await _authService.registerAndJoinGroup(
+          user: user,
+          password: _controllerPassword.text,
+          groupName: _selectedPilgrimage!,
+        );
+
         await Future.delayed(const Duration(milliseconds: 1500));
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
             duration: Duration(milliseconds: 500),
             content: Center(
-                child: Padding(
-              padding: EdgeInsets.symmetric(vertical: 4.0),
-              child: Text(
-                'Rejestracja przebiegła pomyślnie!',
-                style: TextStyle(fontSize: 16),
-                textAlign: TextAlign.center,
+              child: Padding(
+                padding: EdgeInsets.symmetric(vertical: 4.0),
+                child: Text(
+                  'Rejestracja przebiegła pomyślnie!',
+                  style: TextStyle(fontSize: 16),
+                  textAlign: TextAlign.center,
+                ),
               ),
-            ))));
+            ),
+          ),
+        );
         Navigator.pop(context);
         return;
       }
 
       if (isRegister == false) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
             duration: Duration(seconds: 3),
             content: Center(
-                child: Padding(
-              padding: EdgeInsets.symmetric(vertical: 4.0),
-              child: Text(
-                'Błąd: Nie wybrałeś pielgrzymki',
-                style: TextStyle(fontSize: 16),
-                textAlign: TextAlign.center,
+              child: Padding(
+                padding: EdgeInsets.symmetric(vertical: 4.0),
+                child: Text(
+                  'Błąd: Nie wybrałeś pielgrzymki',
+                  style: TextStyle(fontSize: 16),
+                  textAlign: TextAlign.center,
+                ),
               ),
-            ))));
+            ),
+          ),
+        );
         return;
       }
     } on FirebaseAuthException catch (e) {
@@ -196,19 +223,21 @@ class _RegisterUserState extends State<RegisterUser> {
           message = 'Błąd: ${e.message}';
       }
 
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        duration: const Duration(seconds: 3),
-        content: Center(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 4.0),
-            child: Text(
-              message,
-              style: const TextStyle(fontSize: 16),
-              textAlign: TextAlign.center,
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          duration: const Duration(seconds: 3),
+          content: Center(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 4.0),
+              child: Text(
+                message,
+                style: const TextStyle(fontSize: 16),
+                textAlign: TextAlign.center,
+              ),
             ),
           ),
         ),
-      ));
+      );
     }
   }
 
@@ -227,8 +256,15 @@ class _RegisterUserState extends State<RegisterUser> {
         _pilgrimageList = fetchedPilgrimages;
       });
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Center(child: Text('Wystąpił problem z załadowaniem pielgrzymek'))));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Center(
+            child: Text(
+              'Wystąpił problem z załadowaniem pielgrzymek',
+            ),
+          ),
+        ),
+      );
     }
   }
 
@@ -238,87 +274,95 @@ class _RegisterUserState extends State<RegisterUser> {
     final screenHeight = MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top;
 
     return Scaffold(
-        body: SafeArea(
-            child: GestureDetector(
-                onTap: () {
-                  FocusScope.of(context).unfocus();
-                },
-                child: Stack(
-                  children: [
-                    const WelcomeBackground(
-                      elevated: true,
-                    ),
-                    SingleChildScrollView(
-                        physics: const NeverScrollableScrollPhysics(),
-                        child: Container(
-                            width: screenWidth,
-                            height: screenHeight,
-                            color: Colors.black.withOpacity(0.5),
-                            child: Column(children: [
-                              Container(
-                                  width: screenWidth,
-                                  height: screenHeight,
-                                  color: Colors.black.withOpacity(0.5),
-                                  child: Column(
-                                    children: [
-                                      Container(
-                                        width: screenWidth * 0.8,
-                                        height: screenHeight * 0.65,
-                                        margin: EdgeInsets.only(
-                                            top: screenHeight * 0.15, bottom: screenHeight * 0.03),
-                                        padding:
-                                            const EdgeInsets.only(top: 15, left: 20, right: 20),
-                                        decoration: const BoxDecoration(
-                                          borderRadius: BorderRadius.all(Radius.circular(25)),
-                                          color: Colors.white,
-                                        ),
-                                        child: _registrationContent(screenHeight),
+      body: SafeArea(
+        child: GestureDetector(
+          onTap: () {
+            FocusScope.of(context).unfocus();
+          },
+          child: Stack(
+            children: [
+              const WelcomeBackground(
+                elevated: true,
+              ),
+              SingleChildScrollView(
+                physics: const NeverScrollableScrollPhysics(),
+                child: Container(
+                  width: screenWidth,
+                  height: screenHeight,
+                  color: Colors.black.withOpacity(0.5),
+                  child: Column(
+                    children: [
+                      Container(
+                        width: screenWidth,
+                        height: screenHeight,
+                        color: Colors.black.withOpacity(0.5),
+                        child: Column(
+                          children: [
+                            Container(
+                              width: screenWidth * 0.8,
+                              height: screenHeight * 0.65,
+                              margin: EdgeInsets.only(
+                                  top: screenHeight * 0.15, bottom: screenHeight * 0.03),
+                              padding: const EdgeInsets.only(top: 15, left: 20, right: 20),
+                              decoration: const BoxDecoration(
+                                borderRadius: BorderRadius.all(Radius.circular(25)),
+                                color: Colors.white,
+                              ),
+                              child: _registrationContent(screenHeight),
+                            ),
+                            ElevatedButton(
+                                style: ButtonStyle(
+                                  fixedSize: WidgetStateProperty.all(
+                                      Size(screenWidth * LOGIN_CONTAINER_SIZE, 50)),
+                                  elevation: const WidgetStatePropertyAll(5.0),
+                                  backgroundColor: const WidgetStatePropertyAll(Colors.white),
+                                ),
+                                onPressed: () {
+                                  createUserWithEmailAndPassword();
+                                },
+                                child: Stack(
+                                  children: [
+                                    Container(
+                                      alignment: Alignment.centerRight,
+                                      child: Image.asset(
+                                        'images/arrow-right.png',
+                                        height: 20,
                                       ),
-                                      ElevatedButton(
-                                          style: ButtonStyle(
-                                            fixedSize: WidgetStateProperty.all(
-                                                Size(screenWidth * LOGIN_CONTAINER_SIZE, 50)),
-                                            elevation: const WidgetStatePropertyAll(5.0),
-                                            backgroundColor:
-                                                const WidgetStatePropertyAll(Colors.white),
-                                          ),
-                                          onPressed: () {
-                                            createUserWithEmailAndPassword();
-                                          },
-                                          child: Stack(
-                                            children: [
-                                              Container(
-                                                alignment: Alignment.centerRight,
-                                                child: Image.asset(
-                                                  'images/arrow-right.png',
-                                                  height: 20,
-                                                ),
-                                              ),
-                                              Container(
-                                                alignment: Alignment.center,
-                                                child: const Text(
-                                                  'Zarejestruj',
-                                                  style: TextStyle(
-                                                    color: Colors.black,
-                                                    fontSize: 24,
-                                                    fontFamily: 'Lexend',
-                                                  ),
-                                                ),
-                                              )
-                                            ],
-                                          )),
-                                    ],
-                                  )),
-                            ]))),
-                    Visibility(
-                        visible: isRegister,
-                        child: RegisterTopBar(
-                            title: _controllerGroupColor.text,
-                            subtitle: _controllerGroupCity.text,
-                            firstColor: pickerColor,
-                            secondColor: _getSecondColor(pickerColor)))
-                  ],
-                ))));
+                                    ),
+                                    Container(
+                                      alignment: Alignment.center,
+                                      child: const Text(
+                                        'Zarejestruj',
+                                        style: TextStyle(
+                                          color: Colors.black,
+                                          fontSize: 24,
+                                          fontFamily: 'Lexend',
+                                        ),
+                                      ),
+                                    )
+                                  ],
+                                )),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Visibility(
+                visible: isRegister,
+                child: RegisterTopBar(
+                  title: _controllerGroupColor.text,
+                  subtitle: _controllerGroupCity.text,
+                  firstColor: pickerColor,
+                  secondColor: _getSecondColor(pickerColor),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   Widget _registrationContent(screenHeight) {
@@ -331,104 +375,109 @@ class _RegisterUserState extends State<RegisterUser> {
             const Text('Rejestracja',
                 style: TextStyle(fontSize: 24, fontFamily: 'Lexend', fontWeight: FontWeight.bold)),
             GestureDetector(
-                onTap: () => {FocusScope.of(context).unfocus(), Navigator.pop(context)},
-                child: Image.asset(
-                  './images/close.png',
-                  width: 25,
-                )),
+              onTap: () => {FocusScope.of(context).unfocus(), Navigator.pop(context)},
+              child: Image.asset(
+                './images/close.png',
+                width: 25,
+              ),
+            ),
           ],
         ),
         const Padding(padding: EdgeInsets.only(bottom: 10)),
         Container(
-            padding: const EdgeInsets.only(bottom: 20),
-            height: screenHeight * 0.50,
-            child: CupertinoScrollbar(
-                thumbVisibility: true,
-                controller: _scrollController,
-                child: SingleChildScrollView(
-                    controller: _scrollController,
-                    child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                      Visibility(
-                          visible: !isRegister,
-                          child: DropdownButtonFormField(
-                            padding: const EdgeInsets.only(right: 10, bottom: 10),
-                            isExpanded: true,
-                            isDense: _selectedPilgrimage == null ? true : false,
-                            menuMaxHeight: screenHeight * 0.3,
-                            style: const TextStyle(
-                                fontFamily: 'Lexend', fontSize: 18, color: Colors.black),
-                            hint: const Text('Wybierz pielgrzymke'),
-                            value: _selectedPilgrimage,
-                            items: _pilgrimageList.map((String pilgrimage) {
-                              return DropdownMenuItem(
-                                value: pilgrimage,
-                                child: Text(
-                                  pilgrimage,
-                                  softWrap: true,
-                                ),
-                              );
-                            }).toList(),
-                            onChanged: (String? newValue) {
-                              setState(() {
-                                _selectedPilgrimage = newValue;
-                              });
-                            },
-                          )),
-                      _entryField(
-                          _controllerFirstName, false, "Imie", TextInputAction.next, context),
-                      _entryField(
-                          _controllerLastName, false, "Nazwisko", TextInputAction.next, context),
-                      _entryField(_controllerEmail, false, "E-mail", TextInputAction.next, context),
-                      _entryField(
-                          _controllerPassword, true, "Hasło", TextInputAction.next, context),
-                      _entryField(_controllerPhone, false, "Nr tel",
-                          isRegister ? TextInputAction.next : TextInputAction.done, context),
-                      Visibility(
-                          visible: isRegister,
-                          child: Column(
-                            children: [
-                              _entryField(_controllerGroupColor, false, "Kolor pielgrzymki",
-                                  TextInputAction.next, context),
-                              _entryField(_controllerGroupCity, false, "Miejscowość grupy",
-                                  TextInputAction.done, context),
-                              Container(
-                                padding: const EdgeInsets.only(top: 5, bottom: 5, right: 10),
-                                child: GestureDetector(
-                                    onTap: () {
-                                      FocusScope.of(context).unfocus();
-                                      _colorPicker();
-                                    },
-                                    child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          const Text(
-                                            'Wybierz kolor grupy',
-                                            style: TextStyle(fontFamily: 'Lexend', fontSize: 20),
-                                          ),
-                                          Container(
-                                            width: 30,
-                                            height: 30,
-                                            decoration: BoxDecoration(
-                                                color: pickerColor,
-                                                border: pickerColor == const Color(0xffffffff)
-                                                    ? Border.all(color: Colors.black)
-                                                    : null),
-                                          ),
-                                        ])),
-                              ),
-                              Visibility(
-                                  visible: isRegister ? true : false,
-                                  child: Padding(
-                                      padding: EdgeInsets.only(
-                                          bottom: MediaQuery.of(context).viewInsets.bottom / 4)))
-                            ],
-                          )),
-                      Visibility(
-                          visible: isRegister ? false : true,
-                          child: Padding(
-                              padding: EdgeInsets.only(
-                                  bottom: MediaQuery.of(context).viewInsets.bottom / 5)))
-                    ])))),
+          padding: const EdgeInsets.only(bottom: 20),
+          height: screenHeight * 0.50,
+          child: CupertinoScrollbar(
+            thumbVisibility: true,
+            controller: _scrollController,
+            child: SingleChildScrollView(
+              controller: _scrollController,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Visibility(
+                      visible: !isRegister,
+                      child: DropdownButtonFormField(
+                        padding: const EdgeInsets.only(right: 10, bottom: 10),
+                        isExpanded: true,
+                        isDense: _selectedPilgrimage == null ? true : false,
+                        menuMaxHeight: screenHeight * 0.3,
+                        style: const TextStyle(
+                            fontFamily: 'Lexend', fontSize: 18, color: Colors.black),
+                        hint: const Text('Wybierz pielgrzymke'),
+                        value: _selectedPilgrimage,
+                        items: _pilgrimageList.map((String pilgrimage) {
+                          return DropdownMenuItem(
+                            value: pilgrimage,
+                            child: Text(
+                              pilgrimage,
+                              softWrap: true,
+                            ),
+                          );
+                        }).toList(),
+                        onChanged: (String? newValue) {
+                          setState(() {
+                            _selectedPilgrimage = newValue;
+                          });
+                        },
+                      )),
+                  _entryField(_controllerFirstName, false, "Imie", TextInputAction.next, context),
+                  _entryField(
+                      _controllerLastName, false, "Nazwisko", TextInputAction.next, context),
+                  _entryField(_controllerEmail, false, "E-mail", TextInputAction.next, context),
+                  _entryField(_controllerPassword, true, "Hasło", TextInputAction.next, context),
+                  _entryField(_controllerPhone, false, "Nr tel",
+                      isRegister ? TextInputAction.next : TextInputAction.done, context),
+                  Visibility(
+                      visible: isRegister,
+                      child: Column(
+                        children: [
+                          _entryField(_controllerGroupColor, false, "Kolor pielgrzymki",
+                              TextInputAction.next, context),
+                          _entryField(_controllerGroupCity, false, "Miejscowość grupy",
+                              TextInputAction.done, context),
+                          Container(
+                            padding: const EdgeInsets.only(top: 5, bottom: 5, right: 10),
+                            child: GestureDetector(
+                                onTap: () {
+                                  FocusScope.of(context).unfocus();
+                                  _colorPicker();
+                                },
+                                child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      const Text(
+                                        'Wybierz kolor grupy',
+                                        style: TextStyle(fontFamily: 'Lexend', fontSize: 20),
+                                      ),
+                                      Container(
+                                        width: 30,
+                                        height: 30,
+                                        decoration: BoxDecoration(
+                                            color: pickerColor,
+                                            border: pickerColor == const Color(0xffffffff)
+                                                ? Border.all(color: Colors.black)
+                                                : null),
+                                      ),
+                                    ])),
+                          ),
+                          Visibility(
+                              visible: isRegister ? true : false,
+                              child: Padding(
+                                  padding: EdgeInsets.only(
+                                      bottom: MediaQuery.of(context).viewInsets.bottom / 4)))
+                        ],
+                      )),
+                  Visibility(
+                      visible: isRegister ? false : true,
+                      child: Padding(
+                          padding: EdgeInsets.only(
+                              bottom: MediaQuery.of(context).viewInsets.bottom / 5)))
+                ],
+              ),
+            ),
+          ),
+        ),
         GestureDetector(
             onTap: () => setState(() {
                   FocusScope.of(context).unfocus();

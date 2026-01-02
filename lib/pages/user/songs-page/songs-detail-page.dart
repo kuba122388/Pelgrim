@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:pelgrim/core/const/consts.dart';
-import 'package:pelgrim/models/song.dart';
+import 'package:pelgrim/domain/models/song.dart';
 import 'package:pelgrim/pages/user/songs-page/songs-detail-topbar.dart';
+import 'package:pelgrim/providers/user_provider.dart';
+import 'package:provider/provider.dart';
 
 class SongsDetailPage extends StatefulWidget {
-  final Map<String, dynamic> settings;
-  final bool admin;
   final Song song;
 
-  const SongsDetailPage(
-      {super.key, required this.song, required this.settings, required this.admin});
+  const SongsDetailPage({super.key, required this.song});
 
   @override
   State<SongsDetailPage> createState() => _SongsDetailPageState();
@@ -22,7 +21,9 @@ class _SongsDetailPageState extends State<SongsDetailPage> {
   @override
   void initState() {
     super.initState();
-    _group = '${widget.settings['groupColor']} - ${widget.settings['groupCity']}';
+
+    final groupName = context.read<UserProvider>().groupInfo!.groupName;
+    _group = groupName;
     _playingNow = Song.playingNow(_group);
   }
 
@@ -34,11 +35,17 @@ class _SongsDetailPageState extends State<SongsDetailPage> {
 
   @override
   Widget build(BuildContext context) {
+    final userProvider = context.watch<UserProvider>();
+
+    final groupInfo = userProvider.groupInfo!;
+    final bool isAdmin = userProvider.user!.admin;
+
     Song song = widget.song;
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top;
-    Color firstColor = Color(int.parse(widget.settings['color'], radix: 16));
-    Color secondColor = Color(int.parse(widget.settings['secondColor'], radix: 16));
+
+    Color firstColor = groupInfo.color;
+    Color secondColor = groupInfo.secondColor;
 
     Future<void> changedSong() async {
       await song.refreshSong(_group);
@@ -46,8 +53,7 @@ class _SongsDetailPageState extends State<SongsDetailPage> {
     }
 
     return Scaffold(
-      appBar: SongsDetailTopbar(
-          song: widget.song, settings: widget.settings, edit: changedSong, admin: widget.admin),
+      appBar: SongsDetailTopbar(song: widget.song, edit: changedSong),
       body: SafeArea(
         child: Center(
           child: Container(
@@ -71,14 +77,17 @@ class _SongsDetailPageState extends State<SongsDetailPage> {
                     style: const TextStyle(fontFamily: 'Lexend', fontSize: 22),
                   ),
                 ),
-                const Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                  SizedBox(
-                    width: 50,
-                    child: Divider(
-                      color: Colors.black,
+                const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      width: 50,
+                      child: Divider(
+                        color: Colors.black,
+                      ),
                     ),
-                  ),
-                ]),
+                  ],
+                ),
                 Expanded(
                   child: Scrollbar(
                     thumbVisibility: true,
@@ -115,43 +124,45 @@ class _SongsDetailPageState extends State<SongsDetailPage> {
                         }
 
                         return Visibility(
-                            visible: widget.admin,
-                            child: InkWell(
-                                onTap: () {
-                                  widget.song.requestSong(_group);
-                                  _refreshPlayingNow();
-                                },
-                                child: Container(
-                                  margin: const EdgeInsets.only(bottom: 10, top: 10),
-                                  width: 50,
-                                  height: 50,
-                                  decoration: BoxDecoration(
-                                    gradient: RadialGradient(
-                                      center: Alignment.center,
-                                      radius: 1.0,
-                                      colors: [secondColorHere, firstColorHere],
-                                      stops: const [0.2, 0.8],
-                                    ),
-                                    borderRadius: BorderRadius.circular(30),
-                                    boxShadow: const [BOX_SHADOW_CONTAINER],
-                                  ),
-                                  child: ElevatedButton(
-                                    style: ButtonStyle(
-                                      padding: WidgetStateProperty.all(EdgeInsets.zero),
-                                      backgroundColor: WidgetStateProperty.all(Colors.transparent),
-                                    ),
-                                    onPressed: null,
-                                    child: Image.asset(
-                                      './images/radio-waves.png',
-                                      width: 30,
-                                      height: 30,
-                                      color: firstColorHere == Colors.white
-                                          ? Colors.black.withOpacity(0.6)
-                                          : Colors.white,
-                                      colorBlendMode: BlendMode.srcIn,
-                                    ),
-                                  ),
-                                )));
+                          visible: isAdmin,
+                          child: InkWell(
+                            onTap: () {
+                              widget.song.requestSong(_group);
+                              _refreshPlayingNow();
+                            },
+                            child: Container(
+                              margin: const EdgeInsets.only(bottom: 10, top: 10),
+                              width: 50,
+                              height: 50,
+                              decoration: BoxDecoration(
+                                gradient: RadialGradient(
+                                  center: Alignment.center,
+                                  radius: 1.0,
+                                  colors: [secondColorHere, firstColorHere],
+                                  stops: const [0.2, 0.8],
+                                ),
+                                borderRadius: BorderRadius.circular(30),
+                                boxShadow: const [BOX_SHADOW_CONTAINER],
+                              ),
+                              child: ElevatedButton(
+                                style: ButtonStyle(
+                                  padding: WidgetStateProperty.all(EdgeInsets.zero),
+                                  backgroundColor: WidgetStateProperty.all(Colors.transparent),
+                                ),
+                                onPressed: null,
+                                child: Image.asset(
+                                  './images/radio-waves.png',
+                                  width: 30,
+                                  height: 30,
+                                  color: firstColorHere == Colors.white
+                                      ? Colors.black.withOpacity(0.6)
+                                      : Colors.white,
+                                  colorBlendMode: BlendMode.srcIn,
+                                ),
+                              ),
+                            ),
+                          ),
+                        );
                       },
                     ),
                   ],
