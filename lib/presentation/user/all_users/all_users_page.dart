@@ -94,7 +94,10 @@ class _AllUsersPageState extends State<AllUsersPage> {
               fillColor: Colors.white,
               label: Text(
                 'Wyszukaj użytkownika',
-                style: TextStyle(color: Colors.black.withOpacity(0.4), fontSize: 14),
+                style: TextStyle(
+                  color: Colors.black.withValues(alpha: 0.4),
+                  fontSize: 14,
+                ),
               ),
               border: const OutlineInputBorder(borderSide: BorderSide.none),
             ),
@@ -177,7 +180,7 @@ class _AllUsersPageState extends State<AllUsersPage> {
                                 borderRadius: BorderRadius.circular(20),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: Colors.black.withOpacity(0.25),
+                                    color: Colors.black.withValues(alpha: 0.25),
                                     blurRadius: 4,
                                     spreadRadius: 2,
                                     offset: const Offset(0, 0),

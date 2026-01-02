@@ -22,7 +22,10 @@ class _SongsDetailPageState extends State<SongsDetailPage> {
   void initState() {
     super.initState();
 
-    final groupName = context.read<UserProvider>().groupInfo!.groupName;
+    final groupName = context
+        .read<UserProvider>()
+        .groupInfo!
+        .groupName;
     _group = groupName;
     _playingNow = Song.playingNow(_group);
   }
@@ -41,8 +44,17 @@ class _SongsDetailPageState extends State<SongsDetailPage> {
     final bool isAdmin = userProvider.user!.admin;
 
     Song song = widget.song;
-    final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top;
+    final screenWidth = MediaQuery
+        .of(context)
+        .size
+        .width;
+    final screenHeight = MediaQuery
+        .of(context)
+        .size
+        .height - MediaQuery
+        .of(context)
+        .padding
+        .top;
 
     Color firstColor = groupInfo.color;
     Color secondColor = groupInfo.secondColor;
@@ -155,7 +167,7 @@ class _SongsDetailPageState extends State<SongsDetailPage> {
                                   width: 30,
                                   height: 30,
                                   color: firstColorHere == Colors.white
-                                      ? Colors.black.withOpacity(0.6)
+                                      ? Colors.black.withValues(alpha: 0.6)
                                       : Colors.white,
                                   colorBlendMode: BlendMode.srcIn,
                                 ),

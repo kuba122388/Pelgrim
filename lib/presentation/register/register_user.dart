@@ -63,10 +63,10 @@ class _RegisterUserState extends State<RegisterUser> {
     int diffG = 110;
     int diffB = 121;
 
-    int newR = (baseColor.red + diffR).clamp(0, 255);
-    int newG = (baseColor.green + diffG).clamp(0, 255);
-    int newB = (baseColor.blue + diffB).clamp(0, 255);
-    return Color.fromARGB(baseColor.alpha, newR, newG, newB);
+    double newR = (baseColor.r + (diffR / 255)).clamp(0.0, 1.0);
+    double newG = (baseColor.g + (diffG / 255)).clamp(0.0, 255);
+    double newB = (baseColor.b + (diffB / 255)).clamp(0.0, 255);
+    return Color.from(alpha: baseColor.a, red: newR, green: newG, blue: newB);
   }
 
   String stringToColor(Color colorString) {
@@ -289,13 +289,13 @@ class _RegisterUserState extends State<RegisterUser> {
                 child: Container(
                   width: screenWidth,
                   height: screenHeight,
-                  color: Colors.black.withOpacity(0.5),
+                  color: Colors.black.withValues(alpha: 0.5),
                   child: Column(
                     children: [
                       Container(
                         width: screenWidth,
                         height: screenHeight,
-                        color: Colors.black.withOpacity(0.5),
+                        color: Colors.black.withValues(alpha: 0.5),
                         child: Column(
                           children: [
                             Container(
@@ -396,31 +396,32 @@ class _RegisterUserState extends State<RegisterUser> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Visibility(
-                      visible: !isRegister,
-                      child: DropdownButtonFormField(
-                        padding: const EdgeInsets.only(right: 10, bottom: 10),
-                        isExpanded: true,
-                        isDense: _selectedPilgrimage == null ? true : false,
-                        menuMaxHeight: screenHeight * 0.3,
-                        style: const TextStyle(
-                            fontFamily: 'Lexend', fontSize: 18, color: Colors.black),
-                        hint: const Text('Wybierz pielgrzymke'),
-                        value: _selectedPilgrimage,
-                        items: _pilgrimageList.map((String pilgrimage) {
-                          return DropdownMenuItem(
-                            value: pilgrimage,
-                            child: Text(
-                              pilgrimage,
-                              softWrap: true,
-                            ),
-                          );
-                        }).toList(),
-                        onChanged: (String? newValue) {
-                          setState(() {
-                            _selectedPilgrimage = newValue;
-                          });
-                        },
-                      )),
+                    visible: !isRegister,
+                    child: DropdownButtonFormField(
+                      padding: const EdgeInsets.only(right: 10, bottom: 10),
+                      isExpanded: true,
+                      isDense: _selectedPilgrimage == null ? true : false,
+                      menuMaxHeight: screenHeight * 0.3,
+                      style:
+                          const TextStyle(fontFamily: 'Lexend', fontSize: 18, color: Colors.black),
+                      hint: const Text('Wybierz pielgrzymke'),
+                      initialValue: _selectedPilgrimage,
+                      items: _pilgrimageList.map((String pilgrimage) {
+                        return DropdownMenuItem(
+                          value: pilgrimage,
+                          child: Text(
+                            pilgrimage,
+                            softWrap: true,
+                          ),
+                        );
+                      }).toList(),
+                      onChanged: (String? newValue) {
+                        setState(() {
+                          _selectedPilgrimage = newValue;
+                        });
+                      },
+                    ),
+                  ),
                   _entryField(_controllerFirstName, false, "Imie", TextInputAction.next, context),
                   _entryField(
                       _controllerLastName, false, "Nazwisko", TextInputAction.next, context),

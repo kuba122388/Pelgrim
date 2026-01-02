@@ -104,7 +104,7 @@ class SongsPageState extends State<SongsPage> {
                   fillColor: Colors.white,
                   label: Text(
                     'Tutaj wyszukaj piosenki',
-                    style: TextStyle(color: Colors.black.withOpacity(0.4), fontSize: 14),
+                    style: TextStyle(color: Colors.black.withValues(alpha: 0.4), fontSize: 14),
                   ),
                   border: const OutlineInputBorder(borderSide: BorderSide.none),
                 ),
@@ -142,7 +142,7 @@ class SongsPageState extends State<SongsPage> {
                                     borderRadius: BorderRadius.circular(20),
                                     boxShadow: [
                                       BoxShadow(
-                                          color: Colors.black.withOpacity(0.25),
+                                          color: Colors.black.withValues(alpha: 0.25),
                                           blurRadius: 4,
                                           spreadRadius: 2,
                                           offset: const Offset(0, 0))
