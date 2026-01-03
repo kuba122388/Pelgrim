@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:pelgrim/core/const/consts.dart';
+import 'package:pelgrim/core/const/app_consts.dart';
 import 'package:pelgrim/domain/entities/group_info.dart';
 import 'package:pelgrim/domain/entities/song.dart';
 import 'package:pelgrim/presentation/user/songs-page/add-song-topbar.dart';
-import 'package:pelgrim/providers/user_provider.dart';
+import 'package:pelgrim/presentation/providers/user_provider.dart';
 import 'package:provider/provider.dart';
 
 class AddSongPage extends StatefulWidget {

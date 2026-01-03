@@ -1,9 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:pelgrim/core/const/consts.dart';
+import 'package:pelgrim/core/const/app_consts.dart';
 import 'package:pelgrim/domain/entities/group_info.dart';
 import 'package:pelgrim/domain/entities/my_user.dart';
-import 'package:pelgrim/providers/user_provider.dart';
+import 'package:pelgrim/presentation/providers/user_provider.dart';
 import 'package:provider/provider.dart';
 
 class HelpPage extends StatefulWidget {

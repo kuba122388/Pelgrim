@@ -2,15 +2,15 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:pelgrim/domain/entities/group_info.dart';
 import 'package:pelgrim/domain/entities/my_user.dart';
-import 'package:pelgrim/core/const/consts.dart';
-import 'package:pelgrim/presentation/login/login_page.dart';
+import 'package:pelgrim/core/const/app_consts.dart';
+import 'package:pelgrim/presentation/login/pages/login_page.dart';
 import 'package:pelgrim/presentation/user/main-page.dart';
 import 'package:pelgrim/data/sources/group_service.dart';
 import 'package:pelgrim/data/sources/user_service.dart';
 import 'package:provider/provider.dart';
 
 import 'package:pelgrim/core/di/service_locator.dart';
-import 'package:pelgrim/providers/user_provider.dart';
+import 'package:pelgrim/presentation/providers/user_provider.dart';
 
 class LoginApproved extends StatefulWidget {
   final String email;

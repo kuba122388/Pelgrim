@@ -1,4 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:pelgrim/core/const/firebase_constants.dart';
+import 'package:pelgrim/data/models/my_user_model.dart';
 
 import 'package:pelgrim/domain/entities/my_user.dart';
 import 'package:pelgrim/domain/entities/group_info.dart';
@@ -6,14 +8,13 @@ import 'package:pelgrim/domain/entities/group_info.dart';
 class UserService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
 
-  Future<void> registerAdminWithGroup(MyUser user, GroupInfo group) async {
+  Future<void> registerAdminWithGroup(MyUserModel user, GroupInfo group) async {
     final batch = _db.batch();
 
     try {
-      final groupRef = _db.collection('Pelgrim Groups').doc(group.groupName);
+      final groupRef = _db.collection(FirebaseConstants.groupsCollection).doc(group.groupName);
       batch.set(groupRef, {
         'exists': true,
-        'groupName': group.groupName,
         'createdAt': FieldValue.serverTimestamp(),
       });
 
@@ -29,12 +30,12 @@ class UserService {
     }
   }
 
-  Future<void> registerAndJoinGroup(MyUser user, String groupName) async {
+  Future<void> registerAndJoinGroup(MyUserModel user, String groupName) async {
     try {
       await FirebaseFirestore.instance
-          .collection('Pelgrim Groups')
+          .collection(FirebaseConstants.groupsCollection)
           .doc(groupName)
-          .collection('Users')
+          .collection(FirebaseConstants.usersCollection)
           .doc(user.email)
           .set(user.toMap());
     } catch (e) {
@@ -42,16 +43,16 @@ class UserService {
     }
   }
 
-  Future<MyUser?> getUserData(String email, String group) async {
+  Future<MyUserModel?> getUserData(String email, String group) async {
     try {
       DocumentSnapshot doc = await FirebaseFirestore.instance
-          .collection('Pelgrim Groups')
+          .collection(FirebaseConstants.groupsCollection)
           .doc(group)
-          .collection('Users')
+          .collection(FirebaseConstants.usersCollection)
           .doc(email.toLowerCase())
           .get();
       if (doc.exists) {
-        return MyUser.fromMap(doc.data() as Map<String, dynamic>);
+        return MyUserModel.fromMap(doc.data() as Map<String, dynamic>);
       } else {
         print('Użytkownik nie został znaleziony');
         return null;
@@ -64,7 +65,7 @@ class UserService {
 
   Future<String> getUserGroup(String email) async {
     try {
-      QuerySnapshot groupsSnapshot = await _db.collection('Pelgrim Groups').get();
+      QuerySnapshot groupsSnapshot = await _db.collection(FirebaseConstants.groupsCollection).get();
 
       for (QueryDocumentSnapshot groupDoc in groupsSnapshot.docs) {
         DocumentReference userDocRef = groupDoc.reference.collection('Users').doc(email);
@@ -83,16 +84,16 @@ class UserService {
     }
   }
 
-  Future<List<MyUser>> getAllUsersByGroup(String group) async {
+  Future<List<MyUserModel>> getAllUsersByGroup(String group) async {
     try {
       QuerySnapshot allUsersSnapshot = await FirebaseFirestore.instance
-          .collection('Pelgrim Groups')
+          .collection(FirebaseConstants.groupsCollection)
           .doc(group)
-          .collection('Users')
+          .collection(FirebaseConstants.usersCollection)
           .get();
 
-      List<MyUser> allUsers = allUsersSnapshot.docs.map((doc) {
-        return MyUser.fromMap(doc.data() as Map<String, dynamic>);
+      List<MyUserModel> allUsers = allUsersSnapshot.docs.map((doc) {
+        return MyUserModel.fromMap(doc.data() as Map<String, dynamic>);
       }).toList();
 
       return allUsers;
@@ -105,9 +106,9 @@ class UserService {
   Future<void> grantAdmin(bool grant, String email, String group) async {
     try {
       await FirebaseFirestore.instance
-          .collection('Pelgrim Groups')
+          .collection(FirebaseConstants.groupsCollection)
           .doc(group)
-          .collection('Users')
+          .collection(FirebaseConstants.usersCollection)
           .doc(email)
           .update({"Admin": grant});
     } catch (e) {

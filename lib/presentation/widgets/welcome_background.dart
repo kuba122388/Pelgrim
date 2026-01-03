@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pelgrim/core/const/app_colors.dart';
 import 'package:pelgrim/core/const/app_sizes.dart';
 import 'package:pelgrim/core/const/app_styles.dart';
-import 'package:pelgrim/presentation/register/register_user.dart';
+import 'package:pelgrim/presentation/register/pages/register_user.dart';
 import 'package:pelgrim/presentation/welcome/widgets/background_gradient.dart';
 
 class WelcomeBackground extends StatelessWidget {

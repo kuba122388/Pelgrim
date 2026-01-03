@@ -3,8 +3,8 @@ import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:pelgrim/core/const/consts.dart';
-import 'package:pelgrim/providers/user_provider.dart';
+import 'package:pelgrim/core/const/app_consts.dart';
+import 'package:pelgrim/presentation/providers/user_provider.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 import 'package:provider/provider.dart';
@@ -169,7 +169,7 @@ class _InformantPageState extends State<InformantPage> {
                                 ),
                               ),
                             ),
-                            if (myUser.admin)
+                            if (myUser.isAdmin)
                               Positioned(
                                 top: 20,
                                 right: 20,
@@ -189,7 +189,7 @@ class _InformantPageState extends State<InformantPage> {
               },
             ),
           ),
-          if (myUser.admin)
+          if (myUser.isAdmin)
             Padding(
               padding: const EdgeInsets.only(top: 30),
               child: Row(

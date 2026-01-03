@@ -92,7 +92,7 @@ class _DutyBoxState extends State<DutyBox> {
                   ),
                 ),
                 const SizedBox(width: 10),
-                if (widget.currentUser.admin)
+                if (widget.currentUser.isAdmin)
                   GestureDetector(
                     onTap: () async {
                       final confirm = await showDialog<bool>(

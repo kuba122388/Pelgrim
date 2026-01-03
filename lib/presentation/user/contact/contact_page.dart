@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:pelgrim/core/const/consts.dart';
+import 'package:pelgrim/core/const/app_consts.dart';
 import 'package:pelgrim/domain/entities/contact.dart';
 import 'package:pelgrim/domain/entities/my_user.dart';
 import 'package:pelgrim/core/const/app_strings.dart';
-import 'package:pelgrim/providers/user_provider.dart';
+import 'package:pelgrim/presentation/providers/contact_provider.dart';
+import 'package:pelgrim/presentation/providers/user_provider.dart';
 import 'package:provider/provider.dart';
 
 class ContactPage extends StatefulWidget {
@@ -15,31 +16,48 @@ class ContactPage extends StatefulWidget {
 
 class _ContactPageState extends State<ContactPage> {
   late String _group;
+  late ContactProvider _contactProvider;
+
   bool _isEditing = false;
   final TextEditingController _controller = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-
     _group = context.read<UserProvider>().groupInfo!.groupName;
-
+    _contactProvider = context.read<ContactProvider>();
     _loadContactInfo();
   }
 
   Future<void> _loadContactInfo() async {
-    final contactInfo = await Contact.get(_group);
-    setState(() {
-      _controller.text = contactInfo?.description ?? '';
-    });
+    try {
+      await _contactProvider.fetchContactInfo(groupName: _group);
+      setState(() {
+        _controller.text = _contactProvider.contactDescription;
+      });
+    } catch (e) {
+      print(e);
+    }
   }
 
   Future<void> _saveContactInfo() async {
-    final updated = Contact(description: _controller.text);
-    await updated.save(_group);
-    setState(() {
-      _isEditing = false;
-    });
+    try {
+      await _contactProvider.saveContactInfo(
+        groupName: _group,
+        contact: Contact(
+          description: _controller.text,
+        ),
+      );
+      setState(() {
+        _controller.text = _contactProvider.contactDescription;
+      });
+    } catch (e) {
+      print(e);
+    } finally {
+      setState(() {
+        _isEditing = false;
+      });
+    }
   }
 
   @override
@@ -88,15 +106,26 @@ class _ContactPageState extends State<ContactPage> {
                       : SingleChildScrollView(
                           child: Padding(
                             padding: const EdgeInsets.only(right: 15.0),
-                            child: Text(_controller.text == "" ? contactInfo : _controller.text,
-                                style: const TextStyle(
-                                    fontFamily: 'Lexend', fontSize: 14, letterSpacing: 0.2)),
+                            child: Consumer<ContactProvider>(
+                              builder: (context, provider, child) {
+                                if (provider.isLoading)
+                                  return const CircularProgressIndicator(); // Dodaj obsługę ładowania!
+                                return Text(
+                                  _isEditing ? _controller.text : provider.contactDescription,
+                                  style: const TextStyle(
+                                    fontFamily: 'Lexend',
+                                    fontSize: 14,
+                                    letterSpacing: 0.2,
+                                  ),
+                                );
+                              },
+                            ),
                           ),
                         ),
                 ),
               ),
             ),
-            if (myUser.admin)
+            if (myUser.isAdmin)
               Padding(
                 padding: const EdgeInsets.only(top: 30),
                 child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [

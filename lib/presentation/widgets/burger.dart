@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pelgrim/core/const/consts.dart';
+import 'package:pelgrim/core/const/app_consts.dart';
 import 'package:pelgrim/domain/entities/my_user.dart';
 
 class BurgerMenu extends StatefulWidget implements PreferredSizeWidget {
@@ -31,7 +31,7 @@ class _BurgerMenuState extends State<BurgerMenu> {
     'Informator',
     'Kontakt',
     'Zdjęcia',
-    if (widget.currentUser.admin) 'Użytkownicy',
+    if (widget.currentUser.isAdmin) 'Użytkownicy',
     'Pomoc'
   ];
 
@@ -43,7 +43,7 @@ class _BurgerMenuState extends State<BurgerMenu> {
     './images/information.png',
     './images/phone.png',
     './images/images.png',
-    if (widget.currentUser.admin) './images/users.png',
+    if (widget.currentUser.isAdmin) './images/users.png',
     './images/about.png'
   ];
 

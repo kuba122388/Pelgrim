@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:pelgrim/app.dart';
 import 'package:pelgrim/core/config/firebase_options.dart';
-import 'package:pelgrim/providers/user_provider.dart';
+import 'package:pelgrim/presentation/providers/user_provider.dart';
 import 'package:provider/provider.dart';
 
 import 'core/di/service_locator.dart';

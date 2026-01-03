@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:pelgrim/presentation/login/login_approved.dart';
-import 'package:pelgrim/presentation/welcome/welcome_page.dart';
+import 'package:pelgrim/presentation/login/pages/login_approved.dart';
+import 'package:pelgrim/presentation/welcome/pages/welcome_page.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});

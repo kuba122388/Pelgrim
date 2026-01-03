@@ -1,9 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:pelgrim/core/const/consts.dart';
-import 'package:pelgrim/presentation/login/login_approved.dart';
+import 'package:pelgrim/core/const/app_consts.dart';
+import 'package:pelgrim/presentation/login/pages/login_approved.dart';
 import 'package:pelgrim/presentation/login/widgets/labeled_text_field.dart';
-import 'package:pelgrim/presentation/register/register_user.dart';
+import 'package:pelgrim/presentation/register/pages/register_user.dart';
 import 'package:pelgrim/presentation/widgets/custom_navigate_button.dart';
 import 'package:pelgrim/presentation/widgets/welcome_background.dart';
 import 'package:pelgrim/core/const/app_sizes.dart';

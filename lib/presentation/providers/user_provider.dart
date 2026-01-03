@@ -1,13 +1,14 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:pelgrim/core/di/service_locator.dart';
 import 'package:pelgrim/domain/entities/group_info.dart';
 import 'package:pelgrim/domain/entities/my_user.dart';
 import 'package:pelgrim/data/sources/user_service.dart';
 
 class UserProvider extends ChangeNotifier {
-  final UserService _userService = sl<UserService>();
+  final UserService _userService;
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+
+  UserProvider(this._userService);
 
   MyUser? _user;
   GroupInfo? _groupInfo;
@@ -49,8 +50,7 @@ class UserProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> signOut() async{
+  Future<void> signOut() async {
     await _firebaseAuth.signOut();
   }
-
 }

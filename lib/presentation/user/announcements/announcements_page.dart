@@ -4,8 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:pelgrim/domain/entities/announcement.dart';
 import 'package:pelgrim/domain/entities/group_info.dart';
 import 'package:pelgrim/domain/entities/my_user.dart';
-import 'package:pelgrim/core/const/consts.dart';
-import 'package:pelgrim/providers/user_provider.dart';
+import 'package:pelgrim/core/const/app_consts.dart';
+import 'package:pelgrim/presentation/providers/announcement_provider.dart';
+import 'package:pelgrim/presentation/providers/user_provider.dart';
 import 'package:provider/provider.dart';
 
 class AnnouncementsPage extends StatefulWidget {
@@ -18,6 +19,13 @@ class AnnouncementsPage extends StatefulWidget {
 class _AnnouncementsPageState extends State<AnnouncementsPage> {
   User? user = FirebaseAuth.instance.currentUser;
   bool important = false;
+  late final AnnouncementProvider _announcementProvider;
+
+  @override
+  void initState() {
+    super.initState();
+    _announcementProvider = context.read<AnnouncementProvider>();
+  }
 
   void refresh() {
     setState(() {});
@@ -34,57 +42,61 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
     final screenHeight = MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top;
 
     return SafeArea(
-        child: SingleChildScrollView(
-      physics: const NeverScrollableScrollPhysics(),
-      child: SizedBox(
-        width: screenWidth,
-        height: screenHeight,
-        child: Column(
-          children: [
-            Padding(
-              padding: EdgeInsets.only(top: screenHeight * 0.02, bottom: screenHeight * 0.01),
-              child: const Text(
-                'Dodaj Ogłoszenie',
-                style: TextStyle(
-                  fontFamily: 'Lexend',
-                  fontWeight: FontWeight.bold,
-                  color: FONT_BLACK_COLOR,
-                  fontSize: 18,
-                  shadows: [APP_TEXT_SHADOW],
+      child: SingleChildScrollView(
+        physics: const NeverScrollableScrollPhysics(),
+        child: SizedBox(
+          width: screenWidth,
+          height: screenHeight,
+          child: Column(
+            children: [
+              Padding(
+                padding: EdgeInsets.only(top: screenHeight * 0.02, bottom: screenHeight * 0.01),
+                child: const Text(
+                  'Dodaj Ogłoszenie',
+                  style: TextStyle(
+                    fontFamily: 'Lexend',
+                    fontWeight: FontWeight.bold,
+                    color: FONT_BLACK_COLOR,
+                    fontSize: 18,
+                    shadows: [APP_TEXT_SHADOW],
+                  ),
                 ),
               ),
-            ),
-            Expanded(
-              child: SizedBox(
-                width: screenWidth * 0.85,
-                child: Column(
-                  children: [
-                    InkWell(
+              Expanded(
+                child: SizedBox(
+                  width: screenWidth * 0.85,
+                  child: Column(
+                    children: [
+                      InkWell(
                         onTap: () =>
-                            {_showAddAnnouncementWidget(groupInfo.groupName, myUser, refresh)},
-                        child: _addAnnouncement(screenWidth, screenHeight)),
-                    SizedBox(height: screenHeight * 0.01),
-                    Container(
-                      height: screenHeight * 0.73,
-                      padding: const EdgeInsets.only(top: 15, left: 15, right: 15),
-                      decoration: BoxDecoration(
-                          color: BACKGROUND_CONTAINERS_COLOR,
-                          border: Border.all(color: Colors.black),
-                          borderRadius: BorderRadius.circular(10)),
-                      child: Column(
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              const Text('Tablica ogłoszeń',
+                            _showAddAnnouncementWidget(groupInfo.groupName, myUser, refresh),
+                        child: _addAnnouncement(screenWidth, screenHeight),
+                      ),
+                      SizedBox(height: screenHeight * 0.01),
+                      Container(
+                        height: screenHeight * 0.73,
+                        padding: const EdgeInsets.only(top: 15, left: 15, right: 15),
+                        decoration: BoxDecoration(
+                            color: BACKGROUND_CONTAINERS_COLOR,
+                            border: Border.all(color: Colors.black),
+                            borderRadius: BorderRadius.circular(10)),
+                        child: Column(
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                const Text(
+                                  'Tablica ogłoszeń',
                                   style: TextStyle(
-                                      fontFamily: 'Lexend',
-                                      fontWeight: FontWeight.bold,
-                                      color: FONT_BLACK_COLOR,
-                                      fontSize: FONT_SIZE_BIG)),
-                              Row(
-                                children: [
-                                  SizedBox(
+                                    fontFamily: 'Lexend',
+                                    fontWeight: FontWeight.bold,
+                                    color: FONT_BLACK_COLOR,
+                                    fontSize: FONT_SIZE_BIG,
+                                  ),
+                                ),
+                                Row(
+                                  children: [
+                                    SizedBox(
                                       width: 36,
                                       height: 24,
                                       child: Checkbox(
@@ -95,35 +107,40 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
                                           });
                                         },
                                         activeColor: Colors.grey,
-                                      )),
-                                  const Text('Ważne',
+                                      ),
+                                    ),
+                                    const Text(
+                                      'Ważne',
                                       style: TextStyle(
-                                          fontFamily: 'Lexend',
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: FONT_SIZE_SMALL,
-                                          color: FONT_BLACK_COLOR))
-                                ],
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 10),
-                          Expanded(child: _displayAnnouncements(groupInfo.groupName, myUser)),
-                        ],
-                      ),
-                    )
-                  ],
+                                        fontFamily: 'Lexend',
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: FONT_SIZE_SMALL,
+                                        color: FONT_BLACK_COLOR,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 10),
+                            Expanded(child: _displayAnnouncements(groupInfo.groupName, myUser)),
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
                 ),
-              ),
-            )
-          ],
+              )
+            ],
+          ),
         ),
       ),
-    ));
+    );
   }
 
   StreamBuilder<List<Announcement>> _displayAnnouncements(String group, MyUser myUser) {
     return StreamBuilder<List<Announcement>>(
-      stream: Announcement.loadAnnouncementsAsStream(group),
+      stream: _announcementProvider.getAnnouncementStream(group),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
@@ -210,7 +227,7 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
                         Visibility(
                           visible:
                               announcement.author == '${myUser.firstName} ${myUser.lastName}' ||
-                                      myUser.admin
+                                      myUser.isAdmin
                                   ? true
                                   : false,
                           child: Row(
@@ -239,25 +256,30 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
     return Row(
       children: [
         Expanded(
-            child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
-                decoration: BoxDecoration(
-                    color: BACKGROUND_CONTAINERS_COLOR,
-                    border: Border.all(color: Colors.black),
-                    borderRadius: BorderRadius.circular(10)),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                        child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      margin: const EdgeInsets.only(right: 10, left: 3),
-                      decoration: BoxDecoration(
-                          color: const Color(0xC0FFFFFF), borderRadius: BorderRadius.circular(5)),
-                    )),
-                    Image.asset('./images/plus.png', height: 24)
-                  ],
-                )))
+          child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+            decoration: BoxDecoration(
+                color: BACKGROUND_CONTAINERS_COLOR,
+                border: Border.all(color: Colors.black),
+                borderRadius: BorderRadius.circular(10)),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    margin: const EdgeInsets.only(right: 10, left: 3),
+                    decoration: BoxDecoration(
+                      color: const Color(0xC0FFFFFF),
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                  ),
+                ),
+                Image.asset('./images/plus.png', height: 24)
+              ],
+            ),
+          ),
+        ),
       ],
     );
   }
@@ -391,13 +413,16 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
                                   processing = true;
                                 });
                                 if (announcementController.text != '') {
-                                  await Announcement(
-                                    anonymous: anonymous,
-                                    important: important,
-                                    author: '${myUser.firstName} ${myUser.lastName}',
-                                    content: announcementController.text,
-                                    date: DateTime.now(),
-                                  ).save(group);
+                                  _announcementProvider.addAnnouncement(
+                                    group,
+                                    Announcement(
+                                      anonymous: anonymous,
+                                      important: important,
+                                      author: '${myUser.firstName} ${myUser.lastName}',
+                                      content: announcementController.text,
+                                      date: DateTime.now(),
+                                    ),
+                                  );
                                   await Future.delayed(const Duration(milliseconds: 500));
                                   notifyParent();
                                 }
@@ -433,7 +458,7 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
                     }),
                     if (text == 'Usuń')
                       {
-                        await announcement.delete(group),
+                        _announcementProvider.deleteAnnouncement(group, announcement.id!),
                         setState(() {
                           _displayAnnouncements(group, myUser);
                         })

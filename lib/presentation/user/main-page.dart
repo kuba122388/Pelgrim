@@ -14,8 +14,7 @@ import 'package:pelgrim/presentation/user/songs-page/songs-topbar.dart';
 import 'package:pelgrim/presentation/widgets/burger.dart';
 import 'package:pelgrim/presentation/widgets/topbar.dart';
 import 'package:provider/provider.dart';
-
-import '../../providers/user_provider.dart';
+import 'package:pelgrim/presentation/providers/user_provider.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -34,7 +33,7 @@ class _MainPageState extends State<MainPage> {
   void initState() {
     super.initState();
 
-    final isAdmin = context.read<UserProvider>().user!.admin;
+    final isAdmin = context.read<UserProvider>().user!.isAdmin;
 
     _pages = [
       const AnnouncementsPage(),

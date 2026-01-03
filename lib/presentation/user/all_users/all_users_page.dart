@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:pelgrim/core/const/consts.dart';
+import 'package:pelgrim/core/const/app_consts.dart';
 import 'package:pelgrim/domain/entities/my_user.dart';
-import 'package:pelgrim/providers/user_provider.dart';
+import 'package:pelgrim/presentation/providers/user_provider.dart';
 import 'package:pelgrim/data/sources/user_service.dart';
 import 'package:pelgrim/core/di/service_locator.dart';
 import 'package:provider/provider.dart';
@@ -45,7 +45,7 @@ class _AllUsersPageState extends State<AllUsersPage> {
     String query = searchEngineController.text.toLowerCase().trimRight();
     setState(() {
       if (query == 'admin') {
-        filteredUsers = users.where((user) => user.admin).toList();
+        filteredUsers = users.where((user) => user.isAdmin).toList();
       } else {
         filteredUsers = users.where((user) {
           return ("${user.firstName.trimRight()} ${user.lastName.trimRight()}")
@@ -135,7 +135,7 @@ class _AllUsersPageState extends State<AllUsersPage> {
                                           );
                                           return;
                                         }
-                                        if (user.admin) {
+                                        if (user.isAdmin) {
                                           await _userService.grantAdmin(
                                               false, user.email, groupName);
                                           ScaffoldMessenger.of(context).showSnackBar(
@@ -153,7 +153,7 @@ class _AllUsersPageState extends State<AllUsersPage> {
                                     ),
                                     ElevatedButton(
                                       onPressed: () async {
-                                        if (!user.admin) {
+                                        if (!user.isAdmin) {
                                           await _userService.grantAdmin(
                                               true, user.email, groupName);
                                           ScaffoldMessenger.of(context).showSnackBar(
@@ -207,7 +207,7 @@ class _AllUsersPageState extends State<AllUsersPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          "${user.firstName.trimRight()} ${user.lastName.trimRight()} ${user.admin ? '- Admin' : ''}",
+          "${user.firstName.trimRight()} ${user.lastName.trimRight()} ${user.isAdmin ? '- Admin' : ''}",
           style: const TextStyle(
             fontSize: 16,
             fontFamily: 'Lexend',

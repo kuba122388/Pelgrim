@@ -3,7 +3,7 @@ import 'package:pelgrim/domain/entities/group_info.dart';
 import 'package:pelgrim/presentation/user/settings/settings_page.dart';
 import 'package:pelgrim/presentation/user/songs-page/add-song-page.dart';
 import 'package:pelgrim/presentation/user/songs-page/songs-page.dart';
-import 'package:pelgrim/providers/user_provider.dart';
+import 'package:pelgrim/presentation/providers/user_provider.dart';
 import 'package:provider/provider.dart';
 
 class SongsTopBar extends StatefulWidget implements PreferredSizeWidget {
@@ -27,7 +27,7 @@ class _SongsTopBarState extends State<SongsTopBar> {
     final UserProvider userProvider = context.read<UserProvider>();
 
     final GroupInfo groupInfo = userProvider.groupInfo!;
-    final bool isAdmin = userProvider.user!.admin;
+    final bool isAdmin = userProvider.user!.isAdmin;
 
     final screenWidth = MediaQuery.of(context).size.width;
     final statusBar = MediaQuery.of(context).padding.top;

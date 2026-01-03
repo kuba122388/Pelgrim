@@ -3,12 +3,12 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:pelgrim/core/const/consts.dart';
+import 'package:pelgrim/core/const/app_consts.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:pelgrim/domain/entities/group_info.dart';
 import 'package:pelgrim/domain/entities/my_user.dart';
 import 'package:pelgrim/presentation/user/images_upload/all_images/all_images_page.dart';
-import 'package:pelgrim/providers/user_provider.dart';
+import 'package:pelgrim/presentation/providers/user_provider.dart';
 import 'package:provider/provider.dart';
 
 class ImagePage extends StatefulWidget {
@@ -233,7 +233,7 @@ class _ImagePageState extends State<ImagePage> {
                     ),
                   ),
                 ),
-                if (myUser.admin)
+                if (myUser.isAdmin)
                   InkWell(
                     onTap: () async => {
                       Navigator.push(

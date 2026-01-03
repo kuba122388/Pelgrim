@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:pelgrim/presentation/login/login_page.dart';
+import 'package:pelgrim/presentation/login/pages/login_page.dart';
 import 'package:pelgrim/presentation/widgets/custom_navigate_button.dart';
 import 'package:pelgrim/presentation/widgets/welcome_background.dart';
 
-import '../../core/const/app_sizes.dart';
+import '../../../core/const/app_sizes.dart';
 
 class WelcomePage extends StatelessWidget {
   const WelcomePage({super.key});

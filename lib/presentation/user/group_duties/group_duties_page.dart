@@ -3,7 +3,7 @@ import 'package:pelgrim/domain/entities/duty.dart';
 import 'package:pelgrim/domain/entities/group_info.dart';
 import 'package:pelgrim/domain/entities/my_user.dart';
 import 'package:pelgrim/presentation/widgets/duty_box.dart';
-import 'package:pelgrim/providers/user_provider.dart';
+import 'package:pelgrim/presentation/providers/user_provider.dart';
 import 'package:provider/provider.dart';
 
 class GroupDutiesPage extends StatefulWidget {
@@ -56,7 +56,7 @@ class _GroupDutiesPageState extends State<GroupDutiesPage> {
             },
           ),
         ),
-        if (myUser.admin)
+        if (myUser.isAdmin)
           Positioned(
             bottom: 16,
             right: 16,

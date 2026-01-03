@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../core/const/app_colors.dart';
+import 'package:pelgrim/core/const/app_colors.dart';
 
 class BackgroundGradient extends StatelessWidget {
   const BackgroundGradient({super.key});

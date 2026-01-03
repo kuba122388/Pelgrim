@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:pelgrim/core/const/consts.dart';
+import 'package:pelgrim/core/const/app_consts.dart';
 import 'package:pelgrim/domain/entities/group_info.dart';
 import 'package:pelgrim/domain/entities/my_user.dart';
 import 'package:pelgrim/presentation/user/settings/special_topbar.dart';
-import 'package:pelgrim/presentation/welcome/welcome_page.dart';
-import 'package:pelgrim/providers/user_provider.dart';
+import 'package:pelgrim/presentation/welcome/pages/welcome_page.dart';
+import 'package:pelgrim/presentation/providers/user_provider.dart';
 import 'package:provider/provider.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -55,7 +55,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     _dataField('Nr tel', myUser.phone, context),
                     _dataField(
                       'Status',
-                      myUser.admin == false ? 'Pielgrzym' : 'Pielgrzym moderator',
+                      myUser.isAdmin == false ? 'Pielgrzym' : 'Pielgrzym moderator',
                       context,
                     ),
                     _dataFieldLast('Pielgrzymka', groupInfo.groupColor, context),

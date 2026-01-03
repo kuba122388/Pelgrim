@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:pelgrim/core/const/consts.dart';
+import 'package:pelgrim/core/const/app_consts.dart';
 import 'package:pelgrim/domain/entities/song.dart';
 import 'package:pelgrim/presentation/user/songs-page/songs-detail-topbar.dart';
-import 'package:pelgrim/providers/user_provider.dart';
+import 'package:pelgrim/presentation/providers/user_provider.dart';
 import 'package:provider/provider.dart';
 
 class SongsDetailPage extends StatefulWidget {
@@ -22,10 +22,7 @@ class _SongsDetailPageState extends State<SongsDetailPage> {
   void initState() {
     super.initState();
 
-    final groupName = context
-        .read<UserProvider>()
-        .groupInfo!
-        .groupName;
+    final groupName = context.read<UserProvider>().groupInfo!.groupName;
     _group = groupName;
     _playingNow = Song.playingNow(_group);
   }
@@ -41,20 +38,11 @@ class _SongsDetailPageState extends State<SongsDetailPage> {
     final userProvider = context.watch<UserProvider>();
 
     final groupInfo = userProvider.groupInfo!;
-    final bool isAdmin = userProvider.user!.admin;
+    final bool isAdmin = userProvider.user!.isAdmin;
 
     Song song = widget.song;
-    final screenWidth = MediaQuery
-        .of(context)
-        .size
-        .width;
-    final screenHeight = MediaQuery
-        .of(context)
-        .size
-        .height - MediaQuery
-        .of(context)
-        .padding
-        .top;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top;
 
     Color firstColor = groupInfo.color;
     Color secondColor = groupInfo.secondColor;

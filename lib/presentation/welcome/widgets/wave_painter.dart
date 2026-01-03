@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../core/const/consts.dart';
+import '../../../core/const/app_consts.dart';
 
 class WavePainter extends CustomPainter {
   @override

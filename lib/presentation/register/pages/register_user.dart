@@ -3,10 +3,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
-import 'package:pelgrim/core/const/consts.dart';
+import 'package:pelgrim/core/const/app_consts.dart';
 import 'package:pelgrim/domain/entities/group_info.dart';
 import 'package:pelgrim/domain/entities/my_user.dart';
-import 'package:pelgrim/presentation/register/register_topbar.dart';
+import 'package:pelgrim/presentation/register/widgets/register_topbar.dart';
 import 'package:pelgrim/presentation/widgets/welcome_background.dart';
 import 'package:pelgrim/data/sources/auth_service.dart';
 import 'package:pelgrim/core/di/service_locator.dart';
@@ -119,7 +119,7 @@ class _RegisterUserState extends State<RegisterUser> {
           _controllerGroupCity.text != '' &&
           pickerColor != const Color(0xffffffff)) {
         MyUser user = MyUser(
-          admin: isRegister,
+          isAdmin: isRegister,
           email: _controllerEmail.text.toLowerCase().trimRight(),
           firstName: _controllerFirstName.text.trimRight(),
           lastName: _controllerLastName.text.trimRight(),
@@ -154,7 +154,7 @@ class _RegisterUserState extends State<RegisterUser> {
 
       if (_selectedPilgrimage?.isNotEmpty ?? false) {
         MyUser user = MyUser(
-          admin: isRegister,
+          isAdmin: isRegister,
           email: _controllerEmail.text.toLowerCase(),
           firstName: _controllerFirstName.text,
           lastName: _controllerLastName.text,
