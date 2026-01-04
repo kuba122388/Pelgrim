@@ -1,10 +1,10 @@
 import 'package:pelgrim/data/models/duty_model.dart';
-import 'package:pelgrim/data/sources/duty_service.dart';
+import 'package:pelgrim/data/datasources/duty_datasource.dart';
 import 'package:pelgrim/domain/entities/duty.dart';
 import 'package:pelgrim/domain/repositories/duty_repository.dart';
 
 class DutyRepositoryImpl implements DutyRepository {
-  final DutyService _dutyService;
+  final DutyDataSource _dutyService;
 
   DutyRepositoryImpl(this._dutyService);
 
@@ -27,7 +27,7 @@ class DutyRepositoryImpl implements DutyRepository {
   }
 
   @override
-  Future<List<Duty>> loadDuties(String groupName) async {
+  Future<List<Duty>> getDuties(String groupName) async {
     try {
       List<DutyModel> list = await _dutyService.loadDuties(groupName);
       return list.map((e) => e.toEntity()).toList();

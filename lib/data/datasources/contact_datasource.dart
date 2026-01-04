@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:pelgrim/core/const/firebase_constants.dart';
 import 'package:pelgrim/data/models/contact_model.dart';
 
-class ContactService {
+class ContactDataSource {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
 
   Future<ContactModel> getContactInfo(String groupName) async {

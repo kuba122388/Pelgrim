@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:pelgrim/domain/entities/group_info.dart';
-import 'package:pelgrim/domain/entities/my_user.dart';
+import 'package:pelgrim/domain/entities/group.dart';
+import 'package:pelgrim/domain/entities/user.dart';
 import 'package:pelgrim/presentation/providers/user_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -17,12 +17,12 @@ class AddSongTopBar extends StatefulWidget implements PreferredSizeWidget {
 }
 
 class _AddSongTopBarState extends State<AddSongTopBar> {
-  late MyUser? myUser;
+  late User? myUser;
   bool processing = false;
 
   @override
   Widget build(BuildContext context) {
-    final GroupInfo groupInfo = context.read<UserProvider>().groupInfo!;
+    final Group groupInfo = context.read<UserProvider>().groupInfo!;
 
     final screenWidth = MediaQuery.of(context).size.width;
     final statusBar = MediaQuery.of(context).padding.top;

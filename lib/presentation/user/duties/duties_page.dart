@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pelgrim/domain/entities/duty.dart';
-import 'package:pelgrim/domain/entities/group_info.dart';
-import 'package:pelgrim/domain/entities/my_user.dart';
+import 'package:pelgrim/domain/entities/group.dart';
+import 'package:pelgrim/domain/entities/user.dart';
 import 'package:pelgrim/presentation/widgets/duty_box.dart';
 import 'package:pelgrim/presentation/providers/user_provider.dart';
 import 'package:provider/provider.dart';
@@ -22,15 +22,15 @@ class _GroupDutiesPageState extends State<GroupDutiesPage> {
   Widget build(BuildContext context) {
     final UserProvider userProvider = context.read<UserProvider>();
 
-    final GroupInfo groupInfo = userProvider.groupInfo!;
-    final MyUser myUser = userProvider.user!;
+    final Group groupInfo = userProvider.groupInfo!;
+    final User myUser = userProvider.user!;
 
     return Stack(
       children: [
         Padding(
           padding: const EdgeInsets.all(20),
           child: FutureBuilder<List<Duty>>(
-            future: Duty.loadDuties(groupInfo.groupName),
+            future: Duty.getDuties(groupInfo.groupName),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());

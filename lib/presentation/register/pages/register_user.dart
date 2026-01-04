@@ -4,11 +4,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:pelgrim/core/const/app_consts.dart';
-import 'package:pelgrim/domain/entities/group_info.dart';
-import 'package:pelgrim/domain/entities/my_user.dart';
+import 'package:pelgrim/domain/entities/group.dart';
+import 'package:pelgrim/domain/entities/user.dart';
 import 'package:pelgrim/presentation/register/widgets/register_topbar.dart';
 import 'package:pelgrim/presentation/widgets/welcome_background.dart';
-import 'package:pelgrim/data/sources/auth_service.dart';
+import 'package:pelgrim/data/datasources/auth_datasource.dart';
 import 'package:pelgrim/core/di/service_locator.dart';
 
 class RegisterUser extends StatefulWidget {
@@ -19,7 +19,7 @@ class RegisterUser extends StatefulWidget {
 }
 
 class _RegisterUserState extends State<RegisterUser> {
-  final AuthService _authService = sl();
+  final AuthDataSource _authService = sl();
 
   bool isRegister = false;
   final TextEditingController _controllerFirstName = TextEditingController();
@@ -118,7 +118,7 @@ class _RegisterUserState extends State<RegisterUser> {
           _controllerGroupColor.text != '' &&
           _controllerGroupCity.text != '' &&
           pickerColor != const Color(0xffffffff)) {
-        MyUser user = MyUser(
+        User user = User(
           isAdmin: isRegister,
           email: _controllerEmail.text.toLowerCase().trimRight(),
           firstName: _controllerFirstName.text.trimRight(),
@@ -126,7 +126,7 @@ class _RegisterUserState extends State<RegisterUser> {
           phone: _controllerPhone.text.trimRight(),
         );
 
-        GroupInfo groupInfo = GroupInfo(
+        Group groupInfo = Group(
           color: pickerColor,
           secondColor: _getSecondColor(pickerColor),
           groupCity: _controllerGroupCity.text,
@@ -153,7 +153,7 @@ class _RegisterUserState extends State<RegisterUser> {
       }
 
       if (_selectedPilgrimage?.isNotEmpty ?? false) {
-        MyUser user = MyUser(
+        User user = User(
           isAdmin: isRegister,
           email: _controllerEmail.text.toLowerCase(),
           firstName: _controllerFirstName.text,

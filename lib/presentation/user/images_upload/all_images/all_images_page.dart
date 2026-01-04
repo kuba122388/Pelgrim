@@ -2,7 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:pelgrim/domain/entities/group_info.dart';
+import 'package:pelgrim/domain/entities/group.dart';
 import 'package:pelgrim/presentation/user/settings/special_topbar.dart';
 import 'package:pelgrim/presentation/providers/user_provider.dart';
 import 'package:provider/provider.dart';
@@ -17,7 +17,7 @@ class AllImagesPage extends StatefulWidget {
 class _AllImagesPageState extends State<AllImagesPage> {
   @override
   Widget build(BuildContext context) {
-    final GroupInfo groupInfo = context.read<UserProvider>().groupInfo!;
+    final Group groupInfo = context.read<UserProvider>().groupInfo!;
 
     return Scaffold(
       appBar: const SpecialTopBar(),

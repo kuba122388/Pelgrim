@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:pelgrim/domain/entities/my_user.dart';
+import 'package:pelgrim/domain/entities/user.dart';
 import 'package:pelgrim/presentation/user/all_users/all_users_page.dart';
 import 'package:pelgrim/presentation/user/announcements/announcements_page.dart';
 import 'package:pelgrim/presentation/user/contact/contact_page.dart';
-import 'package:pelgrim/presentation/user/group_duties/group_duties_page.dart';
+import 'package:pelgrim/presentation/user/group_duties/duties_page.dart';
 import 'package:pelgrim/presentation/user/help/help_page.dart';
 import 'package:pelgrim/presentation/user/images_upload/images_upload_page.dart';
 import 'package:pelgrim/presentation/user/informant/informant_page.dart';
@@ -70,7 +70,7 @@ class _MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
-    final MyUser? myUser = context.watch<UserProvider>().user;
+    final User? myUser = context.watch<UserProvider>().user;
 
     return Scaffold(
       appBar: _topBars.isNotEmpty ? _topBars[_selectedIndex] as PreferredSizeWidget : _loading(),

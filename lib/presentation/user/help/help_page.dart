@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:pelgrim/core/const/app_consts.dart';
-import 'package:pelgrim/domain/entities/group_info.dart';
-import 'package:pelgrim/domain/entities/my_user.dart';
+import 'package:pelgrim/domain/entities/group.dart';
+import 'package:pelgrim/domain/entities/user.dart';
 import 'package:pelgrim/presentation/providers/user_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -88,8 +88,8 @@ class _HelpPageState extends State<HelpPage> {
   Widget build(BuildContext context) {
     final UserProvider userProvider = context.read<UserProvider>();
 
-    final MyUser myUser = userProvider.user!;
-    final GroupInfo groupInfo = userProvider.groupInfo!;
+    final User myUser = userProvider.user!;
+    final Group groupInfo = userProvider.groupInfo!;
 
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top;

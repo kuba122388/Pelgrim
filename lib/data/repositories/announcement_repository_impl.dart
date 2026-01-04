@@ -1,11 +1,11 @@
-import 'package:pelgrim/data/sources/announcement_service.dart';
+import 'package:pelgrim/data/datasources/announcement_datasource.dart';
 import 'package:pelgrim/domain/entities/announcement.dart';
 import 'package:pelgrim/domain/repositories/announcement_repository.dart';
 
 import '../models/announcement_model.dart';
 
 class AnnouncementRepositoryImpl implements AnnouncementRepository {
-  final AnnouncementService _announcementService;
+  final AnnouncementDataSource _announcementService;
 
   AnnouncementRepositoryImpl(this._announcementService);
 

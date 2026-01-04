@@ -1,6 +1,7 @@
-import 'package:pelgrim/domain/entities/my_user.dart';
+import 'package:pelgrim/domain/entities/user.dart';
 
-class MyUserModel {
+class UserModel {
+  final String id; // uid
   final String firstName;
   final String lastName;
   final String email;
@@ -8,7 +9,8 @@ class MyUserModel {
   final String groupName;
   final bool isAdmin;
 
-  MyUserModel({
+  UserModel({
+    required this.id,
     required this.firstName,
     required this.lastName,
     required this.email,
@@ -19,6 +21,7 @@ class MyUserModel {
 
   Map<String, dynamic> toMap() {
     return {
+      'id': id,
       'FirstName': firstName,
       'LastName': lastName,
       'Email': email,
@@ -28,8 +31,9 @@ class MyUserModel {
     };
   }
 
-  factory MyUserModel.fromMap(Map<String, dynamic> map) {
-    return MyUserModel(
+  factory UserModel.fromMap(Map<String, dynamic> map) {
+    return UserModel(
+      id: map["id"],
       firstName: map['FirstName'],
       lastName: map['LastName'],
       email: map['Email'],
@@ -39,8 +43,9 @@ class MyUserModel {
     );
   }
 
-  factory MyUserModel.fromEntity(MyUser entity) {
-    return MyUserModel(
+  factory UserModel.fromEntity(User entity) {
+    return UserModel(
+      id: entity.id,
       email: entity.email,
       firstName: entity.firstName,
       lastName: entity.lastName,
@@ -50,8 +55,9 @@ class MyUserModel {
     );
   }
 
-  MyUser toEntity() {
-    return MyUser(
+  User toEntity() {
+    return User(
+      id: id,
       groupName: groupName,
       firstName: firstName,
       lastName: lastName,

@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:pelgrim/core/const/firebase_constants.dart';
 import 'package:pelgrim/data/models/duty_model.dart';
 
-class DutyService {
+class DutyDataSource {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
 
   Future<void> addDuty(String group, DutyModel dutyModel) async {

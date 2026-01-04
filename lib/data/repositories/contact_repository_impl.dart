@@ -1,10 +1,10 @@
 import 'package:pelgrim/data/models/contact_model.dart';
-import 'package:pelgrim/data/sources/contact_service.dart';
+import 'package:pelgrim/data/datasources/contact_datasource.dart';
 import 'package:pelgrim/domain/entities/contact.dart';
 import 'package:pelgrim/domain/repositories/contact_repository.dart';
 
 class ContactRepositoryImpl implements ContactRepository {
-  final ContactService _contactService;
+  final ContactDataSource _contactService;
 
   ContactRepositoryImpl(this._contactService);
 

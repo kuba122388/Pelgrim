@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:pelgrim/core/const/app_consts.dart';
-import 'package:pelgrim/domain/entities/my_user.dart';
+import 'package:pelgrim/domain/entities/user.dart';
 import 'package:pelgrim/presentation/providers/user_provider.dart';
-import 'package:pelgrim/data/sources/user_service.dart';
+import 'package:pelgrim/data/datasources/user_datasource.dart';
 import 'package:pelgrim/core/di/service_locator.dart';
 import 'package:provider/provider.dart';
 
@@ -14,10 +14,10 @@ class AllUsersPage extends StatefulWidget {
 }
 
 class _AllUsersPageState extends State<AllUsersPage> {
-  final UserService _userService = sl<UserService>();
+  final UserDataSource _userService = sl<UserDataSource>();
 
-  List<MyUser> users = [];
-  List<MyUser> filteredUsers = [];
+  List<User> users = [];
+  List<User> filteredUsers = [];
   TextEditingController searchEngineController = TextEditingController();
 
   bool isLoading = true;
@@ -202,7 +202,7 @@ class _AllUsersPageState extends State<AllUsersPage> {
     );
   }
 
-  Column userInfo(MyUser user) {
+  Column userInfo(User user) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

@@ -1,11 +1,11 @@
 import 'package:get_it/get_it.dart';
 import 'package:pelgrim/data/repositories/announcement_repository_impl.dart';
 import 'package:pelgrim/data/repositories/contact_repository_impl.dart';
-import 'package:pelgrim/data/sources/announcement_service.dart';
-import 'package:pelgrim/data/sources/auth_service.dart';
-import 'package:pelgrim/data/sources/contact_service.dart';
-import 'package:pelgrim/data/sources/group_service.dart';
-import 'package:pelgrim/data/sources/user_service.dart';
+import 'package:pelgrim/data/datasources/announcement_datasource.dart';
+import 'package:pelgrim/data/datasources/auth_datasource.dart';
+import 'package:pelgrim/data/datasources/contact_datasource.dart';
+import 'package:pelgrim/data/datasources/group_datasource.dart';
+import 'package:pelgrim/data/datasources/user_datasource.dart';
 import 'package:pelgrim/domain/repositories/announcement_repository.dart';
 import 'package:pelgrim/domain/repositories/contact_repository.dart';
 import 'package:pelgrim/domain/usecases/announcement/add_announcement_usecase.dart';
@@ -20,17 +20,17 @@ final sl = GetIt.instance;
 
 void setupLocator() {
   // --- 1. Data Sources (Services) ---
-  sl.registerLazySingleton<AuthService>(() => AuthService());
-  sl.registerLazySingleton<GroupService>(() => GroupService());
-  sl.registerLazySingleton<UserService>(() => UserService());
-  sl.registerLazySingleton<AnnouncementService>(() => AnnouncementService());
-  sl.registerLazySingleton<ContactService>(() => ContactService());
+  sl.registerLazySingleton<AuthDataSource>(() => AuthDataSource());
+  sl.registerLazySingleton<GroupDataSource>(() => GroupDataSource());
+  sl.registerLazySingleton<UserDataSource>(() => UserDataSource());
+  sl.registerLazySingleton<AnnouncementDataSource>(() => AnnouncementDataSource());
+  sl.registerLazySingleton<ContactDataSource>(() => ContactDataSource());
 
   // --- 2. Repositories ---
   sl.registerLazySingleton<AnnouncementRepository>(
-    () => AnnouncementRepositoryImpl(sl<AnnouncementService>()),
+    () => AnnouncementRepositoryImpl(sl<AnnouncementDataSource>()),
   );
-  sl.registerLazySingleton<ContactRepository>(() => ContactRepositoryImpl(sl<ContactService>()));
+  sl.registerLazySingleton<ContactRepository>(() => ContactRepositoryImpl(sl<ContactDataSource>()));
 
   // --- 3. Use Cases ---
   sl.registerLazySingleton(() => AddAnnouncementUseCase(sl<AnnouncementRepository>()));

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pelgrim/domain/entities/group_info.dart';
+import 'package:pelgrim/domain/entities/group.dart';
 import 'package:pelgrim/presentation/user/settings/settings_page.dart';
 import 'package:pelgrim/presentation/user/songs-page/add-song-page.dart';
 import 'package:pelgrim/presentation/user/songs-page/songs-page.dart';
@@ -26,7 +26,7 @@ class _SongsTopBarState extends State<SongsTopBar> {
   Widget build(BuildContext context) {
     final UserProvider userProvider = context.read<UserProvider>();
 
-    final GroupInfo groupInfo = userProvider.groupInfo!;
+    final Group groupInfo = userProvider.groupInfo!;
     final bool isAdmin = userProvider.user!.isAdmin;
 
     final screenWidth = MediaQuery.of(context).size.width;

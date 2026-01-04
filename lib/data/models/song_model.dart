@@ -1,9 +1,11 @@
+import 'package:pelgrim/domain/entities/song.dart';
+
 class SongModel {
-  String? docId;
+  String? id;
   String title;
   String lyrics;
 
-  SongModel({this.docId, required this.title, required this.lyrics});
+  SongModel({this.id, required this.title, required this.lyrics});
 
   Map<String, dynamic> toMap() {
     return {
@@ -14,9 +16,25 @@ class SongModel {
 
   factory SongModel.fromMap(Map<String, dynamic> map, docId) {
     return SongModel(
-      docId: docId,
+      id: docId,
       title: map['Title'] ?? '',
       lyrics: map['Lyrics'] ?? '',
+    );
+  }
+
+  factory SongModel.fromEntity(Song entity) {
+    return SongModel(
+      id: entity.id,
+      title: entity.title,
+      lyrics: entity.lyrics,
+    );
+  }
+
+  Song toEntity() {
+    return Song(
+      id: id,
+      title: title,
+      lyrics: lyrics,
     );
   }
 }

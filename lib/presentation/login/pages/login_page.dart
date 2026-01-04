@@ -7,7 +7,7 @@ import 'package:pelgrim/presentation/register/pages/register_user.dart';
 import 'package:pelgrim/presentation/widgets/custom_navigate_button.dart';
 import 'package:pelgrim/presentation/widgets/welcome_background.dart';
 import 'package:pelgrim/core/const/app_sizes.dart';
-import 'package:pelgrim/data/sources/auth_service.dart';
+import 'package:pelgrim/data/datasources/auth_datasource.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -19,7 +19,7 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final TextEditingController _controllerEmail = TextEditingController();
   final TextEditingController _controllerPassword = TextEditingController();
-  final AuthService _authService = AuthService();
+  final AuthDataSource _authService = AuthDataSource();
 
   @override
   void dispose() {

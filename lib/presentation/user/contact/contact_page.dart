@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pelgrim/core/const/app_consts.dart';
 import 'package:pelgrim/domain/entities/contact.dart';
-import 'package:pelgrim/domain/entities/my_user.dart';
+import 'package:pelgrim/domain/entities/user.dart';
 import 'package:pelgrim/core/const/app_strings.dart';
 import 'package:pelgrim/presentation/providers/contact_provider.dart';
 import 'package:pelgrim/presentation/providers/user_provider.dart';
@@ -62,7 +62,7 @@ class _ContactPageState extends State<ContactPage> {
 
   @override
   Widget build(BuildContext context) {
-    final MyUser myUser = context.read<UserProvider>().user!;
+    final User myUser = context.read<UserProvider>().user!;
 
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;

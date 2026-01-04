@@ -1,4 +1,5 @@
-class MyUser {
+class User {
+  final String id; // uid
   final String firstName;
   final String lastName;
   final String email;
@@ -6,7 +7,8 @@ class MyUser {
   final String groupName;
   final bool isAdmin;
 
-  MyUser({
+  User({
+    required this.id,
     required this.firstName,
     required this.lastName,
     required this.email,

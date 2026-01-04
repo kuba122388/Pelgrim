@@ -1,10 +1,10 @@
-import 'package:pelgrim/domain/entities/my_user.dart';
+import 'package:pelgrim/domain/entities/user.dart';
 
 class Duty {
   final String? id;
   final String title;
   final int maxVolunteers;
-  final List<MyUser> volunteers;
+  final List<User> volunteers;
   final DateTime createdAt;
 
   Duty({

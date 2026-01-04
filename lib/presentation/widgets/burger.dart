@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:pelgrim/core/const/app_consts.dart';
-import 'package:pelgrim/domain/entities/my_user.dart';
+import 'package:pelgrim/domain/entities/user.dart';
 
 class BurgerMenu extends StatefulWidget implements PreferredSizeWidget {
   final Function(int) onItemTapped;
   final int selectedIndex;
-  final MyUser currentUser;
+  final User currentUser;
 
   const BurgerMenu(
       {super.key,

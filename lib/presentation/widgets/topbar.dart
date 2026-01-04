@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pelgrim/domain/entities/group_info.dart';
+import 'package:pelgrim/domain/entities/group.dart';
 import 'package:pelgrim/presentation/user/settings/settings_page.dart';
 import 'package:pelgrim/presentation/providers/user_provider.dart';
 import 'package:provider/provider.dart';
@@ -17,7 +17,7 @@ class CustomTopBar extends StatefulWidget implements PreferredSizeWidget {
 class _CustomTopBarState extends State<CustomTopBar> {
   @override
   Widget build(BuildContext context) {
-    final GroupInfo groupInfo = context.read<UserProvider>().groupInfo!;
+    final Group groupInfo = context.read<UserProvider>().groupInfo!;
 
     final screenWidth = MediaQuery.of(context).size.width;
     final statusBar = MediaQuery.of(context).padding.top;

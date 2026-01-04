@@ -2,8 +2,8 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:pelgrim/domain/entities/announcement.dart';
-import 'package:pelgrim/domain/entities/group_info.dart';
-import 'package:pelgrim/domain/entities/my_user.dart';
+import 'package:pelgrim/domain/entities/group.dart';
+import 'package:pelgrim/domain/entities/user.dart';
 import 'package:pelgrim/core/const/app_consts.dart';
 import 'package:pelgrim/presentation/providers/announcement_provider.dart';
 import 'package:pelgrim/presentation/providers/user_provider.dart';
@@ -35,8 +35,8 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
   Widget build(BuildContext context) {
     final UserProvider userProvider = context.read<UserProvider>();
 
-    final GroupInfo groupInfo = userProvider.groupInfo!;
-    final MyUser myUser = userProvider.user!;
+    final Group groupInfo = userProvider.groupInfo!;
+    final User myUser = userProvider.user!;
 
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top;
@@ -138,7 +138,7 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
     );
   }
 
-  StreamBuilder<List<Announcement>> _displayAnnouncements(String group, MyUser myUser) {
+  StreamBuilder<List<Announcement>> _displayAnnouncements(String group, User myUser) {
     return StreamBuilder<List<Announcement>>(
       stream: _announcementProvider.getAnnouncementStream(group),
       builder: (context, snapshot) {
@@ -284,7 +284,7 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
     );
   }
 
-  Future<void> _showAddAnnouncementWidget(String group, MyUser myUser, Function notifyParent) {
+  Future<void> _showAddAnnouncementWidget(String group, User myUser, Function notifyParent) {
     final screenWidth = MediaQuery.of(context).size.width;
     bool important = false;
     bool anonymous = false;
@@ -444,7 +444,7 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
     );
   }
 
-  Future<void> _deleteAnnouncement(Announcement announcement, MyUser myUser, String group) {
+  Future<void> _deleteAnnouncement(Announcement announcement, User myUser, String group) {
     final screenHeight = MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top;
 
     ElevatedButton buttonOption(text) {

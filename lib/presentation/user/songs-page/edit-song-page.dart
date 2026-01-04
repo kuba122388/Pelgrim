@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pelgrim/core/const/app_consts.dart';
-import 'package:pelgrim/domain/entities/group_info.dart';
+import 'package:pelgrim/domain/entities/group.dart';
 import 'package:pelgrim/domain/entities/song.dart';
 import 'package:pelgrim/presentation/user/songs-page/edit-song-topbar.dart';
 import 'package:pelgrim/presentation/providers/user_provider.dart';
@@ -32,11 +32,11 @@ class _EditSongPageState extends State<EditSongPage> {
     final screenHeight = MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top;
     final keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
 
-    final GroupInfo groupInfo = context.read<UserProvider>().groupInfo!;
+    final Group groupInfo = context.read<UserProvider>().groupInfo!;
 
     Future<void> editSong(group) async {
-      Song song = Song(
-          title: titleController.text, lyrics: lyricsController.text, docId: widget.song.docId);
+      Song song =
+          Song(title: titleController.text, lyrics: lyricsController.text, id: widget.song.id);
       try {
         await song.editSong(group);
         Navigator.pop(context, true);

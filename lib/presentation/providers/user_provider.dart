@@ -1,28 +1,28 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:pelgrim/domain/entities/group_info.dart';
-import 'package:pelgrim/domain/entities/my_user.dart';
-import 'package:pelgrim/data/sources/user_service.dart';
+import 'package:pelgrim/domain/entities/group.dart';
+import 'package:pelgrim/domain/entities/user.dart';
+import 'package:pelgrim/data/datasources/user_datasource.dart';
 
 class UserProvider extends ChangeNotifier {
-  final UserService _userService;
+  final UserDataSource _userService;
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
   UserProvider(this._userService);
 
-  MyUser? _user;
-  GroupInfo? _groupInfo;
+  User? _user;
+  Group? _groupInfo;
   bool _isLoading = false;
 
-  MyUser? get user => _user;
+  User? get user => _user;
 
-  GroupInfo? get groupInfo => _groupInfo;
+  Group? get groupInfo => _groupInfo;
 
   bool get isLoaded => _user != null && _groupInfo != null;
 
   bool get isLoading => _isLoading;
 
-  void updateData({required MyUser user, required GroupInfo groupInfo}) {
+  void updateData({required User user, required Group groupInfo}) {
     _user = user;
     _groupInfo = groupInfo;
     notifyListeners();

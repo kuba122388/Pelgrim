@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pelgrim/core/const/app_consts.dart';
-import 'package:pelgrim/domain/entities/group_info.dart';
+import 'package:pelgrim/domain/entities/group.dart';
 import 'package:pelgrim/domain/entities/song.dart';
 import 'package:pelgrim/presentation/user/settings/settings_page.dart';
 import 'package:pelgrim/presentation/user/songs-page/edit-song-page.dart';
@@ -23,7 +23,7 @@ class SongsDetailTopbar extends StatefulWidget implements PreferredSizeWidget {
 class _SongsDetailTopbarState extends State<SongsDetailTopbar> {
   @override
   Widget build(BuildContext context) {
-    final GroupInfo groupInfo = context.read<UserProvider>().groupInfo!;
+    final Group groupInfo = context.read<UserProvider>().groupInfo!;
     final bool isAdmin = context.read<UserProvider>().user!.isAdmin;
 
     final screenWidth = MediaQuery.of(context).size.width;

@@ -5,5 +5,5 @@ abstract class DutyRepository {
 
   Future<void> deleteDuty(String groupName, String dutyId);
 
-  Future<List<Duty>> loadDuties(String groupName);
+  Future<List<Duty>> getDuties(String groupName);
 }

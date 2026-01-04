@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pelgrim/core/const/app_consts.dart';
-import 'package:pelgrim/domain/entities/group_info.dart';
+import 'package:pelgrim/domain/entities/group.dart';
 import 'package:pelgrim/domain/entities/song.dart';
 import 'package:pelgrim/presentation/providers/user_provider.dart';
 import 'package:provider/provider.dart';
@@ -20,7 +20,7 @@ class _PlayingNowPageState extends State<PlayingNowPage> {
   void initState() {
     super.initState();
 
-    final GroupInfo groupInfo = context.read<UserProvider>().groupInfo!;
+    final Group groupInfo = context.read<UserProvider>().groupInfo!;
     _group = groupInfo.groupName;
     song = Song.playingNow(_group);
   }
@@ -33,7 +33,7 @@ class _PlayingNowPageState extends State<PlayingNowPage> {
     return SafeArea(
       child: Center(
         child: StreamBuilder<Song>(
-          stream: Song.getPlayingNow(_group),
+          stream: Song.watchPlayingNow(_group),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const CircularProgressIndicator();

@@ -1,11 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:pelgrim/domain/entities/duty.dart';
-import 'package:pelgrim/domain/entities/my_user.dart';
+import 'package:pelgrim/domain/entities/user.dart';
 
 class DutyBox extends StatefulWidget {
   final Duty duty;
-  final MyUser currentUser;
+  final User currentUser;
   final String group;
   final VoidCallback onRefresh;
 

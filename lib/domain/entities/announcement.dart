@@ -6,11 +6,12 @@ class Announcement {
   final bool important;
   final bool anonymous;
 
-  Announcement(
-      {this.id,
-      required this.author,
-      required this.content,
-      required this.date,
-      required this.important,
-      required this.anonymous});
+  Announcement({
+    this.id,
+    required this.author,
+    required this.content,
+    required this.date,
+    required this.important,
+    required this.anonymous,
+  });
 }

@@ -28,7 +28,7 @@ class SongsPageState extends State<SongsPage> {
       isLoading = true;
     });
 
-    Song.loadSongs(_groupName).then((songs) {
+    Song.getSongList(_groupName).then((songs) {
       setState(() {
         allSongs = songs;
         filterSongs();

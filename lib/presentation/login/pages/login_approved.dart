@@ -1,12 +1,12 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:pelgrim/domain/entities/group_info.dart';
-import 'package:pelgrim/domain/entities/my_user.dart';
+import 'package:pelgrim/domain/entities/group.dart';
+import 'package:pelgrim/domain/entities/user.dart';
 import 'package:pelgrim/core/const/app_consts.dart';
 import 'package:pelgrim/presentation/login/pages/login_page.dart';
 import 'package:pelgrim/presentation/user/main-page.dart';
-import 'package:pelgrim/data/sources/group_service.dart';
-import 'package:pelgrim/data/sources/user_service.dart';
+import 'package:pelgrim/data/datasources/group_datasource.dart';
+import 'package:pelgrim/data/datasources/user_datasource.dart';
 import 'package:provider/provider.dart';
 
 import 'package:pelgrim/core/di/service_locator.dart';
@@ -22,11 +22,11 @@ class LoginApproved extends StatefulWidget {
 }
 
 class _LoginApprovedState extends State<LoginApproved> {
-  final UserService _userService = sl<UserService>();
-  final GroupService _groupService = sl<GroupService>();
+  final UserDataSource _userService = sl<UserDataSource>();
+  final GroupDataSource _groupService = sl<GroupDataSource>();
 
-  late GroupInfo groupInfo;
-  late MyUser? myUser;
+  late Group groupInfo;
+  late User? myUser;
   late Future<void> _futureLoadData;
 
   Future<void> loadGroupData() async {

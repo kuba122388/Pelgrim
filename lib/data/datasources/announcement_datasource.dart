@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:pelgrim/core/const/firebase_constants.dart';
 import 'package:pelgrim/data/models/announcement_model.dart';
 
-class AnnouncementService {
+class AnnouncementDataSource {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
 
   Future<void> addAnnouncement(String groupName, AnnouncementModel announcement) async {
