@@ -77,4 +77,8 @@ class GroupDataSource {
 
     await batch.commit();
   }
+
+  Future<void> deleteGroup(String groupId) async {
+    await _db.collection(FirebaseConstants.groupsCollection).doc(groupId).delete();
+  }
 }

@@ -18,4 +18,6 @@ abstract class GroupRepository {
     required String userId,
     required bool isAdmin,
   });
+
+  Future<void> deleteGroup(String groupId);
 }

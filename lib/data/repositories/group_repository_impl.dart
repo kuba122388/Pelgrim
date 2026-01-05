@@ -1,3 +1,4 @@
+import 'package:pelgrim/core/errors/repository_exception.dart';
 import 'package:pelgrim/data/datasources/group_datasource.dart';
 import 'package:pelgrim/data/models/group_model.dart';
 import 'package:pelgrim/domain/entities/group.dart';
@@ -57,6 +58,15 @@ class GroupRepositoryImpl extends GroupRepository {
       await _groupDataSource.setAdminStatus(groupId, userId, isAdmin);
     } catch (e) {
       throw Exception("Nadawanie uprawnień nie powiodło się: $e");
+    }
+  }
+
+  @override
+  Future<void> deleteGroup(String groupId) async {
+    try {
+      await _groupDataSource.deleteGroup(groupId);
+    } catch (e) {
+      throw RepositoryException("Usuwanie grupy nie powiodło się: $e");
     }
   }
 }

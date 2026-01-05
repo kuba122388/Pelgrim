@@ -38,7 +38,7 @@ class RegisterUserToGroupUseCase {
         lastName: lastName,
         phone: phone,
         isAdmin: false,
-        groupId: null,
+        groupId: groupId,
       );
 
       await _userRepository.createUser(user);

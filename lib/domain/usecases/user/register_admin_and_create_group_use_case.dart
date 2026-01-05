@@ -30,24 +30,13 @@ class RegisterAdminAndCreateGroupUseCase {
     required Color secondColor,
   }) async {
     String? userId;
+    String? groupId;
 
     try {
       userId = await _authRepository.register(
         email: email,
         password: password,
       );
-
-      User user = User(
-        id: userId,
-        email: email,
-        firstName: firstName,
-        lastName: lastName,
-        phone: phone,
-        isAdmin: false,
-        groupId: null,
-      );
-
-      await _userRepository.createUser(user);
 
       Group group = Group(
         color: color,
@@ -56,12 +45,32 @@ class RegisterAdminAndCreateGroupUseCase {
         groupCity: groupCity,
       );
 
+      groupId = group.id;
       await _groupRepository.createGroup(group);
 
-      await _groupRepository.joinUserToGroup(groupId: group.id, userId: userId, isAdmin: true);
+      User user = User(
+        id: userId,
+        email: email,
+        firstName: firstName,
+        lastName: lastName,
+        phone: phone,
+        isAdmin: true,
+        groupId: group.id,
+      );
+
+      await _userRepository.createUser(user);
+
+      await _groupRepository.joinUserToGroup(
+        groupId: group.id,
+        userId: userId,
+        isAdmin: true,
+      );
     } catch (e) {
       if (userId != null) {
         await _authRepository.deleteAccount(userId);
+      }
+      if (groupId != null) {
+        await _groupRepository.deleteGroup(groupId);
       }
       throw UseCaseException('Rejestracja administratora i utworzenie grupy nie powiodły się');
     }

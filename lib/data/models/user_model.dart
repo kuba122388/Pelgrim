@@ -2,7 +2,7 @@ import 'package:pelgrim/domain/entities/user.dart';
 
 class UserModel {
   final String id; // uid
-  final String? groupId;
+  final String groupId;
   final String firstName;
   final String lastName;
   final String email;

@@ -1,14 +1,20 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:pelgrim/domain/entities/group.dart';
 import 'package:pelgrim/domain/entities/user.dart';
-import 'package:pelgrim/data/datasources/user_datasource.dart';
+import 'package:pelgrim/domain/usecases/group/get_group_use_case.dart';
+import 'package:pelgrim/domain/usecases/user/sign_in_use_case.dart';
+import 'package:pelgrim/domain/usecases/user/sign_out_use_case.dart';
 
 class UserProvider extends ChangeNotifier {
-  final UserDataSource _userService;
-  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+  final SignInUseCase _signInUseCase;
+  final SignOutUseCase _signOutUseCase;
+  final GetGroupUseCase _getGroupUseCase;
 
-  UserProvider(this._userService);
+  UserProvider(
+    this._signInUseCase,
+    this._signOutUseCase,
+    this._getGroupUseCase,
+  );
 
   User? _user;
   Group? _groupInfo;
@@ -34,16 +40,24 @@ class UserProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> fetchAndSetUser(String email) async {
+  Future<void> signIn(String email, String password) async {
     _isLoading = true;
     notifyListeners();
 
     try {
-      final group = await _userService.getUserGroup(email);
-      _user = await _userService.getUser(email, group);
+      final user = await _signInUseCase.execute(
+        email: email,
+        password: password,
+      );
+
+      final group = await _getGroupUseCase.execute(user.groupId);
+
+      _user = user;
+      _groupInfo = group;
     } catch (e) {
       _user = null;
       _groupInfo = null;
+      rethrow;
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -51,6 +65,7 @@ class UserProvider extends ChangeNotifier {
   }
 
   Future<void> signOut() async {
-    await _firebaseAuth.signOut();
+    await _signOutUseCase.execute();
+    clear();
   }
 }
