@@ -11,14 +11,14 @@ import 'package:pelgrim/domain/entities/user.dart';
 import 'package:pelgrim/presentation/register/widgets/register_topbar.dart';
 import 'package:pelgrim/presentation/widgets/welcome_background.dart';
 
-class RegisterUser extends StatefulWidget {
-  const RegisterUser({super.key});
+class RegisterUserPage extends StatefulWidget {
+  const RegisterUserPage({super.key});
 
   @override
-  State<RegisterUser> createState() => _RegisterUserState();
+  State<RegisterUserPage> createState() => _RegisterUserPageState();
 }
 
-class _RegisterUserState extends State<RegisterUser> {
+class _RegisterUserPageState extends State<RegisterUserPage> {
   final AuthDataSource _authService = sl();
 
   bool isRegister = false;
@@ -560,65 +560,5 @@ class _RegisterUserState extends State<RegisterUser> {
         ),
       ),
     ]);
-  }
-}
-
-class Picture extends StatelessWidget {
-  final String img;
-  final double top;
-  final double left;
-  final double width;
-
-  const Picture({
-    super.key,
-    required this.img,
-    required this.top,
-    required this.left,
-    required this.width,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
-
-    return Positioned(
-      top: screenHeight * top,
-      left: screenWidth * left,
-      child: Image.asset(
-        'images/$img',
-        width: width == 0 ? null : screenWidth * width,
-      ),
-    );
-  }
-}
-
-class WavePainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    Paint paint = Paint()
-      ..shader = const LinearGradient(
-        colors: [LOGIN_BG_PRIMARY_COLOR, LOGIN_BG_SECONDARY_COLOR],
-        begin: Alignment.topCenter,
-        end: Alignment.bottomCenter,
-      ).createShader(Rect.fromLTWH(0, 0, size.width, size.height))
-      ..style = PaintingStyle.fill;
-
-    Path path = Path()
-      ..moveTo(0, size.height * (BACKGROUND_WAVES_IMAGE + 0.05))
-      ..quadraticBezierTo(size.width * 0.25, size.height * (BACKGROUND_WAVES_IMAGE + 0.05),
-          size.width * 0.5, size.height * BACKGROUND_WAVES_IMAGE)
-      ..quadraticBezierTo(size.width * 0.75, size.height * (BACKGROUND_WAVES_IMAGE - 0.05),
-          size.width, size.height * (BACKGROUND_WAVES_IMAGE - 0.05))
-      ..lineTo(size.width, size.height)
-      ..lineTo(0, size.height)
-      ..close();
-
-    canvas.drawPath(path, paint);
-  }
-
-  @override
-  bool shouldRepaint(CustomPainter oldDelegate) {
-    return false;
   }
 }

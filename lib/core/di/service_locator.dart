@@ -2,35 +2,99 @@ import 'package:get_it/get_it.dart';
 import 'package:pelgrim/data/datasources/announcement_datasource.dart';
 import 'package:pelgrim/data/datasources/auth_datasource.dart';
 import 'package:pelgrim/data/datasources/contact_datasource.dart';
+import 'package:pelgrim/data/datasources/duty_datasource.dart';
 import 'package:pelgrim/data/datasources/group_datasource.dart';
+import 'package:pelgrim/data/datasources/song_datasource.dart';
 import 'package:pelgrim/data/datasources/user_datasource.dart';
 import 'package:pelgrim/data/repositories/announcement_repository_impl.dart';
+import 'package:pelgrim/data/repositories/auth_repository_impl.dart';
 import 'package:pelgrim/data/repositories/contact_repository_impl.dart';
+import 'package:pelgrim/data/repositories/duty_repository_impl.dart';
+import 'package:pelgrim/data/repositories/group_repository_impl.dart';
+import 'package:pelgrim/data/repositories/song_repository_impl.dart';
+import 'package:pelgrim/data/repositories/user_repository_impl.dart';
 import 'package:pelgrim/domain/repositories/announcement_repository.dart';
+import 'package:pelgrim/domain/repositories/auth_repository.dart';
 import 'package:pelgrim/domain/repositories/contact_repository.dart';
+import 'package:pelgrim/domain/repositories/duty_repository.dart';
+import 'package:pelgrim/domain/repositories/group_repository.dart';
+import 'package:pelgrim/domain/repositories/song_repository.dart';
+import 'package:pelgrim/domain/repositories/user_repository.dart';
 import 'package:pelgrim/domain/usecases/announcement/add_announcement_use_case.dart';
 import 'package:pelgrim/domain/usecases/announcement/delete_announcement_use_case.dart';
 import 'package:pelgrim/domain/usecases/announcement/get_announcements_stream_use_case.dart';
 import 'package:pelgrim/domain/usecases/contact/get_contact_info_use_case.dart';
 import 'package:pelgrim/domain/usecases/contact/save_contact_info_use_case.dart';
+import 'package:pelgrim/domain/usecases/duty/add_duty_use_case.dart';
+import 'package:pelgrim/domain/usecases/duty/delete_duty_use_case.dart';
+import 'package:pelgrim/domain/usecases/duty/get_duties_use_case.dart';
+import 'package:pelgrim/domain/usecases/group/delete_group_use_case.dart';
+import 'package:pelgrim/domain/usecases/group/get_all_group_names_use_case.dart';
+import 'package:pelgrim/domain/usecases/group/get_group_use_case.dart';
+import 'package:pelgrim/domain/usecases/group/set_admin_status_use_case.dart';
+import 'package:pelgrim/domain/usecases/song/add_song_use_case.dart';
+import 'package:pelgrim/domain/usecases/song/delete_song_use_case.dart';
+import 'package:pelgrim/domain/usecases/song/edit_song_use_case.dart';
+import 'package:pelgrim/domain/usecases/song/get_song_list_use_case.dart';
+import 'package:pelgrim/domain/usecases/song/request_song_use_case.dart';
+import 'package:pelgrim/domain/usecases/song/watch_playing_now_use_case.dart';
+import 'package:pelgrim/domain/usecases/user/get_all_users_by_group_use_case.dart';
+import 'package:pelgrim/domain/usecases/user/register_admin_and_create_group_use_case.dart';
+import 'package:pelgrim/domain/usecases/user/register_user_to_group_use_case.dart';
+import 'package:pelgrim/domain/usecases/user/sign_in_use_case.dart';
+import 'package:pelgrim/domain/usecases/user/sign_out_use_case.dart';
 import 'package:pelgrim/presentation/providers/announcement_provider.dart';
 import 'package:pelgrim/presentation/providers/contact_provider.dart';
+import 'package:pelgrim/presentation/providers/user_provider.dart';
 
 final sl = GetIt.instance;
 
 void setupLocator() {
   // --- 1. Data Sources (Services) ---
-  sl.registerLazySingleton<AuthDataSource>(() => AuthDataSource());
-  sl.registerLazySingleton<GroupDataSource>(() => GroupDataSource());
-  sl.registerLazySingleton<UserDataSource>(() => UserDataSource());
   sl.registerLazySingleton<AnnouncementDataSource>(() => AnnouncementDataSource());
+  sl.registerLazySingleton<AuthDataSource>(() => AuthDataSource());
   sl.registerLazySingleton<ContactDataSource>(() => ContactDataSource());
+  sl.registerLazySingleton<DutyDataSource>(() => DutyDataSource());
+  sl.registerLazySingleton<GroupDataSource>(() => GroupDataSource());
+  sl.registerLazySingleton<SongDataSource>(() => SongDataSource());
+  sl.registerLazySingleton<UserDataSource>(() => UserDataSource());
 
   // --- 2. Repositories ---
   sl.registerLazySingleton<AnnouncementRepository>(
-    () => AnnouncementRepositoryImpl(sl<AnnouncementDataSource>()),
+    () => AnnouncementRepositoryImpl(
+      sl<AnnouncementDataSource>(),
+    ),
   );
-  sl.registerLazySingleton<ContactRepository>(() => ContactRepositoryImpl(sl<ContactDataSource>()));
+  sl.registerLazySingleton<AuthRepository>(
+    () => AuthRepositoryImpl(
+      sl<AuthDataSource>(),
+    ),
+  );
+  sl.registerLazySingleton<ContactRepository>(
+    () => ContactRepositoryImpl(
+      sl<ContactDataSource>(),
+    ),
+  );
+  sl.registerLazySingleton<DutyRepository>(
+    () => DutyRepositoryImpl(
+      sl<DutyDataSource>(),
+    ),
+  );
+  sl.registerLazySingleton<GroupRepository>(
+    () => GroupRepositoryImpl(
+      sl<GroupDataSource>(),
+    ),
+  );
+  sl.registerLazySingleton<SongRepository>(
+    () => SongRepositoryImpl(
+      sl<SongDataSource>(),
+    ),
+  );
+  sl.registerLazySingleton<UserRepository>(
+    () => UserRepositoryImpl(
+      sl<UserDataSource>(),
+    ),
+  );
 
   // --- 3. Use Cases ---
   sl.registerLazySingleton(() => AddAnnouncementUseCase(sl<AnnouncementRepository>()));
@@ -38,17 +102,47 @@ void setupLocator() {
   sl.registerLazySingleton(() => GetAnnouncementsStreamUseCase(sl<AnnouncementRepository>()));
   sl.registerLazySingleton(() => GetContactInfoUseCase(sl<ContactRepository>()));
   sl.registerLazySingleton(() => SaveContactInfoUseCase(sl<ContactRepository>()));
+  sl.registerLazySingleton(() => AddDutyUseCase(sl<DutyRepository>()));
+  sl.registerLazySingleton(() => DeleteDutyUseCase(sl<DutyRepository>()));
+  sl.registerLazySingleton(() => GetDutiesUseCase(sl<DutyRepository>()));
+  sl.registerLazySingleton(() => DeleteGroupUseCase(sl<GroupRepository>()));
+  sl.registerLazySingleton(() => GetAllGroupNamesUseCase(sl<GroupRepository>()));
+  sl.registerLazySingleton(() => GetGroupUseCase(sl<GroupRepository>()));
+  sl.registerLazySingleton(
+      () => SetAdminStatusUseCase(sl<GroupRepository>(), sl<UserRepository>()));
+  sl.registerLazySingleton(() => AddSongUseCase(sl<SongRepository>()));
+  sl.registerLazySingleton(() => DeleteSongUseCase(sl<SongRepository>()));
+  sl.registerLazySingleton(() => EditSongUseCase(sl<SongRepository>()));
+  sl.registerLazySingleton(() => GetSongListUseCase((sl<SongRepository>())));
+  sl.registerLazySingleton(() => RequestSongUseCase(sl<SongRepository>()));
+  sl.registerLazySingleton(() => WatchPlayingNowUseCase(sl<SongRepository>()));
+  sl.registerLazySingleton(() => GetAllUsersByGroupUseCase(sl<UserRepository>()));
+  sl.registerLazySingleton(() => RegisterAdminAndCreateGroupUseCase(
+      sl<AuthRepository>(), sl<GroupRepository>(), sl<UserRepository>()));
+  sl.registerLazySingleton(() => RegisterUserToGroupUseCase(
+      sl<AuthRepository>(), sl<GroupRepository>(), sl<UserRepository>()));
+  sl.registerLazySingleton(() => SignInUseCase(sl<AuthRepository>(), sl<UserRepository>()));
+  sl.registerLazySingleton(() => SignOutUseCase(sl<AuthRepository>()));
 
   // --- 4. Providers ---
-  sl.registerFactory(
+  sl.registerLazySingleton(
     () => AnnouncementProvider(
       sl<AddAnnouncementUseCase>(),
       sl<DeleteAnnouncementUseCase>(),
       sl<GetAnnouncementsStreamUseCase>(),
     ),
   );
-
-  sl.registerFactory(
-    () => ContactProvider(sl<GetContactInfoUseCase>(), sl<SaveContactInfoUseCase>()),
+  sl.registerLazySingleton(
+    () => ContactProvider(
+      sl<GetContactInfoUseCase>(),
+      sl<SaveContactInfoUseCase>(),
+    ),
+  );
+  sl.registerLazySingleton(
+    () => UserProvider(
+      sl<SignInUseCase>(),
+      sl<SignOutUseCase>(),
+      sl<GetGroupUseCase>(),
+    ),
   );
 }

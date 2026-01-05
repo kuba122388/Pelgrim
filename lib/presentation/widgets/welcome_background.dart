@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:pelgrim/core/const/app_colors.dart';
 import 'package:pelgrim/core/const/app_sizes.dart';
 import 'package:pelgrim/core/const/app_styles.dart';
-import 'package:pelgrim/presentation/register/pages/register_user.dart';
-import 'package:pelgrim/presentation/welcome/widgets/background_gradient.dart';
+import 'package:pelgrim/presentation/widgets/background_gradient.dart';
+import 'package:pelgrim/presentation/widgets/positioned_picture.dart';
+import 'package:pelgrim/presentation/widgets/wave_painter.dart';
 
 class WelcomeBackground extends StatelessWidget {
   final bool elevated;
@@ -55,18 +56,19 @@ class WelcomeBackground extends StatelessWidget {
             tag: heroTag,
             child: Stack(
               children: [
-                const Picture(img: 'mountains.png', top: AppSizes.mountainsTop, left: 0, width: 0),
-                const Picture(
+                const PositionedPicture(
+                    img: 'mountains.png', top: AppSizes.mountainsTop, left: 0, width: 0),
+                const PositionedPicture(
                     img: 'second-bush.png', top: AppSizes.secondBushTop, left: 0.66, width: 0.3),
-                const Picture(
+                const PositionedPicture(
                     img: 'first-bush.png', top: AppSizes.firstBushTop, left: 0, width: 0.6),
-                Picture(
+                PositionedPicture(
                   img: 'path.png',
                   top: screenHeight < 800 ? AppSizes.pathTopSmall : AppSizes.pathTopBig,
                   left: 0,
                   width: 0,
                 ),
-                const Picture(
+                const PositionedPicture(
                   img: 'wanderer.png',
                   top: AppSizes.wandererTop,
                   left: 0.1,

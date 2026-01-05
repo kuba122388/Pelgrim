@@ -1,13 +1,13 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:pelgrim/core/const/app_consts.dart';
+import 'package:pelgrim/core/const/app_sizes.dart';
 import 'package:pelgrim/presentation/login/pages/login_approved.dart';
 import 'package:pelgrim/presentation/login/widgets/labeled_text_field.dart';
-import 'package:pelgrim/presentation/register/pages/register_user.dart';
+import 'package:pelgrim/presentation/providers/user_provider.dart';
+import 'package:pelgrim/presentation/register/pages/register_user_page.dart';
 import 'package:pelgrim/presentation/widgets/custom_navigate_button.dart';
 import 'package:pelgrim/presentation/widgets/welcome_background.dart';
-import 'package:pelgrim/core/const/app_sizes.dart';
-import 'package:pelgrim/data/datasources/auth_datasource.dart';
+import 'package:provider/provider.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -19,7 +19,13 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final TextEditingController _controllerEmail = TextEditingController();
   final TextEditingController _controllerPassword = TextEditingController();
-  final AuthDataSource _authService = AuthDataSource();
+  late final UserProvider _userProvider;
+
+  @override
+  void initState() {
+    super.initState();
+    _userProvider = context.read<UserProvider>();
+  }
 
   @override
   void dispose() {
@@ -108,7 +114,7 @@ class _LoginPageState extends State<LoginPage> {
                                       context,
                                       PageRouteBuilder(
                                         pageBuilder: (context, animation, secondaryAnimation) =>
-                                            const RegisterUser(),
+                                            const RegisterUserPage(),
                                         transitionsBuilder:
                                             (context, animation, secondaryAnimation, child) {
                                           return FadeTransition(opacity: animation, child: child);
@@ -149,7 +155,7 @@ class _LoginPageState extends State<LoginPage> {
     );
 
     try {
-      await _authService.signIn(_controllerEmail.text, _controllerPassword.text);
+      await _userProvider.signIn(_controllerEmail.text, _controllerPassword.text);
 
       await Future.delayed(const Duration(milliseconds: 1400));
 
@@ -163,18 +169,7 @@ class _LoginPageState extends State<LoginPage> {
             ),
           ),
           (route) => false);
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'network-request-failed') {
-        Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(
-              builder: (context) => LoginApproved(
-                email: _controllerEmail.text,
-              ),
-            ),
-            (route) => false);
-      }
-
+    } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           behavior: SnackBarBehavior.floating,

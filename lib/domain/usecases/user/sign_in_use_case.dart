@@ -12,11 +12,15 @@ class SignInUseCase {
     required String email,
     required String password,
   }) async {
-    final userId = await _authRepository.signIn(
-      email: email,
-      password: password,
-    );
+    try {
+      final userId = await _authRepository.signIn(
+        email: email,
+        password: password,
+      );
 
-    return await _userRepository.getUserById(userId);
+      return await _userRepository.getUserById(userId);
+    } catch (e) {
+      rethrow;
+    }
   }
 }

@@ -7,5 +7,7 @@ class SignOutUseCase {
 
   Future<void> execute() async {
     await _authRepository.signOut();
+
+    // TODO: WYCZYŚCIĆ PROVIDERY!
   }
 }

@@ -22,15 +22,14 @@ class LoginApproved extends StatefulWidget {
 }
 
 class _LoginApprovedState extends State<LoginApproved> {
-  final UserDataSource _userService = sl<UserDataSource>();
-  final GroupDataSource _groupService = sl<GroupDataSource>();
-
-  late Group groupInfo;
+\  late Group groupInfo;
   late User? myUser;
   late Future<void> _futureLoadData;
 
   Future<void> loadGroupData() async {
     final userProvider = context.read<UserProvider>();
+
+
 
     String groupName = await _userService.getUserGroup(widget.email);
     groupInfo = await _groupService.getGroup(groupName);
