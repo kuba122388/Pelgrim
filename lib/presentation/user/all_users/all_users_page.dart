@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:pelgrim/core/const/app_consts.dart';
+import 'package:pelgrim/core/di/service_locator.dart';
+import 'package:pelgrim/data/datasources/user_datasource.dart';
 import 'package:pelgrim/domain/entities/user.dart';
 import 'package:pelgrim/presentation/providers/user_provider.dart';
-import 'package:pelgrim/data/datasources/user_datasource.dart';
-import 'package:pelgrim/core/di/service_locator.dart';
 import 'package:provider/provider.dart';
 
 class AllUsersPage extends StatefulWidget {
@@ -28,7 +28,7 @@ class _AllUsersPageState extends State<AllUsersPage> {
 
     final userProvider = Provider.of<UserProvider>(context, listen: false);
 
-    _userService.getAllUsersByGroup(userProvider.groupInfo!.groupName).then((allUsers) {
+    _userService.getAllUsersByGroupId(userProvider.groupInfo!.id).then((allUsers) {
       setState(() {
         users = allUsers;
         filterUsers();
@@ -66,7 +66,7 @@ class _AllUsersPageState extends State<AllUsersPage> {
   @override
   Widget build(BuildContext context) {
     final myUser = Provider.of<UserProvider>(context, listen: false).user!;
-    final groupName = Provider.of<UserProvider>(context, listen: false).groupInfo!.groupName;
+    final groupName = Provider.of<UserProvider>(context, listen: false).groupInfo!.id;
 
     final screenWidth = MediaQuery.of(context).size.width;
 
@@ -136,7 +136,7 @@ class _AllUsersPageState extends State<AllUsersPage> {
                                           return;
                                         }
                                         if (user.isAdmin) {
-                                          await _userService.grantAdmin(
+                                          await _userService.setAdminStatus(
                                               false, user.email, groupName);
                                           ScaffoldMessenger.of(context).showSnackBar(
                                             const SnackBar(
@@ -154,7 +154,7 @@ class _AllUsersPageState extends State<AllUsersPage> {
                                     ElevatedButton(
                                       onPressed: () async {
                                         if (!user.isAdmin) {
-                                          await _userService.grantAdmin(
+                                          await _userService.setAdminStatus(
                                               true, user.email, groupName);
                                           ScaffoldMessenger.of(context).showSnackBar(
                                             const SnackBar(

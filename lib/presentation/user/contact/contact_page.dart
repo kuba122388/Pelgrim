@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:pelgrim/core/const/app_consts.dart';
 import 'package:pelgrim/domain/entities/contact.dart';
 import 'package:pelgrim/domain/entities/user.dart';
-import 'package:pelgrim/core/const/app_strings.dart';
 import 'package:pelgrim/presentation/providers/contact_provider.dart';
 import 'package:pelgrim/presentation/providers/user_provider.dart';
 import 'package:provider/provider.dart';
@@ -24,7 +23,7 @@ class _ContactPageState extends State<ContactPage> {
   @override
   void initState() {
     super.initState();
-    _group = context.read<UserProvider>().groupInfo!.groupName;
+    _group = context.read<UserProvider>().groupInfo!.id;
     _contactProvider = context.read<ContactProvider>();
     _loadContactInfo();
   }

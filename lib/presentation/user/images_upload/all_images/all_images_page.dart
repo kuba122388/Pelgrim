@@ -3,8 +3,8 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:pelgrim/domain/entities/group.dart';
-import 'package:pelgrim/presentation/user/settings/special_topbar.dart';
 import 'package:pelgrim/presentation/providers/user_provider.dart';
+import 'package:pelgrim/presentation/user/settings/special_topbar.dart';
 import 'package:provider/provider.dart';
 
 class AllImagesPage extends StatefulWidget {
@@ -31,7 +31,7 @@ class _AllImagesPageState extends State<AllImagesPage> {
           ),
           Expanded(
             child: FutureBuilder<List<String>>(
-              future: _loadAllImageUrls(groupInfo.groupName),
+              future: _loadAllImageUrls(groupInfo.id),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());

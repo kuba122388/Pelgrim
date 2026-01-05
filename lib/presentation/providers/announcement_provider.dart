@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:pelgrim/domain/entities/announcement.dart';
-import 'package:pelgrim/domain/usecases/announcement/add_announcement_usecase.dart';
-import 'package:pelgrim/domain/usecases/announcement/delete_announcement_usecase.dart';
-import 'package:pelgrim/domain/usecases/announcement/get_announcements_stream_usecase.dart';
+import 'package:pelgrim/domain/usecases/announcement/add_announcement_use_case.dart';
+import 'package:pelgrim/domain/usecases/announcement/delete_announcement_use_case.dart';
+import 'package:pelgrim/domain/usecases/announcement/get_announcements_stream_use_case.dart';
 
 class AnnouncementProvider extends ChangeNotifier {
   final AddAnnouncementUseCase _addAnnouncement;

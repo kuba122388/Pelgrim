@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:pelgrim/core/const/app_consts.dart';
 import 'package:pelgrim/domain/entities/group.dart';
 import 'package:pelgrim/domain/entities/song.dart';
-import 'package:pelgrim/presentation/user/songs-page/edit-song-topbar.dart';
 import 'package:pelgrim/presentation/providers/user_provider.dart';
+import 'package:pelgrim/presentation/user/songs-page/edit-song-topbar.dart';
 import 'package:provider/provider.dart';
 
 class EditSongPage extends StatefulWidget {
@@ -47,7 +47,7 @@ class _EditSongPageState extends State<EditSongPage> {
     }
 
     return Scaffold(
-        appBar: EditSongTopbar(onAccept: () => editSong(groupInfo.groupName)),
+        appBar: EditSongTopbar(onAccept: () => editSong(groupInfo.id)),
         body: GestureDetector(
           behavior: HitTestBehavior.translucent,
           onTap: () {

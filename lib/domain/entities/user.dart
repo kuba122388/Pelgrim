@@ -4,7 +4,7 @@ class User {
   final String lastName;
   final String email;
   final String phone;
-  final String groupName;
+  final String? groupId;
   final bool isAdmin;
 
   User({
@@ -13,7 +13,7 @@ class User {
     required this.lastName,
     required this.email,
     required this.phone,
-    required this.groupName,
+    required this.groupId,
     required this.isAdmin,
   });
 }

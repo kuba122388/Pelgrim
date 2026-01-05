@@ -6,7 +6,7 @@ class Group {
   final Color color;
   final Color secondColor;
 
-  String get groupName => '$groupColor - $groupCity';
+  String get id => '$groupColor - $groupCity';
 
   const Group({
     required this.groupColor,

@@ -1,16 +1,16 @@
 import 'dart:math';
+
 import 'package:flutter/material.dart';
-import 'package:pelgrim/domain/entities/group.dart';
-import 'package:pelgrim/domain/entities/user.dart';
 import 'package:pelgrim/core/const/app_consts.dart';
-import 'package:pelgrim/presentation/login/pages/login_page.dart';
-import 'package:pelgrim/presentation/user/main-page.dart';
+import 'package:pelgrim/core/di/service_locator.dart';
 import 'package:pelgrim/data/datasources/group_datasource.dart';
 import 'package:pelgrim/data/datasources/user_datasource.dart';
-import 'package:provider/provider.dart';
-
-import 'package:pelgrim/core/di/service_locator.dart';
+import 'package:pelgrim/domain/entities/group.dart';
+import 'package:pelgrim/domain/entities/user.dart';
+import 'package:pelgrim/presentation/login/pages/login_page.dart';
 import 'package:pelgrim/presentation/providers/user_provider.dart';
+import 'package:pelgrim/presentation/user/main-page.dart';
+import 'package:provider/provider.dart';
 
 class LoginApproved extends StatefulWidget {
   final String email;
@@ -33,8 +33,8 @@ class _LoginApprovedState extends State<LoginApproved> {
     final userProvider = context.read<UserProvider>();
 
     String groupName = await _userService.getUserGroup(widget.email);
-    groupInfo = await _groupService.getGroupInfo(groupName);
-    myUser = await _userService.getUserData(widget.email, groupInfo.groupName);
+    groupInfo = await _groupService.getGroup(groupName);
+    myUser = await _userService.getUser(widget.email, groupInfo.id);
 
     if (myUser != null) {
       userProvider.updateData(

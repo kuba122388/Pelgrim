@@ -2,11 +2,11 @@ import 'package:pelgrim/domain/entities/user.dart';
 
 class UserModel {
   final String id; // uid
+  final String? groupId;
   final String firstName;
   final String lastName;
   final String email;
   final String phone;
-  final String groupName;
   final bool isAdmin;
 
   UserModel({
@@ -15,31 +15,31 @@ class UserModel {
     required this.lastName,
     required this.email,
     required this.phone,
-    required this.groupName,
+    required this.groupId,
     required this.isAdmin,
   });
 
   Map<String, dynamic> toMap() {
     return {
       'id': id,
-      'FirstName': firstName,
-      'LastName': lastName,
-      'Email': email,
-      'Phone': phone,
-      'GroupName': groupName,
-      'Admin': isAdmin,
+      'firstName': firstName,
+      'lastName': lastName,
+      'email': email,
+      'phone': phone,
+      'groupId': groupId,
+      'isAdmin': isAdmin,
     };
   }
 
   factory UserModel.fromMap(Map<String, dynamic> map) {
     return UserModel(
       id: map["id"],
-      firstName: map['FirstName'],
-      lastName: map['LastName'],
-      email: map['Email'],
-      phone: map['Phone'],
-      groupName: map['GroupName'],
-      isAdmin: map['Admin'],
+      firstName: map['firstName'],
+      lastName: map['lastName'],
+      email: map['email'],
+      phone: map['phone'],
+      groupId: map['groupId'],
+      isAdmin: map['isAdmin'],
     );
   }
 
@@ -49,7 +49,7 @@ class UserModel {
       email: entity.email,
       firstName: entity.firstName,
       lastName: entity.lastName,
-      groupName: entity.groupName,
+      groupId: entity.groupId,
       isAdmin: entity.isAdmin,
       phone: entity.phone,
     );
@@ -58,7 +58,7 @@ class UserModel {
   User toEntity() {
     return User(
       id: id,
-      groupName: groupName,
+      groupId: groupId,
       firstName: firstName,
       lastName: lastName,
       isAdmin: isAdmin,

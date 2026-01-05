@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:pelgrim/core/const/app_consts.dart';
 import 'package:pelgrim/domain/entities/song.dart';
-import 'package:pelgrim/presentation/user/songs-page/songs-detail-page.dart';
 import 'package:pelgrim/presentation/providers/user_provider.dart';
+import 'package:pelgrim/presentation/user/songs-page/songs-detail-page.dart';
 import 'package:provider/provider.dart';
 
 class SongsPage extends StatefulWidget {
@@ -45,7 +45,7 @@ class SongsPageState extends State<SongsPage> {
   @override
   void initState() {
     super.initState();
-    _groupName = context.read<UserProvider>().groupInfo!.groupName;
+    _groupName = context.read<UserProvider>().groupInfo!.id;
 
     loadsongs();
 

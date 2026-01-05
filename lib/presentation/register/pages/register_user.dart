@@ -4,12 +4,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:pelgrim/core/const/app_consts.dart';
+import 'package:pelgrim/core/di/service_locator.dart';
+import 'package:pelgrim/data/datasources/auth_datasource.dart';
 import 'package:pelgrim/domain/entities/group.dart';
 import 'package:pelgrim/domain/entities/user.dart';
 import 'package:pelgrim/presentation/register/widgets/register_topbar.dart';
 import 'package:pelgrim/presentation/widgets/welcome_background.dart';
-import 'package:pelgrim/data/datasources/auth_datasource.dart';
-import 'package:pelgrim/core/di/service_locator.dart';
 
 class RegisterUser extends StatefulWidget {
   const RegisterUser({super.key});
@@ -164,7 +164,7 @@ class _RegisterUserState extends State<RegisterUser> {
         await _authService.registerAndJoinGroup(
           user: user,
           password: _controllerPassword.text,
-          groupName: _selectedPilgrimage!,
+          id: _selectedPilgrimage!,
         );
 
         await Future.delayed(const Duration(milliseconds: 1500));

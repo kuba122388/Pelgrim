@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:pelgrim/core/const/app_strings.dart';
 import 'package:pelgrim/domain/entities/contact.dart';
-import 'package:pelgrim/domain/usecases/contact/get_contact_info_usecase.dart';
-import 'package:pelgrim/domain/usecases/contact/save_contact_info_usecase.dart';
+import 'package:pelgrim/domain/usecases/contact/get_contact_info_use_case.dart';
+import 'package:pelgrim/domain/usecases/contact/save_contact_info_use_case.dart';
 
 class ContactProvider extends ChangeNotifier {
   final GetContactInfoUseCase _getContactInfoUseCase;

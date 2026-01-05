@@ -24,7 +24,7 @@ class _InformantPageState extends State<InformantPage> {
   @override
   void initState() {
     super.initState();
-    _groupName = context.read<UserProvider>().groupInfo!.groupName;
+    _groupName = context.read<UserProvider>().groupInfo!.id;
     _imagesFuture = getAllImageUrls();
   }
 

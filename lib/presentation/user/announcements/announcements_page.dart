@@ -1,10 +1,11 @@
 import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:pelgrim/core/const/app_consts.dart';
 import 'package:pelgrim/domain/entities/announcement.dart';
 import 'package:pelgrim/domain/entities/group.dart';
 import 'package:pelgrim/domain/entities/user.dart';
-import 'package:pelgrim/core/const/app_consts.dart';
 import 'package:pelgrim/presentation/providers/announcement_provider.dart';
 import 'package:pelgrim/presentation/providers/user_provider.dart';
 import 'package:provider/provider.dart';
@@ -68,8 +69,7 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
                   child: Column(
                     children: [
                       InkWell(
-                        onTap: () =>
-                            _showAddAnnouncementWidget(groupInfo.groupName, myUser, refresh),
+                        onTap: () => _showAddAnnouncementWidget(groupInfo.id, myUser, refresh),
                         child: _addAnnouncement(screenWidth, screenHeight),
                       ),
                       SizedBox(height: screenHeight * 0.01),
@@ -123,7 +123,7 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
                               ],
                             ),
                             const SizedBox(height: 10),
-                            Expanded(child: _displayAnnouncements(groupInfo.groupName, myUser)),
+                            Expanded(child: _displayAnnouncements(groupInfo.id, myUser)),
                           ],
                         ),
                       )

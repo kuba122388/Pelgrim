@@ -1,4 +1,4 @@
-import 'package:pelgrim/core/errors/RepositoryException.dart';
+import 'package:pelgrim/core/errors/repository_exception.dart';
 import 'package:pelgrim/data/datasources/auth_datasource.dart';
 import 'package:pelgrim/domain/repositories/auth_repository.dart';
 
@@ -8,7 +8,7 @@ class AuthRepositoryImpl extends AuthRepository {
   AuthRepositoryImpl(this._authDataSource);
 
   @override
-  Future<String> register(String email, String password) async {
+  Future<String> register({required String email, required String password}) async {
     try {
       return await _authDataSource.register(email: email, password: password);
     } catch (e) {
@@ -17,7 +17,7 @@ class AuthRepositoryImpl extends AuthRepository {
   }
 
   @override
-  Future<String> signIn(String email, String password) async {
+  Future<String> signIn({required String email, required String password}) async {
     try {
       return await _authDataSource.signIn(email: email, password: password);
     } catch (e) {

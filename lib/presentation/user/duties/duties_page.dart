@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:pelgrim/domain/entities/duty.dart';
 import 'package:pelgrim/domain/entities/group.dart';
 import 'package:pelgrim/domain/entities/user.dart';
-import 'package:pelgrim/presentation/widgets/duty_box.dart';
 import 'package:pelgrim/presentation/providers/user_provider.dart';
+import 'package:pelgrim/presentation/widgets/duty_box.dart';
 import 'package:provider/provider.dart';
 
 class GroupDutiesPage extends StatefulWidget {
@@ -30,7 +30,7 @@ class _GroupDutiesPageState extends State<GroupDutiesPage> {
         Padding(
           padding: const EdgeInsets.all(20),
           child: FutureBuilder<List<Duty>>(
-            future: Duty.getDuties(groupInfo.groupName),
+            future: Duty.getDuties(groupInfo.id),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());
@@ -48,7 +48,7 @@ class _GroupDutiesPageState extends State<GroupDutiesPage> {
                   return DutyBox(
                     duty: data[index],
                     currentUser: myUser,
-                    group: groupInfo.groupName,
+                    group: groupInfo.id,
                     onRefresh: _refresh,
                   );
                 },
@@ -61,7 +61,7 @@ class _GroupDutiesPageState extends State<GroupDutiesPage> {
             bottom: 16,
             right: 16,
             child: ElevatedButton.icon(
-              onPressed: () => _showAddDutyDialog(context, groupInfo.groupName),
+              onPressed: () => _showAddDutyDialog(context, groupInfo.id),
               icon: const Icon(Icons.add),
               label: const Text("Dodaj zadanie"),
               style: ElevatedButton.styleFrom(

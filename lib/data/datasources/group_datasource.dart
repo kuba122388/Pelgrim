@@ -5,31 +5,76 @@ import 'package:pelgrim/data/models/group_model.dart';
 class GroupDataSource {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
 
-  Future<GroupModel> getGroupInfo(String groupID) async {
-    QuerySnapshot settings = await _db
+  Future<void> createGroup(GroupModel groupModel) async {
+    await _db
         .collection(FirebaseConstants.groupsCollection)
-        .doc(groupID)
-        .collection(FirebaseConstants.settingsCollection)
-        .get();
-
-    if (settings.docs.isNotEmpty) {
-      DocumentSnapshot docSnap = settings.docs.first;
-      return GroupModel.fromMap(docSnap.data() as Map<String, dynamic>);
-    } else {
-      throw Exception('Missing Settings in $groupID group');
-    }
+        .doc(groupModel.id)
+        .set(groupModel.toMap());
   }
 
-  Future<void> grantAdmin(String groupName, String userId, bool isAdmin) async {
-    try {
-      await _db
-          .collection(FirebaseConstants.groupsCollection)
-          .doc(groupName)
-          .collection(FirebaseConstants.usersCollection)
-          .doc(userId)
-          .update({"Admin": isAdmin});
-    } catch (e) {
-      print("Problem z podnoszeniem uprawnień");
-    }
+  Future<GroupModel> getGroup(String groupId) async {
+    DocumentSnapshot docSnap =
+        await _db.collection(FirebaseConstants.groupsCollection).doc(groupId).get();
+
+    // NOTE: ZMIENIĆ MIEJSCE USTAWIEŃ W FIREBASE
+
+    return GroupModel.fromMap(docSnap.data() as Map<String, dynamic>);
+  }
+
+  Future<List<String>> getAllGroupNames() async {
+    final querySnapshot = await _db.collection(FirebaseConstants.groupsCollection).get();
+
+    return querySnapshot.docs.map((doc) {
+      return doc.id;
+    }).toList();
+  }
+
+  Future<void> joinUserToGroup(String groupId, String userId, bool isAdmin) async {
+    final batch = _db.batch();
+
+    final globalUserRef = _db.collection(FirebaseConstants.globalUsersCollection).doc(userId);
+
+    final groupUserRef = _db
+        .collection(FirebaseConstants.groupsCollection)
+        .doc(groupId)
+        .collection(FirebaseConstants.usersCollection)
+        .doc(userId);
+
+    batch.set(
+      globalUserRef,
+      {
+        "groupName": groupId,
+        "isAdmin": isAdmin,
+      },
+      SetOptions(merge: true),
+    );
+
+    batch.set(groupUserRef, {
+      "isAdmin": isAdmin,
+    });
+
+    await batch.commit();
+  }
+
+  Future<void> setAdminStatus(String groupId, String userId, bool isAdmin) async {
+    final batch = _db.batch();
+
+    final globalUserRef = _db.collection(FirebaseConstants.globalUsersCollection).doc(userId);
+
+    final groupUserRef = _db
+        .collection(FirebaseConstants.groupsCollection)
+        .doc(groupId)
+        .collection(FirebaseConstants.usersCollection)
+        .doc(userId);
+
+    batch.update(globalUserRef, {
+      "isAdmin": isAdmin,
+    });
+
+    batch.update(groupUserRef, {
+      "isAdmin": isAdmin,
+    });
+
+    await batch.commit();
   }
 }

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:pelgrim/core/const/app_consts.dart';
 import 'package:pelgrim/domain/entities/group.dart';
 import 'package:pelgrim/domain/entities/song.dart';
-import 'package:pelgrim/presentation/user/songs-page/add-song-topbar.dart';
 import 'package:pelgrim/presentation/providers/user_provider.dart';
+import 'package:pelgrim/presentation/user/songs-page/add-song-topbar.dart';
 import 'package:provider/provider.dart';
 
 class AddSongPage extends StatefulWidget {
@@ -56,7 +56,7 @@ class _AddSongPageState extends State<AddSongPage> {
 
     return Scaffold(
         resizeToAvoidBottomInset: true,
-        appBar: AddSongTopBar(onAccept: () => addSong(groupInfo.groupName)),
+        appBar: AddSongTopBar(onAccept: () => addSong(groupInfo.id)),
         body: GestureDetector(
           behavior: HitTestBehavior.translucent,
           onTap: () {

@@ -15,7 +15,7 @@ class GroupModel {
     required this.secondColor,
   });
 
-  String get groupName => '$groupColor - $groupCity';
+  String get id => '$groupColor - $groupCity';
 
   Map<String, dynamic> toMap() {
     return {
@@ -32,6 +32,15 @@ class GroupModel {
       groupCity: json["groupCity"],
       color: Color(int.parse(json["color"], radix: 16)),
       secondColor: Color(int.parse(json["secondColor"], radix: 16)),
+    );
+  }
+
+  factory GroupModel.fromEntity(Group entity) {
+    return GroupModel(
+      groupCity: entity.groupCity,
+      groupColor: entity.groupColor,
+      secondColor: entity.secondColor,
+      color: entity.color,
     );
   }
 

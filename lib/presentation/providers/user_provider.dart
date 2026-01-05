@@ -40,7 +40,7 @@ class UserProvider extends ChangeNotifier {
 
     try {
       final group = await _userService.getUserGroup(email);
-      _user = await _userService.getUserData(email, group);
+      _user = await _userService.getUser(email, group);
     } catch (e) {
       _user = null;
       _groupInfo = null;

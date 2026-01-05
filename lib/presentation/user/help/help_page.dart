@@ -186,7 +186,7 @@ class _HelpPageState extends State<HelpPage> {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     InkWell(
-                      onTap: () => sendMsg(groupInfo.groupName, myUser.email),
+                      onTap: () => sendMsg(groupInfo.id, myUser.email),
                       child: Container(
                         width: screenWidth * 0.3,
                         padding: const EdgeInsets.symmetric(vertical: 7, horizontal: 10),

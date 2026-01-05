@@ -1,18 +1,18 @@
 import 'package:get_it/get_it.dart';
-import 'package:pelgrim/data/repositories/announcement_repository_impl.dart';
-import 'package:pelgrim/data/repositories/contact_repository_impl.dart';
 import 'package:pelgrim/data/datasources/announcement_datasource.dart';
 import 'package:pelgrim/data/datasources/auth_datasource.dart';
 import 'package:pelgrim/data/datasources/contact_datasource.dart';
 import 'package:pelgrim/data/datasources/group_datasource.dart';
 import 'package:pelgrim/data/datasources/user_datasource.dart';
+import 'package:pelgrim/data/repositories/announcement_repository_impl.dart';
+import 'package:pelgrim/data/repositories/contact_repository_impl.dart';
 import 'package:pelgrim/domain/repositories/announcement_repository.dart';
 import 'package:pelgrim/domain/repositories/contact_repository.dart';
-import 'package:pelgrim/domain/usecases/announcement/add_announcement_usecase.dart';
-import 'package:pelgrim/domain/usecases/announcement/delete_announcement_usecase.dart';
-import 'package:pelgrim/domain/usecases/announcement/get_announcements_stream_usecase.dart';
-import 'package:pelgrim/domain/usecases/contact/get_contact_info_usecase.dart';
-import 'package:pelgrim/domain/usecases/contact/save_contact_info_usecase.dart';
+import 'package:pelgrim/domain/usecases/announcement/add_announcement_use_case.dart';
+import 'package:pelgrim/domain/usecases/announcement/delete_announcement_use_case.dart';
+import 'package:pelgrim/domain/usecases/announcement/get_announcements_stream_use_case.dart';
+import 'package:pelgrim/domain/usecases/contact/get_contact_info_use_case.dart';
+import 'package:pelgrim/domain/usecases/contact/save_contact_info_use_case.dart';
 import 'package:pelgrim/presentation/providers/announcement_provider.dart';
 import 'package:pelgrim/presentation/providers/contact_provider.dart';
 
