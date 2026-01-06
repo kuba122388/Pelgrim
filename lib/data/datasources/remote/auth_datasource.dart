@@ -23,5 +23,9 @@ class AuthDataSource {
     }
   }
 
+  String? getCurrentUserId() {
+    return _auth.currentUser?.uid;
+  }
+
   Future<void> signOut() async => await _auth.signOut();
 }

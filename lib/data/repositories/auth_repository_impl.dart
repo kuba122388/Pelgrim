@@ -42,4 +42,9 @@ class AuthRepositoryImpl extends AuthRepository {
       throw RepositoryException("Nie udało się wylogować użytkownika: $e");
     }
   }
+
+  @override
+  String? getCurrentUserId() {
+    return _authDataSource.getCurrentUserId();
+  }
 }

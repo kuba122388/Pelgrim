@@ -12,10 +12,10 @@ class UserDataSource {
         .set(userModel.toMap());
   }
 
-  Future<UserModel?> getUser(String userId) async {
+  Future<UserModel?> getUserById(String userId) async {
     final doc = await _db.collection(FirebaseConstants.globalUsersCollection).doc(userId).get();
     final data = doc.data();
-    
+
     return data != null ? UserModel.fromMap(data) : null;
   }
 

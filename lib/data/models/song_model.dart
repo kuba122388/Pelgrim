@@ -4,7 +4,7 @@ import '../../domain/entities/song.dart';
 
 part 'song_model.g.dart';
 
-@HiveType(typeId: 2)
+@HiveType(typeId: 3)
 class SongModel extends HiveObject {
   @HiveField(0)
   String? id;

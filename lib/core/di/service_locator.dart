@@ -1,4 +1,5 @@
 import 'package:get_it/get_it.dart';
+import 'package:pelgrim/data/datasources/local/local_user_storage.dart';
 import 'package:pelgrim/data/datasources/remote/announcement_datasource.dart';
 import 'package:pelgrim/data/datasources/remote/auth_datasource.dart';
 import 'package:pelgrim/data/datasources/remote/contact_datasource.dart';
@@ -13,6 +14,7 @@ import 'package:pelgrim/data/repositories/duty_repository_impl.dart';
 import 'package:pelgrim/data/repositories/group_repository_impl.dart';
 import 'package:pelgrim/data/repositories/song_repository_impl.dart';
 import 'package:pelgrim/data/repositories/user_repository_impl.dart';
+import 'package:pelgrim/data/repositories/user_session_repository_impl.dart';
 import 'package:pelgrim/domain/repositories/announcement_repository.dart';
 import 'package:pelgrim/domain/repositories/auth_repository.dart';
 import 'package:pelgrim/domain/repositories/contact_repository.dart';
@@ -20,9 +22,13 @@ import 'package:pelgrim/domain/repositories/duty_repository.dart';
 import 'package:pelgrim/domain/repositories/group_repository.dart';
 import 'package:pelgrim/domain/repositories/song_repository.dart';
 import 'package:pelgrim/domain/repositories/user_repository.dart';
+import 'package:pelgrim/domain/repositories/user_session_repository.dart';
 import 'package:pelgrim/domain/usecases/announcement/add_announcement_use_case.dart';
 import 'package:pelgrim/domain/usecases/announcement/delete_announcement_use_case.dart';
 import 'package:pelgrim/domain/usecases/announcement/get_announcements_stream_use_case.dart';
+import 'package:pelgrim/domain/usecases/auth/is_user_authenticated_use_case.dart';
+import 'package:pelgrim/domain/usecases/auth/sign_in_use_case.dart';
+import 'package:pelgrim/domain/usecases/auth/sign_out_use_case.dart';
 import 'package:pelgrim/domain/usecases/contact/get_contact_info_use_case.dart';
 import 'package:pelgrim/domain/usecases/contact/save_contact_info_use_case.dart';
 import 'package:pelgrim/domain/usecases/duty/add_duty_use_case.dart';
@@ -32,6 +38,10 @@ import 'package:pelgrim/domain/usecases/group/delete_group_use_case.dart';
 import 'package:pelgrim/domain/usecases/group/get_all_group_names_use_case.dart';
 import 'package:pelgrim/domain/usecases/group/get_group_use_case.dart';
 import 'package:pelgrim/domain/usecases/group/set_admin_status_use_case.dart';
+import 'package:pelgrim/domain/usecases/session/clear_local_session_use_case.dart';
+import 'package:pelgrim/domain/usecases/session/load_local_session_use_case.dart';
+import 'package:pelgrim/domain/usecases/session/save_local_session_use_case.dart';
+import 'package:pelgrim/domain/usecases/session/sync_user_session_use_case.dart';
 import 'package:pelgrim/domain/usecases/song/add_song_use_case.dart';
 import 'package:pelgrim/domain/usecases/song/delete_song_use_case.dart';
 import 'package:pelgrim/domain/usecases/song/edit_song_use_case.dart';
@@ -42,8 +52,6 @@ import 'package:pelgrim/domain/usecases/user/get_all_users_by_group_use_case.dar
 import 'package:pelgrim/domain/usecases/user/get_user_by_id_use_case.dart';
 import 'package:pelgrim/domain/usecases/user/register_admin_and_create_group_use_case.dart';
 import 'package:pelgrim/domain/usecases/user/register_user_to_group_use_case.dart';
-import 'package:pelgrim/domain/usecases/user/sign_in_use_case.dart';
-import 'package:pelgrim/domain/usecases/user/sign_out_use_case.dart';
 import 'package:pelgrim/presentation/providers/announcement_provider.dart';
 import 'package:pelgrim/presentation/providers/contact_provider.dart';
 import 'package:pelgrim/presentation/providers/user_provider.dart';
@@ -59,6 +67,7 @@ void setupLocator() {
   sl.registerLazySingleton<GroupDataSource>(() => GroupDataSource());
   sl.registerLazySingleton<SongDataSource>(() => SongDataSource());
   sl.registerLazySingleton<UserDataSource>(() => UserDataSource());
+  sl.registerLazySingleton<LocalUserStorage>(() => LocalUserStorage());
 
   // --- 2. Repositories ---
   sl.registerLazySingleton<AnnouncementRepository>(
@@ -96,6 +105,13 @@ void setupLocator() {
       sl<UserDataSource>(),
     ),
   );
+  sl.registerLazySingleton<UserSessionRepository>(
+    () => UserSessionRepositoryImpl(
+      sl<LocalUserStorage>(),
+      sl<UserDataSource>(),
+      sl<GroupDataSource>(),
+    ),
+  );
 
   // --- 3. Use Cases ---
   sl.registerLazySingleton(() => AddAnnouncementUseCase(sl<AnnouncementRepository>()));
@@ -122,9 +138,16 @@ void setupLocator() {
       sl<AuthRepository>(), sl<GroupRepository>(), sl<UserRepository>()));
   sl.registerLazySingleton(() => RegisterUserToGroupUseCase(
       sl<AuthRepository>(), sl<GroupRepository>(), sl<UserRepository>()));
-  sl.registerLazySingleton(() => SignInUseCase(sl<AuthRepository>(), sl<UserRepository>()));
+  sl.registerLazySingleton(
+      () => SignInUseCase(sl<AuthRepository>(), sl<UserRepository>(), sl<GroupRepository>()));
   sl.registerLazySingleton(() => SignOutUseCase(sl<AuthRepository>()));
   sl.registerLazySingleton(() => GetUserByIdUseCase(sl<UserRepository>()));
+  sl.registerLazySingleton(() => SaveLocalSessionUseCase(sl<UserSessionRepository>()));
+  sl.registerLazySingleton(() => ClearLocalSessionUseCase(sl<UserSessionRepository>()));
+  sl.registerLazySingleton(() => LoadLocalSessionUseCase(sl<UserSessionRepository>()));
+  sl.registerLazySingleton(() => SyncUserSessionUseCase(
+      sl<UserRepository>(), sl<GroupRepository>(), sl<UserSessionRepository>()));
+  sl.registerLazySingleton(() => IsUserAuthenticatedUseCase(sl<AuthRepository>()));
 
   // --- 4. Providers ---
   sl.registerLazySingleton(
@@ -145,6 +168,11 @@ void setupLocator() {
       sl<SignInUseCase>(),
       sl<SignOutUseCase>(),
       sl<GetGroupUseCase>(),
+      sl<SaveLocalSessionUseCase>(),
+      sl<ClearLocalSessionUseCase>(),
+      sl<LoadLocalSessionUseCase>(),
+      sl<SyncUserSessionUseCase>(),
+      sl<IsUserAuthenticatedUseCase>(),
     ),
   );
 }

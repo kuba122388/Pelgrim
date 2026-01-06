@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:pelgrim/domain/entities/group.dart';
 import 'package:pelgrim/domain/entities/user.dart';
-import 'package:pelgrim/presentation/user/settings/settings_page.dart';
 import 'package:pelgrim/presentation/providers/user_provider.dart';
+import 'package:pelgrim/presentation/user/settings/settings_page.dart';
 import 'package:provider/provider.dart';
 
 class PlayingNowTopbar extends StatefulWidget implements PreferredSizeWidget {

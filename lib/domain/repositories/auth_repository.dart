@@ -6,4 +6,6 @@ abstract class AuthRepository {
   Future<void> deleteAccount(String uid);
 
   Future<void> signOut();
+
+  String? getCurrentUserId();
 }

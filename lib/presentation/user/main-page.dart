@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:pelgrim/domain/entities/user.dart';
+import 'package:pelgrim/presentation/providers/user_provider.dart';
 import 'package:pelgrim/presentation/user/all_users/all_users_page.dart';
 import 'package:pelgrim/presentation/user/announcements/announcements_page.dart';
 import 'package:pelgrim/presentation/user/contact/contact_page.dart';
-import 'package:pelgrim/presentation/user/group_duties/duties_page.dart';
 import 'package:pelgrim/presentation/user/help/help_page.dart';
 import 'package:pelgrim/presentation/user/images_upload/images_upload_page.dart';
 import 'package:pelgrim/presentation/user/informant/informant_page.dart';
@@ -14,7 +14,8 @@ import 'package:pelgrim/presentation/user/songs-page/songs-topbar.dart';
 import 'package:pelgrim/presentation/widgets/burger.dart';
 import 'package:pelgrim/presentation/widgets/topbar.dart';
 import 'package:provider/provider.dart';
-import 'package:pelgrim/presentation/providers/user_provider.dart';
+
+import 'duties/duties_page.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});

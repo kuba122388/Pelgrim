@@ -155,7 +155,10 @@ class _LoginPageState extends State<LoginPage> {
     );
 
     try {
-      await _userProvider.signIn(_controllerEmail.text, _controllerPassword.text);
+      await _userProvider.signIn(
+        email: _controllerEmail.text,
+        password: _controllerPassword.text,
+      );
 
       await Future.delayed(const Duration(milliseconds: 1400));
 
@@ -164,9 +167,7 @@ class _LoginPageState extends State<LoginPage> {
       Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(
-            builder: (context) => LoginApproved(
-              email: _controllerEmail.text,
-            ),
+            builder: (context) => const LoginApproved(),
           ),
           (route) => false);
     } catch (e) {

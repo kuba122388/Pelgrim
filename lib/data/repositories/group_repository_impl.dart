@@ -12,7 +12,7 @@ class GroupRepositoryImpl extends GroupRepository {
   @override
   Future<Group> getGroup(String groupId) async {
     try {
-      GroupModel groupModel = await _groupDataSource.getGroup(groupId);
+      GroupModel groupModel = await _groupDataSource.getGroupById(groupId);
       return groupModel.toEntity();
     } catch (e) {
       throw Exception("Wystąpił problem z pobraniem danych grupy: $e");

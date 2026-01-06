@@ -4,67 +4,65 @@ import 'package:flutter/material.dart';
 import 'package:pelgrim/domain/entities/group.dart';
 import 'package:pelgrim/domain/entities/user.dart';
 import 'package:pelgrim/domain/entities/user_session.dart';
+import 'package:pelgrim/domain/usecases/auth/is_user_authenticated_use_case.dart';
+import 'package:pelgrim/domain/usecases/auth/sign_in_use_case.dart';
+import 'package:pelgrim/domain/usecases/auth/sign_out_use_case.dart';
 import 'package:pelgrim/domain/usecases/group/get_group_use_case.dart';
+import 'package:pelgrim/domain/usecases/session/clear_local_session_use_case.dart';
+import 'package:pelgrim/domain/usecases/session/load_local_session_use_case.dart';
 import 'package:pelgrim/domain/usecases/session/save_local_session_use_case.dart';
-import 'package:pelgrim/domain/usecases/user/sign_in_use_case.dart';
-import 'package:pelgrim/domain/usecases/user/sign_out_use_case.dart';
+import 'package:pelgrim/domain/usecases/session/sync_user_session_use_case.dart';
 
 class UserProvider extends ChangeNotifier {
   final SignInUseCase _signInUseCase;
   final SignOutUseCase _signOutUseCase;
   final GetGroupUseCase _getGroupUseCase;
   final SaveLocalSessionUseCase _saveLocalSessionUseCase;
+  final ClearLocalSessionUseCase _clearLocalSessionUseCase;
+  final LoadLocalSessionUseCase _loadLocalSessionUseCase;
+  final SyncUserSessionUseCase _syncUserSessionUseCase;
+  final IsUserAuthenticatedUseCase _isUserAuthenticatedUseCase;
 
   UserProvider(
     this._signInUseCase,
     this._signOutUseCase,
     this._getGroupUseCase,
     this._saveLocalSessionUseCase,
+    this._clearLocalSessionUseCase,
+    this._loadLocalSessionUseCase,
+    this._syncUserSessionUseCase,
+    this._isUserAuthenticatedUseCase,
   );
 
-  User? _user;
-  Group? _groupInfo;
+  UserSession? _userSession;
+
   bool _isLoading = false;
 
-  User? get user => _user;
+  User? get user => _userSession?.user;
 
-  Group? get groupInfo => _groupInfo;
+  Group? get groupInfo => _userSession?.group;
 
-  bool get isLoaded => _user != null && _groupInfo != null;
+  bool isLoggedIn() => _userSession != null;
 
   bool get isLoading => _isLoading;
 
-  void updateData({required User user, required Group groupInfo}) {
-    _user = user;
-    _groupInfo = groupInfo;
-    notifyListeners();
-  }
+  String? get authenticatedUserId => _isUserAuthenticatedUseCase.execute();
 
-  void clear() {
-    _user = null;
-    _groupInfo = null;
-    notifyListeners();
-  }
-
-  Future<void> signIn(String email, String password) async {
+  Future<void> signIn({required String email, required String password}) async {
     _isLoading = true;
     notifyListeners();
 
     try {
-      final user = await _signInUseCase.execute(
+      final userSession = await _signInUseCase.execute(
         email: email,
         password: password,
       );
-      final group = await _getGroupUseCase.execute(user.groupId);
 
-      final session = UserSession(user: user, group: group);
-      await _saveLocalSessionUseCase.execute(session);
+      await _saveLocalSessionUseCase.execute(userSession);
 
-      _user = user;
-      _groupInfo = group;
+      _userSession = userSession;
     } catch (e) {
-      _user = null;
-      _groupInfo = null;
+      _userSession = null;
       rethrow;
     } finally {
       _isLoading = false;
@@ -72,8 +70,39 @@ class UserProvider extends ChangeNotifier {
     }
   }
 
+  Future<void> loadSession() async {
+    _isLoading = true;
+    notifyListeners();
+
+    try {
+      final session = await _loadLocalSessionUseCase.execute();
+      if (session != null) {
+        _userSession = session;
+      }
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> syncUserSessionWithRemote() async {
+    final currentUser = user;
+
+    if (currentUser == null) return;
+
+    _userSession = await _syncUserSessionUseCase.execute(currentUser.id);
+    notifyListeners();
+  }
+
   Future<void> signOut() async {
     await _signOutUseCase.execute();
-    clear();
+    await _clearLocalSessionUseCase.execute();
+    _userSession = null;
+    notifyListeners();
+  }
+
+  void clear() {
+    _userSession = null;
+    notifyListeners();
   }
 }

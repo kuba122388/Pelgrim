@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:pelgrim/core/errors/use_case_exception.dart';
 import 'package:pelgrim/domain/entities/group.dart';
 import 'package:pelgrim/domain/entities/user.dart';
+import 'package:pelgrim/domain/entities/user_session.dart';
 import 'package:pelgrim/domain/repositories/auth_repository.dart';
 import 'package:pelgrim/domain/repositories/group_repository.dart';
 import 'package:pelgrim/domain/repositories/user_repository.dart';
@@ -18,7 +19,7 @@ class RegisterAdminAndCreateGroupUseCase {
     this._userRepository,
   );
 
-  Future<void> execute({
+  Future<UserSession> execute({
     required String email,
     required String password,
     required String firstName,
@@ -65,6 +66,7 @@ class RegisterAdminAndCreateGroupUseCase {
         userId: userId,
         isAdmin: true,
       );
+      return UserSession(user: user, group: group);
     } catch (e) {
       if (userId != null) {
         await _authRepository.deleteAccount(userId);

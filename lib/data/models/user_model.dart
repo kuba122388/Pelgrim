@@ -60,7 +60,7 @@ class UserModel extends HiveObject {
       isAdmin: map['isAdmin'],
     );
   }
-  
+
   factory UserModel.fromEntity(User entity) {
     return UserModel(
       id: entity.id,

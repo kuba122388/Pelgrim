@@ -23,7 +23,7 @@ class UserRepositoryImpl extends UserRepository {
   @override
   Future<User> getUserById(String userId) async {
     try {
-      UserModel? userModel = await _userDataSource.getUser(userId);
+      UserModel? userModel = await _userDataSource.getUserById(userId);
       if (userModel == null) throw Exception("Nie znaleziono użytkownika o id: $userId");
 
       return userModel.toEntity();

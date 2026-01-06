@@ -5,7 +5,7 @@ import 'package:pelgrim/domain/entities/user_session.dart';
 
 part 'user_session_model.g.dart';
 
-@HiveType(typeId: 3)
+@HiveType(typeId: 2)
 class UserSessionModel {
   @HiveField(0)
   final UserModel user;

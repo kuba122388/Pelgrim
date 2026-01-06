@@ -12,7 +12,7 @@ class GroupDataSource {
         .set(groupModel.toMap());
   }
 
-  Future<GroupModel> getGroup(String groupId) async {
+  Future<GroupModel> getGroupById(String groupId) async {
     DocumentSnapshot docSnap =
         await _db.collection(FirebaseConstants.groupsCollection).doc(groupId).get();
 
