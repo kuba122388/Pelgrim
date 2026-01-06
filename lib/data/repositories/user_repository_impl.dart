@@ -1,5 +1,5 @@
 import 'package:pelgrim/core/errors/repository_exception.dart';
-import 'package:pelgrim/data/datasources/user_datasource.dart';
+import 'package:pelgrim/data/datasources/remote/user_datasource.dart';
 import 'package:pelgrim/data/models/user_model.dart';
 import 'package:pelgrim/domain/entities/user.dart';
 import 'package:pelgrim/domain/repositories/user_repository.dart';
@@ -7,7 +7,9 @@ import 'package:pelgrim/domain/repositories/user_repository.dart';
 class UserRepositoryImpl extends UserRepository {
   final UserDataSource _userDataSource;
 
-  UserRepositoryImpl(this._userDataSource);
+  UserRepositoryImpl(
+    this._userDataSource,
+  );
 
   @override
   Future<void> createUser(User user) async {

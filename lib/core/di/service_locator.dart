@@ -1,11 +1,11 @@
 import 'package:get_it/get_it.dart';
-import 'package:pelgrim/data/datasources/announcement_datasource.dart';
-import 'package:pelgrim/data/datasources/auth_datasource.dart';
-import 'package:pelgrim/data/datasources/contact_datasource.dart';
-import 'package:pelgrim/data/datasources/duty_datasource.dart';
-import 'package:pelgrim/data/datasources/group_datasource.dart';
-import 'package:pelgrim/data/datasources/song_datasource.dart';
-import 'package:pelgrim/data/datasources/user_datasource.dart';
+import 'package:pelgrim/data/datasources/remote/announcement_datasource.dart';
+import 'package:pelgrim/data/datasources/remote/auth_datasource.dart';
+import 'package:pelgrim/data/datasources/remote/contact_datasource.dart';
+import 'package:pelgrim/data/datasources/remote/duty_datasource.dart';
+import 'package:pelgrim/data/datasources/remote/group_datasource.dart';
+import 'package:pelgrim/data/datasources/remote/song_datasource.dart';
+import 'package:pelgrim/data/datasources/remote/user_datasource.dart';
 import 'package:pelgrim/data/repositories/announcement_repository_impl.dart';
 import 'package:pelgrim/data/repositories/auth_repository_impl.dart';
 import 'package:pelgrim/data/repositories/contact_repository_impl.dart';
@@ -39,6 +39,7 @@ import 'package:pelgrim/domain/usecases/song/get_song_list_use_case.dart';
 import 'package:pelgrim/domain/usecases/song/request_song_use_case.dart';
 import 'package:pelgrim/domain/usecases/song/watch_playing_now_use_case.dart';
 import 'package:pelgrim/domain/usecases/user/get_all_users_by_group_use_case.dart';
+import 'package:pelgrim/domain/usecases/user/get_user_by_id_use_case.dart';
 import 'package:pelgrim/domain/usecases/user/register_admin_and_create_group_use_case.dart';
 import 'package:pelgrim/domain/usecases/user/register_user_to_group_use_case.dart';
 import 'package:pelgrim/domain/usecases/user/sign_in_use_case.dart';
@@ -123,6 +124,7 @@ void setupLocator() {
       sl<AuthRepository>(), sl<GroupRepository>(), sl<UserRepository>()));
   sl.registerLazySingleton(() => SignInUseCase(sl<AuthRepository>(), sl<UserRepository>()));
   sl.registerLazySingleton(() => SignOutUseCase(sl<AuthRepository>()));
+  sl.registerLazySingleton(() => GetUserByIdUseCase(sl<UserRepository>()));
 
   // --- 4. Providers ---
   sl.registerLazySingleton(

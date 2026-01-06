@@ -1,5 +1,5 @@
+import 'package:pelgrim/data/datasources/remote/duty_datasource.dart';
 import 'package:pelgrim/data/models/duty_model.dart';
-import 'package:pelgrim/data/datasources/duty_datasource.dart';
 import 'package:pelgrim/domain/entities/duty.dart';
 import 'package:pelgrim/domain/repositories/duty_repository.dart';
 

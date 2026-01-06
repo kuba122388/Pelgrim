@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pelgrim/core/const/app_consts.dart';
 import 'package:pelgrim/core/di/service_locator.dart';
-import 'package:pelgrim/data/datasources/user_datasource.dart';
+import 'package:pelgrim/data/datasources/remote/user_datasource.dart';
 import 'package:pelgrim/domain/entities/user.dart';
 import 'package:pelgrim/presentation/providers/user_provider.dart';
 import 'package:provider/provider.dart';

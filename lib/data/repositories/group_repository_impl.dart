@@ -1,5 +1,5 @@
 import 'package:pelgrim/core/errors/repository_exception.dart';
-import 'package:pelgrim/data/datasources/group_datasource.dart';
+import 'package:pelgrim/data/datasources/remote/group_datasource.dart';
 import 'package:pelgrim/data/models/group_model.dart';
 import 'package:pelgrim/domain/entities/group.dart';
 import 'package:pelgrim/domain/repositories/group_repository.dart';

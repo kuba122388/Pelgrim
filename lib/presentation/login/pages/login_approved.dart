@@ -3,8 +3,8 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:pelgrim/core/const/app_consts.dart';
 import 'package:pelgrim/core/di/service_locator.dart';
-import 'package:pelgrim/data/datasources/group_datasource.dart';
-import 'package:pelgrim/data/datasources/user_datasource.dart';
+import 'package:pelgrim/data/datasources/remote/group_datasource.dart';
+import 'package:pelgrim/data/datasources/remote/user_datasource.dart';
 import 'package:pelgrim/domain/entities/group.dart';
 import 'package:pelgrim/domain/entities/user.dart';
 import 'package:pelgrim/presentation/login/pages/login_page.dart';
@@ -22,14 +22,12 @@ class LoginApproved extends StatefulWidget {
 }
 
 class _LoginApprovedState extends State<LoginApproved> {
-\  late Group groupInfo;
+  late Group groupInfo;
   late User? myUser;
   late Future<void> _futureLoadData;
 
   Future<void> loadGroupData() async {
     final userProvider = context.read<UserProvider>();
-
-
 
     String groupName = await _userService.getUserGroup(widget.email);
     groupInfo = await _groupService.getGroup(groupName);

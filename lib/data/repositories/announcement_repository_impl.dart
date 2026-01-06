@@ -1,4 +1,4 @@
-import 'package:pelgrim/data/datasources/announcement_datasource.dart';
+import 'package:pelgrim/data/datasources/remote/announcement_datasource.dart';
 import 'package:pelgrim/domain/entities/announcement.dart';
 import 'package:pelgrim/domain/repositories/announcement_repository.dart';
 

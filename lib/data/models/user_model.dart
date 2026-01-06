@@ -1,12 +1,30 @@
-import 'package:pelgrim/domain/entities/user.dart';
+import 'package:hive/hive.dart';
 
-class UserModel {
-  final String id; // uid
+import '../../domain/entities/user.dart';
+
+part 'user_model.g.dart';
+
+@HiveType(typeId: 0)
+class UserModel extends HiveObject {
+  @HiveField(0)
+  final String id; // UID
+
+  @HiveField(1)
   final String groupId;
+
+  @HiveField(2)
   final String firstName;
+
+  @HiveField(3)
   final String lastName;
+
+  @HiveField(4)
   final String email;
+
+  @HiveField(5)
   final String phone;
+
+  @HiveField(6)
   final bool isAdmin;
 
   UserModel({
@@ -42,7 +60,7 @@ class UserModel {
       isAdmin: map['isAdmin'],
     );
   }
-
+  
   factory UserModel.fromEntity(User entity) {
     return UserModel(
       id: entity.id,

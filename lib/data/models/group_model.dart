@@ -1,14 +1,25 @@
 import 'dart:ui';
 
+import 'package:hive/hive.dart';
 import 'package:pelgrim/domain/entities/group.dart';
 
-class GroupModel {
+part 'group_model.g.dart';
+
+@HiveType(typeId: 1)
+class GroupModel extends HiveObject {
+  @HiveField(0)
   final String groupColor;
+
+  @HiveField(1)
   final String groupCity;
+
+  @HiveField(2)
   final Color color;
+
+  @HiveField(3)
   final Color secondColor;
 
-  const GroupModel({
+  GroupModel({
     required this.groupColor,
     required this.groupCity,
     required this.color,

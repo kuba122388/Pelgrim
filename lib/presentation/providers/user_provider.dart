@@ -1,7 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:pelgrim/domain/entities/group.dart';
 import 'package:pelgrim/domain/entities/user.dart';
+import 'package:pelgrim/domain/entities/user_session.dart';
 import 'package:pelgrim/domain/usecases/group/get_group_use_case.dart';
+import 'package:pelgrim/domain/usecases/session/save_local_session_use_case.dart';
 import 'package:pelgrim/domain/usecases/user/sign_in_use_case.dart';
 import 'package:pelgrim/domain/usecases/user/sign_out_use_case.dart';
 
@@ -9,11 +13,13 @@ class UserProvider extends ChangeNotifier {
   final SignInUseCase _signInUseCase;
   final SignOutUseCase _signOutUseCase;
   final GetGroupUseCase _getGroupUseCase;
+  final SaveLocalSessionUseCase _saveLocalSessionUseCase;
 
   UserProvider(
     this._signInUseCase,
     this._signOutUseCase,
     this._getGroupUseCase,
+    this._saveLocalSessionUseCase,
   );
 
   User? _user;
@@ -49,8 +55,10 @@ class UserProvider extends ChangeNotifier {
         email: email,
         password: password,
       );
-
       final group = await _getGroupUseCase.execute(user.groupId);
+
+      final session = UserSession(user: user, group: group);
+      await _saveLocalSessionUseCase.execute(session);
 
       _user = user;
       _groupInfo = group;

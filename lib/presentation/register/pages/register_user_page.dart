@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:pelgrim/core/const/app_consts.dart';
 import 'package:pelgrim/core/di/service_locator.dart';
-import 'package:pelgrim/data/datasources/auth_datasource.dart';
+import 'package:pelgrim/data/datasources/remote/auth_datasource.dart';
 import 'package:pelgrim/domain/entities/group.dart';
 import 'package:pelgrim/domain/entities/user.dart';
 import 'package:pelgrim/presentation/register/widgets/register_topbar.dart';

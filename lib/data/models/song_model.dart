@@ -1,8 +1,18 @@
-import 'package:pelgrim/domain/entities/song.dart';
+import 'package:hive/hive.dart';
 
-class SongModel {
+import '../../domain/entities/song.dart';
+
+part 'song_model.g.dart';
+
+@HiveType(typeId: 2)
+class SongModel extends HiveObject {
+  @HiveField(0)
   String? id;
+
+  @HiveField(1)
   String title;
+
+  @HiveField(2)
   String lyrics;
 
   SongModel({this.id, required this.title, required this.lyrics});
@@ -14,7 +24,7 @@ class SongModel {
     };
   }
 
-  factory SongModel.fromMap(Map<String, dynamic> map, docId) {
+  factory SongModel.fromMap(Map<String, dynamic> map, String? docId) {
     return SongModel(
       id: docId,
       title: map['Title'] ?? '',

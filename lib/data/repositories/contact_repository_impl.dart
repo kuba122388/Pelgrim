@@ -1,5 +1,5 @@
+import 'package:pelgrim/data/datasources/remote/contact_datasource.dart';
 import 'package:pelgrim/data/models/contact_model.dart';
-import 'package:pelgrim/data/datasources/contact_datasource.dart';
 import 'package:pelgrim/domain/entities/contact.dart';
 import 'package:pelgrim/domain/repositories/contact_repository.dart';
 

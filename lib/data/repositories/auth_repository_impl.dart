@@ -1,5 +1,5 @@
 import 'package:pelgrim/core/errors/repository_exception.dart';
-import 'package:pelgrim/data/datasources/auth_datasource.dart';
+import 'package:pelgrim/data/datasources/remote/auth_datasource.dart';
 import 'package:pelgrim/domain/repositories/auth_repository.dart';
 
 class AuthRepositoryImpl extends AuthRepository {
