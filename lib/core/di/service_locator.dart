@@ -1,4 +1,5 @@
 import 'package:get_it/get_it.dart';
+import 'package:pelgrim/data/datasources/local/local_song_list_storage.dart';
 import 'package:pelgrim/data/datasources/local/local_user_storage.dart';
 import 'package:pelgrim/data/datasources/remote/announcement_datasource.dart';
 import 'package:pelgrim/data/datasources/remote/auth_datasource.dart';
@@ -97,6 +98,7 @@ void setupLocator() {
   sl.registerLazySingleton<SongRepository>(
     () => SongRepositoryImpl(
       sl<SongDataSource>(),
+      sl<LocalSongListStorage>(),
     ),
   );
   sl.registerLazySingleton<UserRepository>(

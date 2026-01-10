@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:pelgrim/domain/entities/duty.dart';
-import 'package:pelgrim/presentation/providers/user_provider.dart';
-import 'package:provider/provider.dart';
 
 class AddDutyDialog extends StatefulWidget {
   final Future<void> Function(
-    String groupId,
     Duty newDuty,
   ) onConfirm;
 
@@ -17,14 +14,12 @@ class AddDutyDialog extends StatefulWidget {
 
 class _AddDutyDialogState extends State<AddDutyDialog> {
   late final TextEditingController _titleController;
-  late final String _groupId;
 
   int _maxVolunteers = 1;
 
   @override
   void initState() {
     super.initState();
-    _groupId = context.read<UserProvider>().userGroupId;
     _titleController = TextEditingController();
   }
 
@@ -86,7 +81,7 @@ class _AddDutyDialogState extends State<AddDutyDialog> {
               createdAt: DateTime.now(),
             );
 
-            await widget.onConfirm(_groupId, newDuty);
+            await widget.onConfirm(newDuty);
 
             Navigator.of(context).pop();
           },

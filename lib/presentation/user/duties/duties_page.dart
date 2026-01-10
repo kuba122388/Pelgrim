@@ -1,13 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:pelgrim/core/di/service_locator.dart';
-import 'package:pelgrim/domain/entities/duty.dart';
-import 'package:pelgrim/domain/entities/group.dart';
-import 'package:pelgrim/domain/entities/user.dart';
-import 'package:pelgrim/domain/usecases/duty/add_duty_use_case.dart';
-import 'package:pelgrim/domain/usecases/duty/get_duties_use_case.dart';
+import 'package:pelgrim/presentation/providers/duty_provider.dart';
 import 'package:pelgrim/presentation/providers/user_provider.dart';
 import 'package:pelgrim/presentation/user/duties/widgets/add_duty_dialog.dart';
-import 'package:pelgrim/presentation/widgets/duty_box.dart';
+import 'package:pelgrim/presentation/user/duties/widgets/duty_box.dart';
 import 'package:provider/provider.dart';
 
 class GroupDutiesPage extends StatefulWidget {
@@ -18,52 +13,38 @@ class GroupDutiesPage extends StatefulWidget {
 }
 
 class _GroupDutiesPageState extends State<GroupDutiesPage> {
-  final AddDutyUseCase _addDutyUseCase = sl<AddDutyUseCase>();
-  final GetDutiesUseCase _getDutiesUseCase = sl<GetDutiesUseCase>();
+  late final String _groupId;
 
-  void _refresh() {
-    setState(() {});
+  @override
+  void initState() {
+    super.initState();
+    _groupId = context.read<UserProvider>().userGroupId;
+    context.read<DutyProvider>().start(_groupId);
   }
 
   @override
   Widget build(BuildContext context) {
-    final UserProvider userProvider = context.read<UserProvider>();
+    final duties = context.watch<DutyProvider>().duties;
+    final user = context.watch<UserProvider>().user!;
 
-    final Group groupInfo = userProvider.groupInfo!;
-    final User myUser = userProvider.user!;
+    if (duties.isEmpty) {
+      return const Center(child: Text("Brak służb."));
+    }
 
     return Stack(
       children: [
         Padding(
           padding: const EdgeInsets.all(20),
-          child: StreamBuilder<List<Duty>>(
-            stream: _getDutiesUseCase.execute(groupInfo.id),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
-              }
-
-              if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                return const Center(child: Text("Brak służb."));
-              }
-
-              final data = snapshot.data!;
-
-              return ListView.builder(
-                itemCount: data.length,
-                itemBuilder: (context, index) {
-                  return DutyBox(
-                    duty: data[index],
-                    currentUser: myUser,
-                    group: groupInfo.id,
-                    onRefresh: _refresh,
-                  );
-                },
+          child: ListView.builder(
+            itemCount: duties.length,
+            itemBuilder: (context, index) {
+              return DutyBox(
+                duty: duties[index],
               );
             },
           ),
         ),
-        if (myUser.isAdmin)
+        if (user.isAdmin)
           Positioned(
             bottom: 16,
             right: 16,
@@ -72,14 +53,11 @@ class _GroupDutiesPageState extends State<GroupDutiesPage> {
                 showDialog(
                   context: context,
                   builder: (ctx) => AddDutyDialog(
-                    onConfirm: (groupId, newDuty) async {
-                      await _addDutyUseCase.execute(groupId, newDuty);
-                      setState(() {});
+                    onConfirm: (newDuty) async {
+                      await context.read<DutyProvider>().addDuty(_groupId, newDuty);
                     },
                   ),
                 );
-
-                Navigator.of(context).pop();
               },
               icon: const Icon(Icons.add),
               label: const Text("Dodaj zadanie"),

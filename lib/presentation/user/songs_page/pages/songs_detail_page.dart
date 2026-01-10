@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:pelgrim/core/const/app_consts.dart';
-import 'package:pelgrim/domain/entities/song.dart';
 import 'package:pelgrim/presentation/providers/song_provider.dart';
 import 'package:pelgrim/presentation/providers/user_provider.dart';
 import 'package:pelgrim/presentation/user/songs_page/widgets/songs_detail_topbar.dart';
@@ -19,7 +18,6 @@ class SongsDetailPage extends StatefulWidget {
 }
 
 class _SongsDetailPageState extends State<SongsDetailPage> {
-  late final SongProvider _songProvider;
   late final UserProvider _userProvider;
   late final String _groupId;
 
@@ -39,9 +37,6 @@ class _SongsDetailPageState extends State<SongsDetailPage> {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top;
 
-    Color firstColor = groupInfo.color;
-    Color secondColor = groupInfo.secondColor;
-
     final songProvider = context.watch<SongProvider>();
 
     final song = songProvider.songs.firstWhere(
@@ -50,6 +45,9 @@ class _SongsDetailPageState extends State<SongsDetailPage> {
     );
 
     final isPlayingNow = songProvider.playingNowSong?.id == song.id;
+
+    Color firstColorHere = isPlayingNow ? groupInfo.color : Colors.white;
+    Color secondColorHere = isPlayingNow ? groupInfo.secondColor : Colors.white;
 
     return Scaffold(
       appBar: SongsDetailTopbar(song: song),
@@ -109,60 +107,45 @@ class _SongsDetailPageState extends State<SongsDetailPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    StreamBuilder<Song>(
-                      stream: songProvider,
-                      builder: (context, snapshot) {
-                        Color firstColorHere = Colors.white;
-                        Color secondColorHere = Colors.white;
-                        if (snapshot.connectionState == ConnectionState.done && snapshot.hasData) {
-                          final playingNow = snapshot.data!;
-                          if (widget.songId.lyrics == playingNow.lyrics) {
-                            firstColorHere = firstColor;
-                            secondColorHere = secondColor;
-                          }
-                        }
-
-                        if (isAdmin) {
-                          InkWell(
-                            onTap: () {
-                              widget.songId.streamSong(_groupId);
-                              _refreshPlayingNow();
-                            },
-                            child: Container(
-                              margin: const EdgeInsets.only(bottom: 10, top: 10),
-                              width: 50,
-                              height: 50,
-                              decoration: BoxDecoration(
-                                gradient: RadialGradient(
-                                  center: Alignment.center,
-                                  radius: 1.0,
-                                  colors: [secondColorHere, firstColorHere],
-                                  stops: const [0.2, 0.8],
-                                ),
-                                borderRadius: BorderRadius.circular(30),
-                                boxShadow: const [BOX_SHADOW_CONTAINER],
-                              ),
-                              child: ElevatedButton(
-                                style: ButtonStyle(
-                                  padding: WidgetStateProperty.all(EdgeInsets.zero),
-                                  backgroundColor: WidgetStateProperty.all(Colors.transparent),
-                                ),
-                                onPressed: null,
-                                child: Image.asset(
-                                  './images/radio-waves.png',
-                                  width: 30,
-                                  height: 30,
-                                  color: firstColorHere == Colors.white
-                                      ? Colors.black.withValues(alpha: 0.6)
-                                      : Colors.white,
-                                  colorBlendMode: BlendMode.srcIn,
-                                ),
-                              ),
+                    Visibility(
+                      visible: isAdmin,
+                      child: InkWell(
+                        onTap: () {
+                          songProvider.streamSong(_groupId, song);
+                        },
+                        child: Container(
+                          margin: const EdgeInsets.only(bottom: 10, top: 10),
+                          width: 50,
+                          height: 50,
+                          decoration: BoxDecoration(
+                            gradient: RadialGradient(
+                              center: Alignment.center,
+                              radius: 1.0,
+                              colors: [secondColorHere, firstColorHere],
+                              stops: const [0.2, 0.8],
                             ),
-                          );
-                        }
-                      },
-                    ),
+                            borderRadius: BorderRadius.circular(30),
+                            boxShadow: const [BOX_SHADOW_CONTAINER],
+                          ),
+                          child: ElevatedButton(
+                            style: ButtonStyle(
+                              padding: WidgetStateProperty.all(EdgeInsets.zero),
+                              backgroundColor: WidgetStateProperty.all(Colors.transparent),
+                            ),
+                            onPressed: null,
+                            child: Image.asset(
+                              './images/radio-waves.png',
+                              width: 30,
+                              height: 30,
+                              color: firstColorHere == Colors.white
+                                  ? Colors.black.withValues(alpha: 0.6)
+                                  : Colors.white,
+                              colorBlendMode: BlendMode.srcIn,
+                            ),
+                          ),
+                        ),
+                      ),
+                    )
                   ],
                 ),
               ],

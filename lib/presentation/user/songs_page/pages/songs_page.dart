@@ -133,7 +133,7 @@ class SongsPageState extends State<SongsPage> {
                                 await Navigator.of(context).push(
                                   MaterialPageRoute(
                                     builder: (context) => SongsDetailPage(
-                                      songId: song,
+                                      songId: song.id!,
                                     ),
                                   ),
                                 );
@@ -145,10 +145,11 @@ class SongsPageState extends State<SongsPage> {
                                   borderRadius: BorderRadius.circular(20),
                                   boxShadow: [
                                     BoxShadow(
-                                        color: Colors.black.withValues(alpha: 0.25),
-                                        blurRadius: 4,
-                                        spreadRadius: 2,
-                                        offset: const Offset(0, 0))
+                                      color: Colors.black.withValues(alpha: 0.25),
+                                      blurRadius: 4,
+                                      spreadRadius: 2,
+                                      offset: const Offset(0, 0),
+                                    ),
                                   ],
                                 ),
                                 width: screenWidth * 0.8,

@@ -1,6 +1,8 @@
 import 'package:pelgrim/data/datasources/remote/duty_datasource.dart';
 import 'package:pelgrim/data/models/duty_model.dart';
+import 'package:pelgrim/data/models/duty_volunteer_model.dart';
 import 'package:pelgrim/domain/entities/duty.dart';
+import 'package:pelgrim/domain/entities/duty_volunteer.dart';
 import 'package:pelgrim/domain/repositories/duty_repository.dart';
 
 class DutyRepositoryImpl implements DutyRepository {
@@ -9,18 +11,18 @@ class DutyRepositoryImpl implements DutyRepository {
   DutyRepositoryImpl(this._dutyService);
 
   @override
-  Future<void> addDuty(String groupName, Duty duty) async {
+  Future<void> addDuty(String groupName, Duty duty) {
     try {
-      await _dutyService.addDuty(groupName, DutyModel.fromEntity(duty));
+      return _dutyService.addDuty(groupName, DutyModel.fromEntity(duty));
     } catch (e) {
       throw Exception("Nie udało się dodać dyżuru: $e");
     }
   }
 
   @override
-  Future<void> deleteDuty(String groupName, String dutyId) async {
+  Future<void> deleteDuty(String groupName, String dutyId) {
     try {
-      await _dutyService.deleteDuty(groupName, dutyId);
+      return _dutyService.deleteDuty(groupName, dutyId);
     } catch (e) {
       throw Exception("Nie udało się dodać dyżuru: $e");
     }
@@ -32,6 +34,24 @@ class DutyRepositoryImpl implements DutyRepository {
       return _dutyService
           .getDutiesStream(groupName)
           .map((models) => models.map((e) => e.toEntity()).toList());
+    } catch (e) {
+      throw Exception("Nie udało się dodać dyżuru: $e");
+    }
+  }
+
+  @override
+  Future<void> addVolunteer(String groupId, String dutyId, DutyVolunteer volunteer) {
+    try {
+      return _dutyService.addVolunteer(groupId, dutyId, DutyVolunteerModel.fromEntity(volunteer));
+    } catch (e) {
+      throw Exception("Nie udało się dodać dyżuru: $e");
+    }
+  }
+
+  @override
+  Future<void> removeVolunteer(String groupId, String dutyId, String userId) {
+    try {
+      return _dutyService.removeVolunteer(groupId, dutyId, userId);
     } catch (e) {
       throw Exception("Nie udało się dodać dyżuru: $e");
     }

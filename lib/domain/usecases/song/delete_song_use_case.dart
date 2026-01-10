@@ -5,7 +5,7 @@ class DeleteSongUseCase {
 
   DeleteSongUseCase(this._songRepository);
 
-  Future<void> execute(String groupName, String songId) async {
-    return _songRepository.deleteSong(groupName, songId);
+  Future<void> execute(String groupId, String songId) async {
+    return _songRepository.deleteSong(groupId, songId);
   }
 }

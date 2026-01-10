@@ -6,5 +6,6 @@ class FirebaseConstants {
   static const String usersCollection = 'Users';
   static const String contactsCollection = 'Contacts';
   static const String dutiesCollection = 'Duties';
+  static const String volunteersCollection = 'Volunteers';
   static const String songsCollection = 'Songs';
 }
