@@ -25,7 +25,7 @@ class SignInUseCase {
 
     final user = await _userRepository.getUserById(userId);
 
-    final group = await _groupRepository.getGroup(user.groupId);
+    final group = await _groupRepository.getGroupById(user.groupId);
 
     return UserSession(user: user, group: group);
   }

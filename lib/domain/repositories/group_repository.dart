@@ -3,7 +3,7 @@ import 'package:pelgrim/domain/entities/group.dart';
 abstract class GroupRepository {
   Future<void> createGroup(Group group);
 
-  Future<Group> getGroup(String groupId);
+  Future<Group> getGroupById(String groupId);
 
   Future<List<String>> getAllGroupNames();
 

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:pelgrim/domain/entities/group.dart';
-import 'package:pelgrim/presentation/user/settings/settings_page.dart';
-import 'package:pelgrim/presentation/user/songs-page/add-song-page.dart';
-import 'package:pelgrim/presentation/user/songs-page/songs-page.dart';
 import 'package:pelgrim/presentation/providers/user_provider.dart';
+import 'package:pelgrim/presentation/user/settings/settings_page.dart';
+import 'package:pelgrim/presentation/user/songs_page/pages/add_song_page.dart';
+import 'package:pelgrim/presentation/user/songs_page/pages/songs_page.dart';
 import 'package:provider/provider.dart';
 
 class SongsTopBar extends StatefulWidget implements PreferredSizeWidget {
@@ -91,11 +91,15 @@ class _SongsTopBarState extends State<SongsTopBar> {
                     InkWell(
                       onTap: () async {
                         bool? songAdded = await Navigator.push(
-                            context, MaterialPageRoute(builder: (context) => const AddSongPage()));
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const AddSongPage(),
+                          ),
+                        );
                         if (songAdded == true) {
                           await Future.delayed(const Duration(milliseconds: 250), () {
                             setState(() {
-                              widget.songsPageKey.currentState?.loadsongs();
+                              widget.songsPageKey.currentState?._loadSongs();
                             });
                           });
                         }

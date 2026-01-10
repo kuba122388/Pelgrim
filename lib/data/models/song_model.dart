@@ -19,16 +19,16 @@ class SongModel extends HiveObject {
 
   Map<String, dynamic> toMap() {
     return {
-      'Title': title,
-      'Lyrics': lyrics,
+      'title': title,
+      'lyrics': lyrics,
     };
   }
 
   factory SongModel.fromMap(Map<String, dynamic> map, String? docId) {
     return SongModel(
       id: docId,
-      title: map['Title'] ?? '',
-      lyrics: map['Lyrics'] ?? '',
+      title: map['title'] ?? '',
+      lyrics: map['lyrics'] ?? '',
     );
   }
 

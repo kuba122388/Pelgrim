@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:pelgrim/core/const/app_consts.dart';
 import 'package:pelgrim/core/di/service_locator.dart';
-import 'package:pelgrim/data/datasources/remote/user_datasource.dart';
 import 'package:pelgrim/domain/entities/user.dart';
+import 'package:pelgrim/domain/usecases/group/set_admin_status_use_case.dart';
+import 'package:pelgrim/domain/usecases/user/get_all_users_by_group_use_case.dart';
 import 'package:pelgrim/presentation/providers/user_provider.dart';
+import 'package:pelgrim/presentation/user/all_users/widgets/user_info_card.dart';
 import 'package:provider/provider.dart';
 
 class AllUsersPage extends StatefulWidget {
@@ -14,60 +16,76 @@ class AllUsersPage extends StatefulWidget {
 }
 
 class _AllUsersPageState extends State<AllUsersPage> {
-  final UserDataSource _userService = sl<UserDataSource>();
+  final GetAllUsersByGroupUseCase _getAllUsersByGroupUseCase = sl<GetAllUsersByGroupUseCase>();
+  final SetAdminStatusUseCase _setAdminStatusUseCase = sl<SetAdminStatusUseCase>();
 
-  List<User> users = [];
-  List<User> filteredUsers = [];
-  TextEditingController searchEngineController = TextEditingController();
+  late final UserProvider _userProvider;
+  late final User _user;
 
-  bool isLoading = true;
+  List<User> _users = [];
+  List<User> _filteredUsers = [];
+
+  final TextEditingController _searchEngineController = TextEditingController();
+
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
 
-    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    _userProvider = context.read<UserProvider>();
+    _user = _userProvider.user!;
 
-    _userService.getAllUsersByGroupId(userProvider.groupInfo!.id).then((allUsers) {
-      setState(() {
-        users = allUsers;
-        filterUsers();
-        isLoading = false;
-      });
-    });
-    searchEngineController.addListener(() {
+    _loadUsers();
+
+    _searchEngineController.addListener(() {
       filterUsers();
     });
   }
 
+  Future<void> _loadUsers() async {
+    try {
+      final allUsers = await _getAllUsersByGroupUseCase.execute(_userProvider.groupInfo!.id);
+
+      if (!mounted) return;
+
+      setState(() {
+        _users = allUsers;
+        filterUsers();
+        _isLoading = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() => _isLoading = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Błąd pobierania użytkowników')),
+      );
+    }
+  }
+
   void filterUsers() {
-    isLoading = true;
-    String query = searchEngineController.text.toLowerCase().trimRight();
+    final query = _searchEngineController.text.toLowerCase().trim();
+
+    final result = query == 'admin'
+        ? _users.where((u) => u.isAdmin).toList()
+        : _users
+            .where((u) => "${u.firstName} ${u.lastName}".toLowerCase().contains(query))
+            .toList();
+
     setState(() {
-      if (query == 'admin') {
-        filteredUsers = users.where((user) => user.isAdmin).toList();
-      } else {
-        filteredUsers = users.where((user) {
-          return ("${user.firstName.trimRight()} ${user.lastName.trimRight()}")
-              .toLowerCase()
-              .contains(query);
-        }).toList();
-      }
+      _filteredUsers = result;
     });
-    isLoading = false;
   }
 
   @override
   void dispose() {
-    searchEngineController.dispose();
+    _searchEngineController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final myUser = Provider.of<UserProvider>(context, listen: false).user!;
-    final groupName = Provider.of<UserProvider>(context, listen: false).groupInfo!.id;
-
     final screenWidth = MediaQuery.of(context).size.width;
 
     return Column(
@@ -85,7 +103,7 @@ class _AllUsersPageState extends State<AllUsersPage> {
               FocusManager.instance.primaryFocus?.unfocus();
             },
             autofocus: false,
-            controller: searchEngineController,
+            controller: _searchEngineController,
             decoration: InputDecoration(
               suffixIcon: Image.asset('./images/search.png', scale: 2),
               isDense: true,
@@ -104,16 +122,16 @@ class _AllUsersPageState extends State<AllUsersPage> {
           ),
         ),
         Expanded(
-          child: isLoading
+          child: _isLoading
               ? const Center(child: Text("Ładowanie..."))
-              : filteredUsers.isEmpty
+              : _filteredUsers.isEmpty
                   ? const Center(child: Text('Brak użytkowników'))
                   : Padding(
                       padding: const EdgeInsets.only(left: 20, right: 20, bottom: 10),
                       child: ListView.builder(
-                        itemCount: filteredUsers.length,
+                        itemCount: _filteredUsers.length,
                         itemBuilder: (context, index) {
-                          final user = filteredUsers[index];
+                          final chosenUser = _filteredUsers[index];
                           return GestureDetector(
                             onTap: () async {
                               await showDialog(
@@ -121,11 +139,11 @@ class _AllUsersPageState extends State<AllUsersPage> {
                                 builder: (ctx) => AlertDialog(
                                   title: const Text('Uprawnienia'),
                                   content: Text(
-                                      'Jakie uprawnienia chcesz przydzielić użytkownikowi ${user.firstName}?'),
+                                      'Jakie uprawnienia chcesz przydzielić użytkownikowi ${chosenUser.fullName}?'),
                                   actions: [
                                     TextButton(
                                       onPressed: () async {
-                                        if (user.email == myUser.email) {
+                                        if (chosenUser.email == _user.email) {
                                           ScaffoldMessenger.of(context).showSnackBar(
                                             const SnackBar(
                                               content: Center(
@@ -135,9 +153,17 @@ class _AllUsersPageState extends State<AllUsersPage> {
                                           );
                                           return;
                                         }
-                                        if (user.isAdmin) {
-                                          await _userService.setAdminStatus(
-                                              false, user.email, groupName);
+                                        if (chosenUser.isAdmin) {
+                                          await _setAdminStatusUseCase.execute(
+                                            currentUserId: _user.id,
+                                            groupId: _user.groupId,
+                                            isAdmin: false,
+                                            targetUserId: chosenUser.id,
+                                          );
+                                          await _loadUsers();
+
+                                          Navigator.of(ctx).pop(false);
+
                                           ScaffoldMessenger.of(context).showSnackBar(
                                             const SnackBar(
                                               content: Center(
@@ -147,15 +173,18 @@ class _AllUsersPageState extends State<AllUsersPage> {
                                             ),
                                           );
                                         }
-                                        Navigator.of(ctx).pop(false);
                                       },
                                       child: const Text('Użytkownik'),
                                     ),
                                     ElevatedButton(
                                       onPressed: () async {
-                                        if (!user.isAdmin) {
-                                          await _userService.setAdminStatus(
-                                              true, user.email, groupName);
+                                        if (!chosenUser.isAdmin) {
+                                          await _setAdminStatusUseCase.execute(
+                                            currentUserId: _user.id,
+                                            groupId: _user.groupId,
+                                            isAdmin: true,
+                                            targetUserId: chosenUser.id,
+                                          );
                                           ScaffoldMessenger.of(context).showSnackBar(
                                             const SnackBar(
                                               content: Center(
@@ -190,45 +219,18 @@ class _AllUsersPageState extends State<AllUsersPage> {
                               width: screenWidth * 0.8,
                               child: Padding(
                                 padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                                child: userInfo(user),
+                                child: UserInfoCard(
+                                  fullName: chosenUser.fullName,
+                                  userEmail: chosenUser.email,
+                                  userPhone: chosenUser.phone,
+                                  isAdmin: chosenUser.isAdmin,
+                                ),
                               ),
                             ),
                           );
                         },
                       ),
                     ),
-        ),
-      ],
-    );
-  }
-
-  Column userInfo(User user) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          "${user.firstName.trimRight()} ${user.lastName.trimRight()} ${user.isAdmin ? '- Admin' : ''}",
-          style: const TextStyle(
-            fontSize: 16,
-            fontFamily: 'Lexend',
-            color: FONT_BLACK_COLOR,
-          ),
-        ),
-        Text(
-          user.email,
-          style: const TextStyle(
-            fontSize: 14,
-            fontFamily: 'Lexend',
-            color: FONT_GREY_COLOR,
-          ),
-        ),
-        Text(
-          user.phone,
-          style: const TextStyle(
-            fontSize: 14,
-            fontFamily: 'Lexend',
-            color: FONT_GREY_COLOR,
-          ),
         ),
       ],
     );

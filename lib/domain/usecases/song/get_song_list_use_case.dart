@@ -1,12 +1,12 @@
 import 'package:pelgrim/domain/entities/song.dart';
 import 'package:pelgrim/domain/repositories/song_repository.dart';
 
-class GetSongListUseCase {
+class WatchSongListUseCase {
   final SongRepository _songRepository;
 
-  GetSongListUseCase(this._songRepository);
+  WatchSongListUseCase(this._songRepository);
 
-  Future<List<Song>> execute(String groupName) async {
-    return await _songRepository.getSongList(groupName);
+  Stream<List<Song>> execute(String groupId) {
+    return _songRepository.watchSongList(groupId);
   }
 }

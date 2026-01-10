@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:pelgrim/core/const/app_consts.dart';
-import 'package:pelgrim/domain/entities/group.dart';
+import 'package:pelgrim/core/di/service_locator.dart';
 import 'package:pelgrim/domain/entities/song.dart';
+import 'package:pelgrim/domain/usecases/song/add_song_use_case.dart';
 import 'package:pelgrim/presentation/providers/user_provider.dart';
-import 'package:pelgrim/presentation/user/songs-page/add-song-topbar.dart';
+import 'package:pelgrim/presentation/user/songs_page/widgets/add_song_topbar.dart';
 import 'package:provider/provider.dart';
 
 class AddSongPage extends StatefulWidget {
@@ -14,56 +15,69 @@ class AddSongPage extends StatefulWidget {
 }
 
 class _AddSongPageState extends State<AddSongPage> {
-  TextEditingController titleController = TextEditingController();
-  TextEditingController lyricsController = TextEditingController();
+  final AddSongUseCase _addSongUseCase = sl<AddSongUseCase>();
+
+  late final TextEditingController _titleController;
+  late final TextEditingController _lyricsController;
+  late final String _groupId;
+
+  @override
+  void initState() {
+    super.initState();
+    _titleController = TextEditingController();
+    _lyricsController = TextEditingController();
+    _groupId = context.read<UserProvider>().userGroupId;
+  }
 
   @override
   void dispose() {
-    titleController.dispose();
-    lyricsController.dispose();
+    _titleController.dispose();
+    _lyricsController.dispose();
     super.dispose();
+  }
+
+  Future<void> _addSong() async {
+    if (_titleController.text.trim().isEmpty || _lyricsController.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          duration: Duration(seconds: 2),
+          content: Center(
+            child: Padding(
+              padding: EdgeInsets.symmetric(vertical: 4.0),
+              child: Text('Pole z tytułem lub słowami jest puste', style: TextStyle(fontSize: 16)),
+            ),
+          ),
+        ),
+      );
+      return;
+    }
+    Song song = Song(title: _titleController.text, lyrics: _lyricsController.text);
+    try {
+      await _addSongUseCase.execute(_groupId, song);
+      Navigator.of(context).pop(true);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Center(child: Text('Wystąpił problem podczas dodawania piosenki: $e'))));
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final Group groupInfo = context.read<UserProvider>().groupInfo!;
-
     final screenWidth = MediaQuery.of(context).size.width;
     final statusBar = MediaQuery.of(context).padding.top;
     final screenHeight = MediaQuery.of(context).size.height - statusBar;
     final keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
 
-    Future<void> addSong(group) async {
-      if (titleController.text == '' || lyricsController.text == '') {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            duration: Duration(seconds: 2),
-            content: Center(
-                child: Padding(
-              padding: EdgeInsets.symmetric(vertical: 4.0),
-              child: Text('Pole z tytułem lub słowami jest puste', style: TextStyle(fontSize: 16)),
-            ))));
-        return;
-      }
-      Song song = Song(title: titleController.text, lyrics: lyricsController.text);
-      try {
-        await song.addSong(group);
-        Navigator.of(context).pop(true);
-      } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Center(child: Text('Wystąpił problem podczas dodawania piosenki: $e'))));
-      }
-    }
-
     return Scaffold(
-        resizeToAvoidBottomInset: true,
-        appBar: AddSongTopBar(onAccept: () => addSong(groupInfo.id)),
-        body: GestureDetector(
-          behavior: HitTestBehavior.translucent,
-          onTap: () {
-            FocusScope.of(context).unfocus();
-          },
-          child: SafeArea(
-              child: SingleChildScrollView(
+      resizeToAvoidBottomInset: true,
+      appBar: AddSongTopBar(onAccept: () => _addSong()),
+      body: GestureDetector(
+        behavior: HitTestBehavior.translucent,
+        onTap: () {
+          FocusScope.of(context).unfocus();
+        },
+        child: SafeArea(
+          child: SingleChildScrollView(
             physics: const NeverScrollableScrollPhysics(),
             child: Container(
               height: screenHeight * 0.85,
@@ -83,7 +97,7 @@ class _AddSongPageState extends State<AddSongPage> {
                             borderRadius: BorderRadius.circular(25),
                             boxShadow: const [BOX_SHADOW_CONTAINER]),
                         child: TextField(
-                          controller: titleController,
+                          controller: _titleController,
                           decoration:
                               const InputDecoration(border: InputBorder.none, hintText: 'Tytuł'),
                           style: const TextStyle(fontSize: FONT_SIZE_BIG, fontFamily: 'Lexend'),
@@ -105,7 +119,7 @@ class _AddSongPageState extends State<AddSongPage> {
                             boxShadow: const [BOX_SHADOW_CONTAINER]),
                         child: TextField(
                           textInputAction: TextInputAction.newline,
-                          controller: lyricsController,
+                          controller: _lyricsController,
                           expands: true,
                           decoration: const InputDecoration(
                               border: InputBorder.none, hintText: 'Tekst z akordami'),
@@ -113,13 +127,15 @@ class _AddSongPageState extends State<AddSongPage> {
                           maxLines: null,
                           minLines: null,
                         ),
-                      )
+                      ),
                     ],
-                  )
+                  ),
                 ],
               ),
             ),
-          )),
-        ));
+          ),
+        ),
+      ),
+    );
   }
 }

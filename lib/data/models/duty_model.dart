@@ -1,13 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:pelgrim/data/models/duty_volunteer_model.dart';
 import 'package:pelgrim/domain/entities/duty.dart';
-
-import 'user_model.dart';
 
 class DutyModel {
   final String? id;
   final String title;
   final int maxVolunteers;
-  final List<UserModel> volunteers;
+  final List<DutyVolunteerModel> volunteers;
   final Timestamp createdAt;
 
   DutyModel({
@@ -28,11 +27,11 @@ class DutyModel {
   }
 
   factory DutyModel.fromMap(Map<String, dynamic> map, String docId) {
-    List<UserModel> parsedVolunteers = [];
+    List<DutyVolunteerModel> parsedVolunteers = [];
 
     if (map["Volunteers"] != null) {
       parsedVolunteers = List<Map<String, dynamic>>.from(map["Volunteers"])
-          .map((userMap) => UserModel.fromMap(userMap))
+          .map((userMap) => DutyVolunteerModel.fromMap(userMap))
           .toList();
     }
 
@@ -51,7 +50,7 @@ class DutyModel {
       createdAt: Timestamp.fromDate(duty.createdAt),
       maxVolunteers: duty.maxVolunteers,
       title: duty.title,
-      volunteers: duty.volunteers.map((entity) => UserModel.fromEntity(entity)).toList(),
+      volunteers: duty.volunteers.map((entity) => DutyVolunteerModel.fromEntity(entity)).toList(),
     );
   }
 

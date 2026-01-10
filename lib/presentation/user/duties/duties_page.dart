@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:pelgrim/core/di/service_locator.dart';
 import 'package:pelgrim/domain/entities/duty.dart';
 import 'package:pelgrim/domain/entities/group.dart';
 import 'package:pelgrim/domain/entities/user.dart';
+import 'package:pelgrim/domain/usecases/duty/add_duty_use_case.dart';
+import 'package:pelgrim/domain/usecases/duty/get_duties_use_case.dart';
 import 'package:pelgrim/presentation/providers/user_provider.dart';
+import 'package:pelgrim/presentation/user/duties/widgets/add_duty_dialog.dart';
 import 'package:pelgrim/presentation/widgets/duty_box.dart';
 import 'package:provider/provider.dart';
 
@@ -14,6 +18,9 @@ class GroupDutiesPage extends StatefulWidget {
 }
 
 class _GroupDutiesPageState extends State<GroupDutiesPage> {
+  final AddDutyUseCase _addDutyUseCase = sl<AddDutyUseCase>();
+  final GetDutiesUseCase _getDutiesUseCase = sl<GetDutiesUseCase>();
+
   void _refresh() {
     setState(() {});
   }
@@ -29,8 +36,8 @@ class _GroupDutiesPageState extends State<GroupDutiesPage> {
       children: [
         Padding(
           padding: const EdgeInsets.all(20),
-          child: FutureBuilder<List<Duty>>(
-            future: Duty.getDuties(groupInfo.id),
+          child: StreamBuilder<List<Duty>>(
+            stream: _getDutiesUseCase.execute(groupInfo.id),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());
@@ -61,7 +68,19 @@ class _GroupDutiesPageState extends State<GroupDutiesPage> {
             bottom: 16,
             right: 16,
             child: ElevatedButton.icon(
-              onPressed: () => _showAddDutyDialog(context, groupInfo.id),
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (ctx) => AddDutyDialog(
+                    onConfirm: (groupId, newDuty) async {
+                      await _addDutyUseCase.execute(groupId, newDuty);
+                      setState(() {});
+                    },
+                  ),
+                );
+
+                Navigator.of(context).pop();
+              },
               icon: const Icon(Icons.add),
               label: const Text("Dodaj zadanie"),
               style: ElevatedButton.styleFrom(
@@ -73,72 +92,6 @@ class _GroupDutiesPageState extends State<GroupDutiesPage> {
             ),
           ),
       ],
-    );
-  }
-
-  void _showAddDutyDialog(BuildContext context, String groupName) {
-    final titleController = TextEditingController();
-    int maxPeople = 1;
-
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('Nowe zadanie'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: titleController,
-                decoration: const InputDecoration(labelText: 'Tytuł zadania'),
-              ),
-              const SizedBox(height: 10),
-              Row(
-                children: [
-                  const Text('Maksymalna liczba osób:'),
-                  const SizedBox(width: 10),
-                  DropdownButton<int>(
-                    value: maxPeople,
-                    items: List.generate(16, (index) => index + 1)
-                        .map((val) => DropdownMenuItem(
-                              value: val,
-                              child: Text(val.toString()),
-                            ))
-                        .toList(),
-                    onChanged: (val) {
-                      if (val != null) {
-                        maxPeople = val;
-                        (context as Element).markNeedsBuild();
-                      }
-                    },
-                  ),
-                ],
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Anuluj'),
-            ),
-            ElevatedButton(
-              onPressed: () async {
-                final title = titleController.text.trim();
-                if (title.isEmpty) return;
-
-                final newDuty = Duty(
-                  title: title,
-                  maxVolunteers: maxPeople,
-                );
-                await newDuty.addDuty(groupName);
-                Navigator.of(context).pop();
-                setState(() {});
-              },
-              child: const Text('Dodaj'),
-            ),
-          ],
-        );
-      },
     );
   }
 }

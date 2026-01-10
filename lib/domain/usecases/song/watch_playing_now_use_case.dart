@@ -6,7 +6,7 @@ class WatchPlayingNowUseCase {
 
   WatchPlayingNowUseCase(this._songRepository);
 
-  Stream<Song> execute(String groupName, String songId) {
-    return _songRepository.watchPlayingNow(groupName);
+  Stream<Song?> execute(String groupId) {
+    return _songRepository.getPlayingNowStream(groupId);
   }
 }

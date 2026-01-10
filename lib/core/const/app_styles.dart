@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'app_colors.dart';
 
+import 'app_colors.dart';
+import 'app_consts.dart';
 
 abstract class AppStyles {
   AppStyles._();
@@ -23,4 +24,12 @@ abstract class AppStyles {
   static const double FONT_SIZE_BIG = 18.0;
   static const double FONT_SIZE_MEDIUM = 16.0;
   static const double FONT_SIZE_SMALL = 14.0;
+
+  static const labelStyle = TextStyle(
+    fontSize: FONT_SIZE_BIG,
+    color: FONT_BLACK_COLOR,
+    fontFamily: 'Lexend',
+    fontWeight: FontWeight.bold,
+    shadows: [APP_TEXT_SHADOW],
+  );
 }

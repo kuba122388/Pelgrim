@@ -1,7 +1,7 @@
 class Song {
-  String title;
-  String lyrics;
-  String? id;
+  final String? id;
+  final String title;
+  final String lyrics;
 
   Song({
     this.id,

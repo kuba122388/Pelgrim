@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pelgrim/presentation/login/widgets/background_image.dart';
 import 'package:pelgrim/presentation/providers/user_provider.dart';
-import 'package:pelgrim/presentation/user/main-page.dart';
+import 'package:pelgrim/presentation/user/main_page.dart';
 import 'package:provider/provider.dart';
 
 import '../../welcome/pages/welcome_page.dart';

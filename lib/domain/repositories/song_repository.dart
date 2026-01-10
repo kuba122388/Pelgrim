@@ -1,15 +1,19 @@
 import 'package:pelgrim/domain/entities/song.dart';
 
 abstract class SongRepository {
-  Future<List<Song>> getSongList(String groupName);
+  Stream<List<Song>> watchSongList(String groupId);
 
-  Future<void> addSong(String groupName, Song song);
+  Future<List<Song>> getLocalSongList(String groupId);
 
-  Future<void> editSong(String groupName, Song song);
+  Future<void> addSong(String groupId, Song song);
 
-  Future<void> deleteSong(String groupName, String songId);
+  Future<void> editSong(String groupId, Song song);
 
-  Future<void> requestSong(String groupName, Song song);
+  Future<Song?> getSong(String groupId, String songId);
 
-  Stream<Song> watchPlayingNow(String groupName);
+  Future<void> deleteSong(String groupId, String songId);
+
+  Future<void> streamSong(String groupId, Song song);
+
+  Stream<Song?> getPlayingNowStream(String groupId);
 }

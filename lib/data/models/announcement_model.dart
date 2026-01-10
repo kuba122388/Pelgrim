@@ -3,59 +3,66 @@ import 'package:pelgrim/domain/entities/announcement.dart';
 
 class AnnouncementModel {
   final String? id;
-  final String author;
+  final String authorId;
+  final String authorName;
   final String content;
-  final DateTime date;
-  final bool important;
-  final bool anonymous;
+  final DateTime createdAt;
+  final bool isImportant;
+  final bool isAnonymous;
 
   AnnouncementModel(
       {this.id,
-      required this.author,
+      required this.authorId,
+      required this.authorName,
       required this.content,
-      required this.date,
-      required this.important,
-      required this.anonymous});
+      required this.createdAt,
+      required this.isImportant,
+      required this.isAnonymous});
 
   Map<String, dynamic> toMap() {
     return {
-      'Author': author,
-      'Content': content,
-      'Date': Timestamp.fromDate(date),
-      'Important': important,
-      'Anonymous': anonymous
+      'authorId': authorId,
+      'authorName': authorName,
+      'content': content,
+      'createdAt': Timestamp.fromDate(createdAt),
+      'isImportant': isImportant,
+      'isAnonymous': isAnonymous
     };
   }
 
   factory AnnouncementModel.fromMap(Map<String, dynamic> json, String docId) {
     return AnnouncementModel(
-        id: docId,
-        author: (json['Author'] ?? '').replaceAll(RegExp(r'\s+'), ' ').trim(),
-        content: json['Content'] ?? '',
-        date: (json['Date'] as Timestamp?)?.toDate() ?? DateTime.now(),
-        important: json['Important'],
-        anonymous: json['Anonymous']);
+      id: docId,
+      authorId: (json['authorId']) ?? '',
+      authorName: json['authorName'] ?? '',
+      content: json['content'] ?? '',
+      createdAt: (json['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      isImportant: json['isImportant'] ?? false,
+      isAnonymous: json['isAnonymous'] ?? false,
+    );
   }
 
   factory AnnouncementModel.fromEntity(Announcement entity) {
     return AnnouncementModel(
       id: entity.id,
-      author: entity.author,
+      authorId: entity.authorId,
+      authorName: entity.authorName,
       content: entity.content,
-      date: entity.date,
-      important: entity.important,
-      anonymous: entity.anonymous,
+      createdAt: entity.createdAt,
+      isImportant: entity.important,
+      isAnonymous: entity.anonymous,
     );
   }
 
   Announcement toEntity() {
     return Announcement(
       id: id,
-      author: author,
+      authorId: authorId,
+      authorName: authorName,
       content: content,
-      date: date,
-      important: important,
-      anonymous: anonymous,
+      createdAt: createdAt,
+      important: isImportant,
+      anonymous: isAnonymous,
     );
   }
 }

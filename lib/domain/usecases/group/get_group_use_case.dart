@@ -7,6 +7,6 @@ class GetGroupUseCase {
   GetGroupUseCase(this._groupRepository);
 
   Future<Group> execute(String groupName) async {
-    return await _groupRepository.getGroup(groupName);
+    return _groupRepository.getGroupById(groupName);
   }
 }

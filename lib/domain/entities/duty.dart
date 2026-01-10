@@ -1,10 +1,10 @@
-import 'package:pelgrim/domain/entities/user.dart';
+import 'package:pelgrim/domain/entities/duty_volunteer.dart';
 
 class Duty {
   final String? id;
   final String title;
   final int maxVolunteers;
-  final List<User> volunteers;
+  final List<DutyVolunteer> volunteers;
   final DateTime createdAt;
 
   Duty({
@@ -14,4 +14,8 @@ class Duty {
     this.volunteers = const [],
     required this.createdAt,
   });
+
+  bool get isFull => volunteers.length >= maxVolunteers;
+
+  int get remainingSlots => maxVolunteers - volunteers.length;
 }

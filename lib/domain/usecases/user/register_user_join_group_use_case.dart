@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:pelgrim/core/errors/use_case_exception.dart';
 import 'package:pelgrim/domain/entities/group.dart';
 import 'package:pelgrim/domain/entities/user.dart';
@@ -8,12 +6,12 @@ import 'package:pelgrim/domain/repositories/auth_repository.dart';
 import 'package:pelgrim/domain/repositories/group_repository.dart';
 import 'package:pelgrim/domain/repositories/user_repository.dart';
 
-class RegisterAdminAndCreateGroupUseCase {
+class RegisterUserJoinGroupUseCase {
   final AuthRepository _authRepository;
   final GroupRepository _groupRepository;
   final UserRepository _userRepository;
 
-  RegisterAdminAndCreateGroupUseCase(
+  RegisterUserJoinGroupUseCase(
     this._authRepository,
     this._groupRepository,
     this._userRepository,
@@ -22,16 +20,12 @@ class RegisterAdminAndCreateGroupUseCase {
   Future<UserSession> execute({
     required String email,
     required String password,
+    required String groupId,
     required String firstName,
     required String lastName,
     required String phone,
-    required String groupColor,
-    required String groupCity,
-    required Color color,
-    required Color secondColor,
   }) async {
     String? userId;
-    String? groupId;
 
     try {
       userId = await _authRepository.register(
@@ -39,42 +33,28 @@ class RegisterAdminAndCreateGroupUseCase {
         password: password,
       );
 
-      Group group = Group(
-        color: color,
-        secondColor: secondColor,
-        groupColor: groupColor,
-        groupCity: groupCity,
-      );
-
-      groupId = group.id;
-      await _groupRepository.createGroup(group);
-
       User user = User(
         id: userId,
         email: email,
         firstName: firstName,
         lastName: lastName,
         phone: phone,
-        isAdmin: true,
-        groupId: group.id,
+        isAdmin: false,
+        groupId: groupId,
       );
+
+      final Group group = await _groupRepository.getGroupById(groupId);
 
       await _userRepository.createUser(user);
 
-      await _groupRepository.joinUserToGroup(
-        groupId: group.id,
-        userId: userId,
-        isAdmin: true,
-      );
+      await _groupRepository.joinUserToGroup(groupId: groupId, userId: userId, isAdmin: false);
+
       return UserSession(user: user, group: group);
     } catch (e) {
       if (userId != null) {
         await _authRepository.deleteAccount(userId);
       }
-      if (groupId != null) {
-        await _groupRepository.deleteGroup(groupId);
-      }
-      throw UseCaseException('Rejestracja administratora i utworzenie grupy nie powiodły się');
+      throw UseCaseException('Rejestracja użytkownika nie powiodła się');
     }
   }
 }

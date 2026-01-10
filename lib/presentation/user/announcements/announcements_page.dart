@@ -1,13 +1,19 @@
 import 'dart:async';
 
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:pelgrim/core/const/app_consts.dart';
+import 'package:pelgrim/core/di/service_locator.dart';
 import 'package:pelgrim/domain/entities/announcement.dart';
 import 'package:pelgrim/domain/entities/group.dart';
 import 'package:pelgrim/domain/entities/user.dart';
-import 'package:pelgrim/presentation/providers/announcement_provider.dart';
+import 'package:pelgrim/domain/usecases/announcement/add_announcement_use_case.dart';
+import 'package:pelgrim/domain/usecases/announcement/delete_announcement_use_case.dart';
+import 'package:pelgrim/domain/usecases/announcement/get_announcements_stream_use_case.dart';
 import 'package:pelgrim/presentation/providers/user_provider.dart';
+import 'package:pelgrim/presentation/user/announcements/widgets/add_announcement_dialog.dart';
+import 'package:pelgrim/presentation/user/announcements/widgets/add_announcement_trigger.dart';
+import 'package:pelgrim/presentation/user/announcements/widgets/announcement_card.dart';
+import 'package:pelgrim/presentation/user/announcements/widgets/delete_announcement_dialog.dart';
 import 'package:provider/provider.dart';
 
 class AnnouncementsPage extends StatefulWidget {
@@ -18,26 +24,47 @@ class AnnouncementsPage extends StatefulWidget {
 }
 
 class _AnnouncementsPageState extends State<AnnouncementsPage> {
-  User? user = FirebaseAuth.instance.currentUser;
-  bool important = false;
-  late final AnnouncementProvider _announcementProvider;
+  final AddAnnouncementUseCase _addAnnouncement = sl<AddAnnouncementUseCase>();
+  final DeleteAnnouncementUseCase _deleteAnnouncementUseCase = sl<DeleteAnnouncementUseCase>();
+  final GetAnnouncementsStreamUseCase _getAnnouncementsStreamUseCase =
+      sl<GetAnnouncementsStreamUseCase>();
+
+  late final UserProvider _userProvider;
+
+  bool _important = false;
 
   @override
   void initState() {
     super.initState();
-    _announcementProvider = context.read<AnnouncementProvider>();
+    _userProvider = context.read<UserProvider>();
   }
 
   void refresh() {
     setState(() {});
   }
 
+  Future<void> _deleteAnnouncement(
+    Announcement announcement,
+    String groupId,
+  ) {
+    return showDialog(
+      context: context,
+      builder: (_) => DeleteAnnouncementDialog(
+        announcement: announcement,
+        onConfirm: () async {
+          await _deleteAnnouncementUseCase.execute(
+            groupId,
+            announcement.id!,
+          );
+        },
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final UserProvider userProvider = context.read<UserProvider>();
-
-    final Group groupInfo = userProvider.groupInfo!;
-    final User myUser = userProvider.user!;
+    final Group groupInfo = _userProvider.groupInfo!;
+    final User user = _userProvider.user!;
 
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top;
@@ -69,8 +96,32 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
                   child: Column(
                     children: [
                       InkWell(
-                        onTap: () => _showAddAnnouncementWidget(groupInfo.id, myUser, refresh),
-                        child: _addAnnouncement(screenWidth, screenHeight),
+                        onTap: () {
+                          showDialog(
+                            context: context,
+                            builder: (_) => AddAnnouncementDialog(
+                              onConfirm: (
+                                  {required content,
+                                  required isImportant,
+                                  required isAnonymous}) async {
+                                final announcement = Announcement(
+                                  authorId: user.id,
+                                  authorName: user.fullName,
+                                  content: content,
+                                  createdAt: DateTime.now(),
+                                  important: isImportant,
+                                  anonymous: isAnonymous,
+                                );
+
+                                await _addAnnouncement.execute(
+                                  _userProvider.userGroupId,
+                                  announcement,
+                                );
+                              },
+                            ),
+                          );
+                        },
+                        child: const AddAnnouncementRow(),
                       ),
                       SizedBox(height: screenHeight * 0.01),
                       Container(
@@ -100,10 +151,10 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
                                       width: 36,
                                       height: 24,
                                       child: Checkbox(
-                                        value: important,
+                                        value: _important,
                                         onChanged: (bool? value) {
                                           setState(() {
-                                            important = value!;
+                                            _important = value!;
                                           });
                                         },
                                         activeColor: Colors.grey,
@@ -123,7 +174,7 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
                               ],
                             ),
                             const SizedBox(height: 10),
-                            Expanded(child: _displayAnnouncements(groupInfo.id, myUser)),
+                            Expanded(child: _displayAnnouncements(groupInfo.id, user)),
                           ],
                         ),
                       )
@@ -138,9 +189,9 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
     );
   }
 
-  StreamBuilder<List<Announcement>> _displayAnnouncements(String group, User myUser) {
+  StreamBuilder<List<Announcement>> _displayAnnouncements(String groupId, User myUser) {
     return StreamBuilder<List<Announcement>>(
-      stream: _announcementProvider.getAnnouncementStream(group),
+      stream: _getAnnouncementsStreamUseCase.execute(groupId),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
@@ -154,378 +205,23 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
             ),
           );
         } else {
-          List<Announcement> announcements = snapshot.data!;
+          final List<Announcement> announcements = snapshot.data!;
+          final filtered =
+              _important ? announcements.where((a) => a.important).toList() : announcements;
+
           return SingleChildScrollView(
             child: Column(
-              children: announcements.map((announcement) {
-                final formattedDate = '${announcement.date.day.toString().padLeft(2, '0')}.'
-                    '${announcement.date.month.toString().padLeft(2, '0')}.'
-                    '${announcement.date.year} '
-                    '${announcement.date.hour.toString().padLeft(2, '0')}:'
-                    '${announcement.date.minute.toString().padLeft(2, '0')}:'
-                    '${announcement.date.second.toString().padLeft(2, '0')}';
-
-                return Visibility(
-                  visible: important == true ? announcement.important : true,
-                  child: Container(
-                    padding: const EdgeInsets.all(15),
-                    margin: const EdgeInsets.only(bottom: 10),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.black),
-                      borderRadius: BorderRadius.circular(10),
-                      color: Colors.white,
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Wrap(
-                          crossAxisAlignment: WrapCrossAlignment.center,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(right: 5),
-                              child: Text(
-                                announcement.anonymous == false
-                                    ? announcement.author
-                                    : 'Autor Anonimowy',
-                                style: const TextStyle(fontFamily: 'Lexend'),
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(right: 10),
-                              child: Text(
-                                formattedDate,
-                                style: const TextStyle(fontSize: 8, fontFamily: 'Lexend'),
-                              ),
-                            ),
-                            Visibility(
-                              visible: announcement.important,
-                              child: const Text(
-                                'WAŻNE!',
-                                style: TextStyle(
-                                  fontSize: 10,
-                                  color: Colors.red,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        Row(
-                          children: [
-                            Flexible(
-                              child: Padding(
-                                padding: const EdgeInsets.only(top: 5, bottom: 10),
-                                child: Text(
-                                  announcement.content,
-                                  style: const TextStyle(fontSize: FONT_SIZE_SMALL),
-                                  softWrap: true,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        Visibility(
-                          visible:
-                              announcement.author == '${myUser.firstName} ${myUser.lastName}' ||
-                                      myUser.isAdmin
-                                  ? true
-                                  : false,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              InkWell(
-                                onTap: () => _deleteAnnouncement(announcement, myUser, group),
-                                child: Image.asset('./images/trash.png', width: 15),
-                              )
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              }).toList(),
+              children: filtered
+                  .map((announcement) => AnnouncementCard(
+                        userId: _userProvider.user!.id,
+                        isAdmin: _userProvider.user!.isAdmin,
+                        announcement: announcement,
+                        onDelete: () => _deleteAnnouncement(announcement, groupId),
+                      ))
+                  .toList(),
             ),
           );
         }
-      },
-    );
-  }
-
-  Row _addAnnouncement(screenWidth, screenHeight) {
-    return Row(
-      children: [
-        Expanded(
-          child: Container(
-            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
-            decoration: BoxDecoration(
-                color: BACKGROUND_CONTAINERS_COLOR,
-                border: Border.all(color: Colors.black),
-                borderRadius: BorderRadius.circular(10)),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    margin: const EdgeInsets.only(right: 10, left: 3),
-                    decoration: BoxDecoration(
-                      color: const Color(0xC0FFFFFF),
-                      borderRadius: BorderRadius.circular(5),
-                    ),
-                  ),
-                ),
-                Image.asset('./images/plus.png', height: 24)
-              ],
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Future<void> _showAddAnnouncementWidget(String group, User myUser, Function notifyParent) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    bool important = false;
-    bool anonymous = false;
-    bool processing = false;
-
-    return showDialog(
-      barrierDismissible: false,
-      context: context,
-      builder: (BuildContext context) {
-        TextEditingController announcementController = TextEditingController();
-
-        return StatefulBuilder(
-          builder: (BuildContext context, StateSetter setState) {
-            return AlertDialog(
-              title: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text('Dodaj ogłoszenie'),
-                  InkWell(
-                    onTap: () {
-                      Navigator.of(context).pop();
-                    },
-                    child: Image.asset(
-                      './images/close.png',
-                      width: 28,
-                      color: Colors.white.withValues(alpha: 0.2),
-                      colorBlendMode: BlendMode.lighten,
-                    ),
-                  ),
-                ],
-              ),
-              titleTextStyle: const TextStyle(
-                fontSize: FONT_SIZE_BIG,
-                color: FONT_BLACK_COLOR,
-                fontFamily: 'Lexend',
-                fontWeight: FontWeight.bold,
-                shadows: [APP_TEXT_SHADOW],
-              ),
-              content: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Treść',
-                      style: TextStyle(
-                        fontSize: FONT_SIZE_BIG,
-                        color: FONT_BLACK_COLOR,
-                        fontFamily: 'Lexend',
-                        fontWeight: FontWeight.bold,
-                        shadows: [APP_TEXT_SHADOW],
-                      ),
-                    ),
-                    Container(
-                      width: screenWidth * 0.7,
-                      margin: const EdgeInsets.only(top: 10, bottom: 20),
-                      padding: const EdgeInsets.symmetric(horizontal: 10),
-                      decoration: BoxDecoration(
-                        color: BACKGROUND_CONTAINERS_COLOR,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: TextField(
-                        controller: announcementController,
-                        decoration: const InputDecoration(border: InputBorder.none),
-                        textCapitalization: TextCapitalization.sentences,
-                        style: const TextStyle(fontSize: FONT_SIZE_SMALL),
-                        maxLines: 8,
-                      ),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
-                          children: [
-                            SizedBox(
-                              width: 30,
-                              height: 24,
-                              child: Checkbox(
-                                activeColor: Colors.grey,
-                                value: important,
-                                onChanged: (bool? value) {
-                                  setState(() {
-                                    important = value!;
-                                  });
-                                },
-                              ),
-                            ),
-                            const Text(
-                              'Oznacz jako ważne',
-                              style: TextStyle(fontSize: 10, fontFamily: 'Lexend'),
-                            ),
-                          ],
-                        ),
-                        Row(
-                          children: [
-                            SizedBox(
-                              width: 30,
-                              height: 24,
-                              child: Checkbox(
-                                value: anonymous,
-                                activeColor: Colors.grey,
-                                onChanged: (bool? value) {
-                                  setState(() {
-                                    anonymous = value!;
-                                  });
-                                },
-                              ),
-                            ),
-                            const Text(
-                              'Post anonimowy',
-                              style: TextStyle(fontSize: 10, fontFamily: 'Lexend'),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(top: 20),
-                          child: ElevatedButton(
-                            onPressed: () async {
-                              if (processing == false) {
-                                setState(() {
-                                  processing = true;
-                                });
-                                if (announcementController.text != '') {
-                                  _announcementProvider.addAnnouncement(
-                                    group,
-                                    Announcement(
-                                      anonymous: anonymous,
-                                      important: important,
-                                      author: '${myUser.firstName} ${myUser.lastName}',
-                                      content: announcementController.text,
-                                      date: DateTime.now(),
-                                    ),
-                                  );
-                                  await Future.delayed(const Duration(milliseconds: 500));
-                                  notifyParent();
-                                }
-                                Navigator.of(context).pop();
-                              }
-                            },
-                            child: const Text('Opublikuj', style: TextStyle(color: Colors.black)),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            );
-          },
-        );
-      },
-    );
-  }
-
-  Future<void> _deleteAnnouncement(Announcement announcement, User myUser, String group) {
-    final screenHeight = MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top;
-
-    ElevatedButton buttonOption(text) {
-      bool processing = false;
-      return ElevatedButton(
-          onPressed: () async => {
-                if (processing == false)
-                  {
-                    setState(() {
-                      processing = true;
-                    }),
-                    if (text == 'Usuń')
-                      {
-                        _announcementProvider.deleteAnnouncement(group, announcement.id!),
-                        setState(() {
-                          _displayAnnouncements(group, myUser);
-                        })
-                      },
-                    Navigator.of(context).pop()
-                  }
-              },
-          style: ButtonStyle(
-            foregroundColor: text == 'Usuń'
-                ? WidgetStateProperty.all<Color>(Colors.white)
-                : WidgetStateProperty.all<Color>(FONT_BLACK_COLOR),
-            backgroundColor: text == 'Usuń'
-                ? const WidgetStatePropertyAll<Color>(Colors.red)
-                : const WidgetStatePropertyAll<Color>(Colors.white),
-            padding: WidgetStateProperty.all<EdgeInsets>(
-              const EdgeInsets.symmetric(horizontal: 20),
-            ),
-            textStyle: WidgetStateProperty.all<TextStyle>(
-              const TextStyle(fontFamily: 'Lexend'),
-            ),
-          ),
-          child: SizedBox(width: 60, child: Center(child: Text(text))));
-    }
-
-    return showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text(
-            'Czy na pewno chcesz usunąć ten wpis?',
-            textAlign: TextAlign.center,
-          ),
-          titleTextStyle: const TextStyle(
-            fontSize: 18,
-            color: Colors.black,
-            fontFamily: 'Lexend',
-          ),
-          content: Container(
-            constraints: BoxConstraints(minHeight: screenHeight * 0.15),
-            child: IntrinsicHeight(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 20),
-                    child: Text(
-                      '"${announcement.content}"',
-                      style: const TextStyle(
-                        fontFamily: 'Lexend',
-                        fontSize: 14,
-                      ),
-                    ),
-                  ),
-                  const Spacer(),
-                  Align(
-                    alignment: Alignment.bottomCenter,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [buttonOption('Anuluj'), buttonOption('Usuń')],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        );
       },
     );
   }

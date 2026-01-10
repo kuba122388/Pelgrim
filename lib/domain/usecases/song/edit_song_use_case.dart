@@ -6,7 +6,7 @@ class EditSongUseCase {
 
   EditSongUseCase(this._songRepository);
 
-  Future<void> execute(String groupName, Song song) async {
-    return await _songRepository.editSong(groupName, song);
+  Future<void> execute(String groupId, Song song) {
+    return _songRepository.editSong(groupId, song);
   }
 }

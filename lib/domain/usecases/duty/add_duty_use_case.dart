@@ -6,7 +6,7 @@ class AddDutyUseCase {
 
   AddDutyUseCase(this._dutyRepository);
 
-  Future<void> execute(String groupName, Duty duty) async {
-    await _dutyRepository.addDuty(groupName, duty);
+  Future<void> execute(String groupId, Duty duty) async {
+    _dutyRepository.addDuty(groupId, duty);
   }
 }

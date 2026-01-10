@@ -7,6 +7,6 @@ class LoadLocalSessionUseCase {
   LoadLocalSessionUseCase(this._sessionRepository);
 
   Future<UserSession?> execute() async {
-    return await _sessionRepository.getLocalSession();
+    return _sessionRepository.getLocalSession();
   }
 }

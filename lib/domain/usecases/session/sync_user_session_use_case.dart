@@ -12,7 +12,7 @@ class SyncUserSessionUseCase {
 
   Future<UserSession> execute(String userId) async {
     final user = await _userRepository.getUserById(userId);
-    final group = await _groupRepository.getGroup(user.groupId);
+    final group = await _groupRepository.getGroupById(user.groupId);
 
     final updatedSession = UserSession(user: user, group: group);
 

@@ -27,10 +27,11 @@ class DutyRepositoryImpl implements DutyRepository {
   }
 
   @override
-  Future<List<Duty>> getDuties(String groupName) async {
+  Stream<List<Duty>> getDutiesStream(String groupName) {
     try {
-      List<DutyModel> list = await _dutyService.loadDuties(groupName);
-      return list.map((e) => e.toEntity()).toList();
+      return _dutyService
+          .getDutiesStream(groupName)
+          .map((models) => models.map((e) => e.toEntity()).toList());
     } catch (e) {
       throw Exception("Nie udało się dodać dyżuru: $e");
     }

@@ -6,6 +6,6 @@ class DeleteDutyUseCase {
   DeleteDutyUseCase(this._dutyRepository);
 
   Future<void> execute(String groupName, String dutyId) async {
-    await _dutyRepository.deleteDuty(groupName, dutyId);
+    _dutyRepository.deleteDuty(groupName, dutyId);
   }
 }

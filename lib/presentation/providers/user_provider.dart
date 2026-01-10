@@ -7,32 +7,42 @@ import 'package:pelgrim/domain/entities/user_session.dart';
 import 'package:pelgrim/domain/usecases/auth/is_user_authenticated_use_case.dart';
 import 'package:pelgrim/domain/usecases/auth/sign_in_use_case.dart';
 import 'package:pelgrim/domain/usecases/auth/sign_out_use_case.dart';
-import 'package:pelgrim/domain/usecases/group/get_group_use_case.dart';
+import 'package:pelgrim/domain/usecases/group/get_all_group_names_use_case.dart';
 import 'package:pelgrim/domain/usecases/session/clear_local_session_use_case.dart';
 import 'package:pelgrim/domain/usecases/session/load_local_session_use_case.dart';
 import 'package:pelgrim/domain/usecases/session/save_local_session_use_case.dart';
 import 'package:pelgrim/domain/usecases/session/sync_user_session_use_case.dart';
+import 'package:pelgrim/domain/usecases/user/register_admin_create_group_use_case.dart';
+import 'package:pelgrim/domain/usecases/user/register_user_join_group_use_case.dart';
 
 class UserProvider extends ChangeNotifier {
+  // Note: Usecases
+
   final SignInUseCase _signInUseCase;
   final SignOutUseCase _signOutUseCase;
-  final GetGroupUseCase _getGroupUseCase;
   final SaveLocalSessionUseCase _saveLocalSessionUseCase;
   final ClearLocalSessionUseCase _clearLocalSessionUseCase;
   final LoadLocalSessionUseCase _loadLocalSessionUseCase;
   final SyncUserSessionUseCase _syncUserSessionUseCase;
   final IsUserAuthenticatedUseCase _isUserAuthenticatedUseCase;
+  final RegisterAdminCreateGroupUseCase _registerAdminCreateGroupUseCase;
+  final RegisterUserJoinGroupUseCase _registerUserJoinGroupUseCase;
+  final GetAllGroupNamesUseCase _getAllGroupNamesUseCase;
 
   UserProvider(
     this._signInUseCase,
     this._signOutUseCase,
-    this._getGroupUseCase,
     this._saveLocalSessionUseCase,
     this._clearLocalSessionUseCase,
     this._loadLocalSessionUseCase,
     this._syncUserSessionUseCase,
     this._isUserAuthenticatedUseCase,
+    this._registerAdminCreateGroupUseCase,
+    this._registerUserJoinGroupUseCase,
+    this._getAllGroupNamesUseCase,
   );
+
+  // Note: Variables
 
   UserSession? _userSession;
 
@@ -45,6 +55,10 @@ class UserProvider extends ChangeNotifier {
   bool isLoggedIn() => _userSession != null;
 
   bool get isLoading => _isLoading;
+
+  // Note: User Methods
+
+  String get userGroupId => groupInfo != null ? groupInfo!.id : "";
 
   String? get authenticatedUserId => _isUserAuthenticatedUseCase.execute();
 
@@ -87,11 +101,13 @@ class UserProvider extends ChangeNotifier {
 
   Future<void> syncUserSessionWithRemote() async {
     final currentUser = user;
-
     if (currentUser == null) return;
-
-    _userSession = await _syncUserSessionUseCase.execute(currentUser.id);
-    notifyListeners();
+    try {
+      _userSession = await _syncUserSessionUseCase.execute(currentUser.id);
+      notifyListeners();
+    } catch (e) {
+      debugPrint("Synchronizacja nie udana");
+    }
   }
 
   Future<void> signOut() async {
@@ -104,5 +120,83 @@ class UserProvider extends ChangeNotifier {
   void clear() {
     _userSession = null;
     notifyListeners();
+  }
+
+  // Note: Register methods
+
+  Future<void> registerAdminCreateGroup({
+    required String email,
+    required String password,
+    required String firstName,
+    required String lastName,
+    required String phone,
+    required String groupColor,
+    required String groupCity,
+    required Color color,
+    required Color secondColor,
+  }) async {
+    _isLoading = true;
+    notifyListeners();
+
+    try {
+      final UserSession userSession = await _registerAdminCreateGroupUseCase.execute(
+        email: email,
+        password: password,
+        firstName: firstName,
+        lastName: lastName,
+        phone: phone,
+        groupColor: groupColor,
+        groupCity: groupCity,
+        color: color,
+        secondColor: secondColor,
+      );
+
+      await _saveLocalSessionUseCase.execute(userSession);
+      _userSession = userSession;
+    } catch (_) {
+      rethrow;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> registerUserJoinGroup({
+    required String email,
+    required String password,
+    required String firstName,
+    required String lastName,
+    required String phone,
+    required String groupId,
+  }) async {
+    _isLoading = true;
+    notifyListeners();
+
+    try {
+      final UserSession userSession = await _registerUserJoinGroupUseCase.execute(
+        email: email,
+        password: password,
+        firstName: firstName,
+        lastName: lastName,
+        phone: phone,
+        groupId: groupId,
+      );
+
+      await _saveLocalSessionUseCase.execute(userSession);
+      _userSession = userSession;
+    } catch (_) {
+      rethrow;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<List<String>> fetchAllGroups() async {
+    try {
+      return await _getAllGroupNamesUseCase.execute();
+    } catch (e) {
+      rethrow;
+    }
   }
 }

@@ -7,6 +7,6 @@ class AddSongUseCase {
   AddSongUseCase(this._songRepository);
 
   Future<void> execute(String groupName, Song song) async {
-    return await _songRepository.addSong(groupName, song);
+    return _songRepository.addSong(groupName, song);
   }
 }

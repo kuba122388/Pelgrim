@@ -6,6 +6,6 @@ class GetAllGroupNamesUseCase {
   GetAllGroupNamesUseCase(this._groupRepository);
 
   Future<List<String>> execute() async {
-    return await _groupRepository.getAllGroupNames();
+    return _groupRepository.getAllGroupNames();
   }
 }

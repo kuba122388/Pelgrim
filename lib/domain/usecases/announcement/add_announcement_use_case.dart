@@ -7,6 +7,6 @@ class AddAnnouncementUseCase {
   AddAnnouncementUseCase(this._announcementRepository);
 
   Future<void> execute(String groupName, Announcement announcement) async {
-    await _announcementRepository.addAnnouncement(groupName, announcement);
+    _announcementRepository.addAnnouncement(groupName, announcement);
   }
 }

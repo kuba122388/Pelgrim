@@ -7,6 +7,6 @@ class SaveContactInfoUseCase {
   SaveContactInfoUseCase(this._contactRepository);
 
   Future<void> execute(String groupName, Contact contact) async {
-    return await _contactRepository.setContactInfo(groupName, contact);
+    return _contactRepository.setContactInfo(groupName, contact);
   }
 }

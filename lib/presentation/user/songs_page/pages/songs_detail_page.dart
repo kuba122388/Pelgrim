@@ -1,59 +1,58 @@
 import 'package:flutter/material.dart';
 import 'package:pelgrim/core/const/app_consts.dart';
 import 'package:pelgrim/domain/entities/song.dart';
+import 'package:pelgrim/presentation/providers/song_provider.dart';
 import 'package:pelgrim/presentation/providers/user_provider.dart';
-import 'package:pelgrim/presentation/user/songs-page/songs-detail-topbar.dart';
+import 'package:pelgrim/presentation/user/songs_page/widgets/songs_detail_topbar.dart';
 import 'package:provider/provider.dart';
 
 class SongsDetailPage extends StatefulWidget {
-  final Song song;
+  final String songId;
 
-  const SongsDetailPage({super.key, required this.song});
+  const SongsDetailPage({
+    super.key,
+    required this.songId,
+  });
 
   @override
   State<SongsDetailPage> createState() => _SongsDetailPageState();
 }
 
 class _SongsDetailPageState extends State<SongsDetailPage> {
-  late Future<Song> _playingNow;
-  late String _group;
+  late final SongProvider _songProvider;
+  late final UserProvider _userProvider;
+  late final String _groupId;
 
   @override
   void initState() {
     super.initState();
 
-    final groupName = context.read<UserProvider>().groupInfo!.id;
-    _group = groupName;
-    _playingNow = Song.playingNow(_group);
-  }
-
-  void _refreshPlayingNow() {
-    setState(() {
-      _playingNow = Song.playingNow(_group);
-    });
+    _userProvider = context.read<UserProvider>();
+    _groupId = _userProvider.userGroupId;
   }
 
   @override
   Widget build(BuildContext context) {
-    final userProvider = context.watch<UserProvider>();
+    final groupInfo = _userProvider.groupInfo!;
+    final bool isAdmin = context.watch<UserProvider>().user!.isAdmin;
 
-    final groupInfo = userProvider.groupInfo!;
-    final bool isAdmin = userProvider.user!.isAdmin;
-
-    Song song = widget.song;
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top;
 
     Color firstColor = groupInfo.color;
     Color secondColor = groupInfo.secondColor;
 
-    Future<void> changedSong() async {
-      await song.refreshSong(_group);
-      setState(() {});
-    }
+    final songProvider = context.watch<SongProvider>();
+
+    final song = songProvider.songs.firstWhere(
+      (s) => s.id == widget.songId,
+      orElse: () => throw Exception('Song not found'),
+    );
+
+    final isPlayingNow = songProvider.playingNowSong?.id == song.id;
 
     return Scaffold(
-      appBar: SongsDetailTopbar(song: widget.song, edit: changedSong),
+      appBar: SongsDetailTopbar(song: song),
       body: SafeArea(
         child: Center(
           child: Container(
@@ -110,24 +109,23 @@ class _SongsDetailPageState extends State<SongsDetailPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    FutureBuilder<Song>(
-                      future: _playingNow,
+                    StreamBuilder<Song>(
+                      stream: songProvider,
                       builder: (context, snapshot) {
                         Color firstColorHere = Colors.white;
                         Color secondColorHere = Colors.white;
                         if (snapshot.connectionState == ConnectionState.done && snapshot.hasData) {
                           final playingNow = snapshot.data!;
-                          if (widget.song.lyrics == playingNow.lyrics) {
+                          if (widget.songId.lyrics == playingNow.lyrics) {
                             firstColorHere = firstColor;
                             secondColorHere = secondColor;
                           }
                         }
 
-                        return Visibility(
-                          visible: isAdmin,
-                          child: InkWell(
+                        if (isAdmin) {
+                          InkWell(
                             onTap: () {
-                              widget.song.requestSong(_group);
+                              widget.songId.streamSong(_groupId);
                               _refreshPlayingNow();
                             },
                             child: Container(
@@ -161,8 +159,8 @@ class _SongsDetailPageState extends State<SongsDetailPage> {
                                 ),
                               ),
                             ),
-                          ),
-                        );
+                          );
+                        }
                       },
                     ),
                   ],

@@ -10,7 +10,7 @@ class GroupRepositoryImpl extends GroupRepository {
   GroupRepositoryImpl(this._groupDataSource);
 
   @override
-  Future<Group> getGroup(String groupId) async {
+  Future<Group> getGroupById(String groupId) async {
     try {
       GroupModel groupModel = await _groupDataSource.getGroupById(groupId);
       return groupModel.toEntity();

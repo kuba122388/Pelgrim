@@ -7,6 +7,8 @@ class User {
   final String groupId;
   final bool isAdmin;
 
+  String get fullName => "$firstName $lastName";
+
   User({
     required this.id,
     required this.firstName,

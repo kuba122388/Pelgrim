@@ -1,3 +1,4 @@
+import 'package:pelgrim/domain/entities/duty.dart';
 import 'package:pelgrim/domain/repositories/duty_repository.dart';
 
 class GetDutiesUseCase {
@@ -5,7 +6,7 @@ class GetDutiesUseCase {
 
   GetDutiesUseCase(this._dutyRepository);
 
-  Future<void> execute(String groupName) async {
-    await _dutyRepository.getDuties(groupName);
+  Stream<List<Duty>> execute(String groupId) {
+    return _dutyRepository.getDutiesStream(groupId);
   }
 }

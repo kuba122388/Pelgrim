@@ -1,19 +1,13 @@
 import 'package:pelgrim/data/datasources/local/local_user_storage.dart';
-import 'package:pelgrim/data/datasources/remote/group_datasource.dart';
-import 'package:pelgrim/data/datasources/remote/user_datasource.dart';
 import 'package:pelgrim/data/models/user_session_model.dart';
 import 'package:pelgrim/domain/entities/user_session.dart';
 import 'package:pelgrim/domain/repositories/user_session_repository.dart';
 
 class UserSessionRepositoryImpl implements UserSessionRepository {
   final LocalUserStorage _localStorage;
-  final UserDataSource _userDataSource;
-  final GroupDataSource _groupDataSource;
 
   UserSessionRepositoryImpl(
     this._localStorage,
-    this._userDataSource,
-    this._groupDataSource,
   );
 
   @override

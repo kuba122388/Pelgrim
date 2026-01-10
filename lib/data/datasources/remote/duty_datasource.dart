@@ -32,17 +32,18 @@ class DutyDataSource {
     }
   }
 
-  Future<List<DutyModel>> loadDuties(String group) async {
+  Stream<List<DutyModel>> getDutiesStream(String group) {
     try {
-      final snapshot = await _db
+      return _db
           .collection(FirebaseConstants.groupsCollection)
           .doc(group)
           .collection(FirebaseConstants.dutiesCollection)
-          .get();
-
-      return snapshot.docs.map((doc) => DutyModel.fromMap(doc.data(), doc.id)).toList();
+          .snapshots()
+          .map((querySnapshot) {
+        return querySnapshot.docs.map((doc) => DutyModel.fromMap(doc.data(), doc.id)).toList();
+      });
     } catch (e) {
-      print('Problem z pobraniem dyżurów: $e');
+      print('Problem z pobraniem listy dyżurów: $e');
       rethrow;
     }
   }

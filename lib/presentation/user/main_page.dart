@@ -9,10 +9,10 @@ import 'package:pelgrim/presentation/user/images_upload/images_upload_page.dart'
 import 'package:pelgrim/presentation/user/informant/informant_page.dart';
 import 'package:pelgrim/presentation/user/playing_now/playing_now_page.dart';
 import 'package:pelgrim/presentation/user/playing_now/playing_now_topbar.dart';
-import 'package:pelgrim/presentation/user/songs-page/songs-page.dart';
-import 'package:pelgrim/presentation/user/songs-page/songs-topbar.dart';
+import 'package:pelgrim/presentation/user/songs-page/pages/songs_page.dart';
+import 'package:pelgrim/presentation/user/songs-page/widgets/songs-custom_topbar.dart';
 import 'package:pelgrim/presentation/widgets/burger.dart';
-import 'package:pelgrim/presentation/widgets/topbar.dart';
+import 'package:pelgrim/presentation/widgets/custom_topbar.dart';
 import 'package:provider/provider.dart';
 
 import 'duties/duties_page.dart';

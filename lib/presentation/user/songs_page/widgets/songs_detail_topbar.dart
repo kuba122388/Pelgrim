@@ -2,16 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:pelgrim/core/const/app_consts.dart';
 import 'package:pelgrim/domain/entities/group.dart';
 import 'package:pelgrim/domain/entities/song.dart';
-import 'package:pelgrim/presentation/user/settings/settings_page.dart';
-import 'package:pelgrim/presentation/user/songs-page/edit-song-page.dart';
 import 'package:pelgrim/presentation/providers/user_provider.dart';
+import 'package:pelgrim/presentation/user/settings/settings_page.dart';
+import 'package:pelgrim/presentation/user/songs_page/pages/edit_song_page.dart';
 import 'package:provider/provider.dart';
 
 class SongsDetailTopbar extends StatefulWidget implements PreferredSizeWidget {
   final Song song;
-  final VoidCallback edit;
 
-  const SongsDetailTopbar({super.key, required this.song, required this.edit});
+  const SongsDetailTopbar({super.key, required this.song});
 
   @override
   State<SongsDetailTopbar> createState() => _SongsDetailTopbarState();
