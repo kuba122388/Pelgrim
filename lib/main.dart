@@ -7,6 +7,8 @@ import 'package:pelgrim/app.dart';
 import 'package:pelgrim/core/config/firebase_options.dart';
 import 'package:pelgrim/core/storage/hive_setup.dart';
 import 'package:pelgrim/presentation/providers/contact_provider.dart';
+import 'package:pelgrim/presentation/providers/duty_provider.dart';
+import 'package:pelgrim/presentation/providers/song_provider.dart';
 import 'package:pelgrim/presentation/providers/user_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -32,15 +34,25 @@ Future<void> main() async {
 
   setupLocator();
 
+  final userProvider = sl<UserProvider>();
+
+  await userProvider.loadSession();
+
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider<UserProvider>(
-          create: (_) => sl<UserProvider>(),
+        ChangeNotifierProvider<UserProvider>.value(
+          value: userProvider,
         ),
         ChangeNotifierProvider<ContactProvider>(
           create: (_) => sl<ContactProvider>(),
         ),
+        ChangeNotifierProvider<DutyProvider>(
+          create: (_) => sl<DutyProvider>(),
+        ),
+        ChangeNotifierProvider<SongProvider>(
+          create: (_) => sl<SongProvider>(),
+        )
       ],
       child: const MyApp(),
     ),

@@ -25,6 +25,7 @@ class UserSessionRepositoryImpl implements UserSessionRepository {
   @override
   Future<UserSession?> getLocalSession() async {
     final session = await _localStorage.loadSession();
+    print("DATASOURCEEEEE $session");
 
     if (session == null) {
       return null;

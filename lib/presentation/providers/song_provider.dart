@@ -5,9 +5,9 @@ import 'package:pelgrim/domain/entities/song.dart';
 import 'package:pelgrim/domain/usecases/song/delete_song_use_case.dart';
 import 'package:pelgrim/domain/usecases/song/edit_song_use_case.dart';
 import 'package:pelgrim/domain/usecases/song/get_local_song_list_use_case.dart';
-import 'package:pelgrim/domain/usecases/song/get_song_list_use_case.dart';
 import 'package:pelgrim/domain/usecases/song/stream_song_use_case.dart';
 import 'package:pelgrim/domain/usecases/song/watch_playing_now_use_case.dart';
+import 'package:pelgrim/domain/usecases/song/watch_song_list_use_case.dart';
 
 class SongProvider extends ChangeNotifier {
   final GetLocalSongListUseCase _getLocalSongListUseCase;

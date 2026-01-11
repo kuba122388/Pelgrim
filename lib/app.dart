@@ -13,39 +13,19 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  late final Future<void> _loadFuture;
-  late final UserProvider _userProvider;
-
   @override
   void initState() {
     super.initState();
-    _userProvider = context.read<UserProvider>();
-    _loadFuture = _userProvider.loadSession();
   }
 
   @override
   Widget build(BuildContext context) {
+    final userProvider = context.watch<UserProvider>();
+
     return MaterialApp(
       theme: ThemeData(fontFamily: 'Lexend'),
       debugShowCheckedModeBanner: false,
-      home: FutureBuilder(
-        future: _loadFuture,
-        builder: (_, __) {
-          if (_userProvider.isLoading) {
-            return const Scaffold(
-              body: Center(
-                child: CircularProgressIndicator(),
-              ),
-            );
-          }
-
-          if (_userProvider.isLoggedIn()) {
-            return const LoginApproved();
-          }
-
-          return const WelcomePage();
-        },
-      ),
+      home: userProvider.isLoggedIn() ? const LoginApproved() : const WelcomePage(),
     );
   }
 }

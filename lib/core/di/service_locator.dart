@@ -35,6 +35,7 @@ import 'package:pelgrim/domain/usecases/contact/save_contact_info_use_case.dart'
 import 'package:pelgrim/domain/usecases/duty/add_duty_use_case.dart';
 import 'package:pelgrim/domain/usecases/duty/delete_duty_use_case.dart';
 import 'package:pelgrim/domain/usecases/duty/get_duties_use_case.dart';
+import 'package:pelgrim/domain/usecases/duty/toggle_duty_sign_up_use_case.dart';
 import 'package:pelgrim/domain/usecases/group/delete_group_use_case.dart';
 import 'package:pelgrim/domain/usecases/group/get_all_group_names_use_case.dart';
 import 'package:pelgrim/domain/usecases/group/get_group_use_case.dart';
@@ -46,14 +47,18 @@ import 'package:pelgrim/domain/usecases/session/sync_user_session_use_case.dart'
 import 'package:pelgrim/domain/usecases/song/add_song_use_case.dart';
 import 'package:pelgrim/domain/usecases/song/delete_song_use_case.dart';
 import 'package:pelgrim/domain/usecases/song/edit_song_use_case.dart';
-import 'package:pelgrim/domain/usecases/song/get_song_list_use_case.dart';
+import 'package:pelgrim/domain/usecases/song/get_local_song_list_use_case.dart';
+import 'package:pelgrim/domain/usecases/song/get_song_use_case.dart';
 import 'package:pelgrim/domain/usecases/song/stream_song_use_case.dart';
 import 'package:pelgrim/domain/usecases/song/watch_playing_now_use_case.dart';
+import 'package:pelgrim/domain/usecases/song/watch_song_list_use_case.dart';
 import 'package:pelgrim/domain/usecases/user/get_all_users_by_group_use_case.dart';
 import 'package:pelgrim/domain/usecases/user/get_user_by_id_use_case.dart';
 import 'package:pelgrim/domain/usecases/user/register_admin_create_group_use_case.dart';
 import 'package:pelgrim/domain/usecases/user/register_user_join_group_use_case.dart';
 import 'package:pelgrim/presentation/providers/contact_provider.dart';
+import 'package:pelgrim/presentation/providers/duty_provider.dart';
+import 'package:pelgrim/presentation/providers/song_provider.dart';
 import 'package:pelgrim/presentation/providers/user_provider.dart';
 
 final sl = GetIt.instance;
@@ -116,37 +121,47 @@ void setupLocator() {
   sl.registerLazySingleton(() => AddAnnouncementUseCase(sl<AnnouncementRepository>()));
   sl.registerLazySingleton(() => DeleteAnnouncementUseCase(sl<AnnouncementRepository>()));
   sl.registerLazySingleton(() => GetAnnouncementsStreamUseCase(sl<AnnouncementRepository>()));
+
+  sl.registerLazySingleton(() => IsUserAuthenticatedUseCase(sl<AuthRepository>()));
+  sl.registerLazySingleton(
+      () => SignInUseCase(sl<AuthRepository>(), sl<UserRepository>(), sl<GroupRepository>()));
+  sl.registerLazySingleton(() => SignOutUseCase(sl<AuthRepository>()));
+
   sl.registerLazySingleton(() => GetContactInfoUseCase(sl<ContactRepository>()));
   sl.registerLazySingleton(() => SaveContactInfoUseCase(sl<ContactRepository>()));
+
   sl.registerLazySingleton(() => AddDutyUseCase(sl<DutyRepository>()));
   sl.registerLazySingleton(() => DeleteDutyUseCase(sl<DutyRepository>()));
   sl.registerLazySingleton(() => GetDutiesUseCase(sl<DutyRepository>()));
+  sl.registerLazySingleton(() => ToggleDutySignUpUseCase(sl<DutyRepository>()));
+
   sl.registerLazySingleton(() => DeleteGroupUseCase(sl<GroupRepository>()));
   sl.registerLazySingleton(() => GetAllGroupNamesUseCase(sl<GroupRepository>()));
   sl.registerLazySingleton(() => GetGroupUseCase(sl<GroupRepository>()));
   sl.registerLazySingleton(
       () => SetAdminStatusUseCase(sl<GroupRepository>(), sl<UserRepository>()));
+
+  sl.registerLazySingleton(() => ClearLocalSessionUseCase(sl<UserSessionRepository>()));
+  sl.registerLazySingleton(() => LoadLocalSessionUseCase(sl<UserSessionRepository>()));
+  sl.registerLazySingleton(() => SaveLocalSessionUseCase(sl<UserSessionRepository>()));
+  sl.registerLazySingleton(() => SyncUserSessionUseCase(
+      sl<UserRepository>(), sl<GroupRepository>(), sl<UserSessionRepository>()));
+
   sl.registerLazySingleton(() => AddSongUseCase(sl<SongRepository>()));
   sl.registerLazySingleton(() => DeleteSongUseCase(sl<SongRepository>()));
   sl.registerLazySingleton(() => EditSongUseCase(sl<SongRepository>()));
-  sl.registerLazySingleton(() => WatchSongListUseCase((sl<SongRepository>())));
+  sl.registerLazySingleton(() => GetLocalSongListUseCase(sl<SongRepository>()));
+  sl.registerLazySingleton(() => GetSongUseCase(sl<SongRepository>()));
   sl.registerLazySingleton(() => StreamSongUseCase(sl<SongRepository>()));
   sl.registerLazySingleton(() => WatchPlayingNowUseCase(sl<SongRepository>()));
+  sl.registerLazySingleton(() => WatchSongListUseCase((sl<SongRepository>())));
+
   sl.registerLazySingleton(() => GetAllUsersByGroupUseCase(sl<UserRepository>()));
+  sl.registerLazySingleton(() => GetUserByIdUseCase(sl<UserRepository>()));
   sl.registerLazySingleton(() => RegisterAdminCreateGroupUseCase(
       sl<AuthRepository>(), sl<GroupRepository>(), sl<UserRepository>()));
   sl.registerLazySingleton(() => RegisterUserJoinGroupUseCase(
       sl<AuthRepository>(), sl<GroupRepository>(), sl<UserRepository>()));
-  sl.registerLazySingleton(
-      () => SignInUseCase(sl<AuthRepository>(), sl<UserRepository>(), sl<GroupRepository>()));
-  sl.registerLazySingleton(() => SignOutUseCase(sl<AuthRepository>()));
-  sl.registerLazySingleton(() => GetUserByIdUseCase(sl<UserRepository>()));
-  sl.registerLazySingleton(() => SaveLocalSessionUseCase(sl<UserSessionRepository>()));
-  sl.registerLazySingleton(() => ClearLocalSessionUseCase(sl<UserSessionRepository>()));
-  sl.registerLazySingleton(() => LoadLocalSessionUseCase(sl<UserSessionRepository>()));
-  sl.registerLazySingleton(() => SyncUserSessionUseCase(
-      sl<UserRepository>(), sl<GroupRepository>(), sl<UserSessionRepository>()));
-  sl.registerLazySingleton(() => IsUserAuthenticatedUseCase(sl<AuthRepository>()));
 
   // --- 4. Providers ---
   sl.registerLazySingleton(
@@ -155,6 +170,15 @@ void setupLocator() {
       sl<SaveContactInfoUseCase>(),
     ),
   );
+  sl.registerLazySingleton(
+    () => DutyProvider(
+      sl<GetDutiesUseCase>(),
+      sl<AddDutyUseCase>(),
+      sl<DeleteDutyUseCase>(),
+      sl<ToggleDutySignUpUseCase>(),
+    ),
+  );
+
   sl.registerLazySingleton(
     () => UserProvider(
       sl<SignInUseCase>(),
@@ -167,6 +191,17 @@ void setupLocator() {
       sl<RegisterAdminCreateGroupUseCase>(),
       sl<RegisterUserJoinGroupUseCase>(),
       sl<GetAllGroupNamesUseCase>(),
+    ),
+  );
+
+  sl.registerLazySingleton(
+    () => SongProvider(
+      sl<GetLocalSongListUseCase>(),
+      sl<WatchSongListUseCase>(),
+      sl<WatchPlayingNowUseCase>(),
+      sl<StreamSongUseCase>(),
+      sl<EditSongUseCase>(),
+      sl<DeleteSongUseCase>(),
     ),
   );
 }

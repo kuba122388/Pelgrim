@@ -46,7 +46,7 @@ class UserProvider extends ChangeNotifier {
 
   UserSession? _userSession;
 
-  bool _isLoading = false;
+  bool _isLoading = true;
 
   User? get user => _userSession?.user;
 
@@ -75,6 +75,9 @@ class UserProvider extends ChangeNotifier {
       await _saveLocalSessionUseCase.execute(userSession);
 
       _userSession = userSession;
+      print("SKHJFASHJKSFHJAKHJFKSAHJKF");
+      print(_userSession!.user.groupId);
+      print(_userSession!.group.id);
     } catch (e) {
       _userSession = null;
       rethrow;
@@ -88,8 +91,11 @@ class UserProvider extends ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
+    print("SESJA?");
+
     try {
       final session = await _loadLocalSessionUseCase.execute();
+      print("SESJA $session");
       if (session != null) {
         _userSession = session;
       }

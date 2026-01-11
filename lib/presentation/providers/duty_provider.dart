@@ -13,7 +13,7 @@ class DutyProvider extends ChangeNotifier {
   final GetDutiesUseCase _getDutiesUseCase;
   final AddDutyUseCase _addDutyUseCase;
   final DeleteDutyUseCase _deleteDutyUseCase;
-  final ToggleDutySignupUseCase _toggleDutySignupUseCase;
+  final ToggleDutySignUpUseCase _toggleDutySignUpUseCase;
 
   StreamSubscription? _sub;
   List<Duty> _duties = [];
@@ -24,7 +24,7 @@ class DutyProvider extends ChangeNotifier {
     this._getDutiesUseCase,
     this._addDutyUseCase,
     this._deleteDutyUseCase,
-    this._toggleDutySignupUseCase,
+    this._toggleDutySignUpUseCase,
   );
 
   bool _isLoading = false;
@@ -52,7 +52,7 @@ class DutyProvider extends ChangeNotifier {
     );
 
     try {
-      await _toggleDutySignupUseCase.execute(groupId, duty, volunteer);
+      await _toggleDutySignUpUseCase.execute(groupId, duty, volunteer);
     } catch (e) {
       rethrow;
     }

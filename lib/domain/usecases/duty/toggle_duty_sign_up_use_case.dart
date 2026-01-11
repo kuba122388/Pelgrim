@@ -2,10 +2,10 @@ import 'package:pelgrim/domain/entities/duty.dart';
 import 'package:pelgrim/domain/entities/duty_volunteer.dart';
 import 'package:pelgrim/domain/repositories/duty_repository.dart';
 
-class ToggleDutySignupUseCase {
+class ToggleDutySignUpUseCase {
   final DutyRepository _repository;
 
-  ToggleDutySignupUseCase(this._repository);
+  ToggleDutySignUpUseCase(this._repository);
 
   Future<void> execute(String groupId, Duty duty, DutyVolunteer dutyVolunteer) async {
     final bool isSignedUp = duty.volunteers.any((v) => v.userId == dutyVolunteer.userId);
