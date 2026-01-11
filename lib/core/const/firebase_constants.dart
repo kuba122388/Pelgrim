@@ -1,11 +1,11 @@
 class FirebaseConstants {
-  static const String groupsCollection = 'Pelgrim Groups';
-  static const String globalUsersCollection = 'Users';
+  static const String groupsCollection = 'pelgrim_groups';
+  static const String globalUsersCollection = 'users';
 
-  static const String announcementsCollection = 'Announcements';
-  static const String usersCollection = 'Users';
-  static const String contactsCollection = 'Contacts';
-  static const String dutiesCollection = 'Duties';
-  static const String volunteersCollection = 'Volunteers';
-  static const String songsCollection = 'Songs';
+  static const String announcementsCollection = 'announcements';
+  static const String usersCollection = 'users';
+  static const String contactsCollection = 'contacts';
+  static const String dutiesCollection = 'duties';
+  static const String volunteersCollection = 'volunteers';
+  static const String songsCollection = 'songs';
 }

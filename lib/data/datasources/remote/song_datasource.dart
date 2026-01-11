@@ -12,7 +12,7 @@ class SongDataSource {
         .collection(FirebaseConstants.songsCollection)
         .orderBy('title')
         .snapshots()
-        .map((snapshot) => snapshot.docs.map((d) => SongModel.fromMap(d.data(), d.id)).toList());
+        .map((snapshot) => snapshot.docs.map((d) => SongModel.fromMap(d.data())).toList());
   }
 
   Future<void> streamSong(String groupId, SongModel song) async {
@@ -36,7 +36,6 @@ class SongDataSource {
 
       return SongModel.fromMap(
         data['playingNow'] as Map<String, dynamic>,
-        null,
       );
     });
   }
@@ -72,7 +71,6 @@ class SongDataSource {
 
     return SongModel.fromMap(
       docSnap.data()!,
-      songId,
     );
   }
 

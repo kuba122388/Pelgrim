@@ -35,7 +35,7 @@ class AnnouncementDataSource {
         .collection(FirebaseConstants.groupsCollection)
         .doc(groupName)
         .collection(FirebaseConstants.announcementsCollection)
-        .orderBy('Date', descending: true)
+        .orderBy('date', descending: true)
         .snapshots()
         .map((querySnapshot) {
       return querySnapshot.docs.map((doc) {

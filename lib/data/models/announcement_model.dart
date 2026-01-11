@@ -21,24 +21,24 @@ class AnnouncementModel {
 
   Map<String, dynamic> toMap() {
     return {
-      'authorId': authorId,
-      'authorName': authorName,
+      'author_id': authorId,
+      'author_name': authorName,
       'content': content,
-      'createdAt': Timestamp.fromDate(createdAt),
-      'isImportant': isImportant,
-      'isAnonymous': isAnonymous
+      'created_at': Timestamp.fromDate(createdAt),
+      'is_important': isImportant,
+      'is_anonymous': isAnonymous
     };
   }
 
   factory AnnouncementModel.fromMap(Map<String, dynamic> json, String docId) {
     return AnnouncementModel(
       id: docId,
-      authorId: (json['authorId']) ?? '',
-      authorName: json['authorName'] ?? '',
+      authorId: (json['author_id']) ?? '',
+      authorName: json['author_name'] ?? '',
       content: json['content'] ?? '',
-      createdAt: (json['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
-      isImportant: json['isImportant'] ?? false,
-      isAnonymous: json['isAnonymous'] ?? false,
+      createdAt: (json['created_at'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      isImportant: json['is_important'] ?? false,
+      isAnonymous: json['is_anonymous'] ?? false,
     );
   }
 

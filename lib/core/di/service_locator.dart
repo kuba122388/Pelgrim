@@ -73,6 +73,7 @@ void setupLocator() {
   sl.registerLazySingleton<SongDataSource>(() => SongDataSource());
   sl.registerLazySingleton<UserDataSource>(() => UserDataSource());
   sl.registerLazySingleton<LocalUserStorage>(() => LocalUserStorage());
+  sl.registerLazySingleton<LocalSongListStorage>(() => LocalSongListStorage());
 
   // --- 2. Repositories ---
   sl.registerLazySingleton<AnnouncementRepository>(

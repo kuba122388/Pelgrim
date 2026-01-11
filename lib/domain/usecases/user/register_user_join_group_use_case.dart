@@ -47,7 +47,7 @@ class RegisterUserJoinGroupUseCase {
 
       await _userRepository.createUser(user);
 
-      await _groupRepository.joinUserToGroup(groupId: groupId, userId: userId, isAdmin: false);
+      await _groupRepository.joinUserToGroup(groupId: groupId, user: user);
 
       return UserSession(user: user, group: group);
     } catch (e) {

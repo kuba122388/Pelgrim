@@ -19,28 +19,28 @@ class DutyModel {
 
   Map<String, dynamic> toMap() {
     return {
-      'Title': title,
-      'MaxVolunteers': maxVolunteers,
-      'Volunteers': volunteers.map((v) => v.toMap()).toList(),
-      'CreatedAt': createdAt,
+      'title': title,
+      'max_volunteers': maxVolunteers,
+      'volunteers': volunteers.map((v) => v.toMap()).toList(),
+      'created_at': createdAt,
     };
   }
 
   factory DutyModel.fromMap(Map<String, dynamic> map, String docId) {
     List<DutyVolunteerModel> parsedVolunteers = [];
 
-    if (map["Volunteers"] != null) {
-      parsedVolunteers = List<Map<String, dynamic>>.from(map["Volunteers"])
+    if (map["volunteers"] != null) {
+      parsedVolunteers = List<Map<String, dynamic>>.from(map["volunteers"])
           .map((userMap) => DutyVolunteerModel.fromMap(userMap))
           .toList();
     }
 
     return DutyModel(
       id: docId,
-      title: map["Title"] ?? "",
-      maxVolunteers: map["MaxVolunteers"] ?? 0,
+      title: map["title"] ?? "",
+      maxVolunteers: map["max_volunteers"] ?? 0,
       volunteers: parsedVolunteers,
-      createdAt: map["CreatedAt"] ?? Timestamp.now(),
+      createdAt: map["created_at"] ?? Timestamp.now(),
     );
   }
 

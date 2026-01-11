@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
@@ -15,6 +16,34 @@ import 'package:provider/provider.dart';
 import 'core/di/service_locator.dart';
 
 Future<void> main() async {
+  Future<void> migrateToNewStructure() async {
+    final firestore = FirebaseFirestore.instance;
+
+    final oldGroups = await firestore.collection('Pelgrim Groups').get();
+
+    for (var groupDoc in oldGroups.docs) {
+      String groupId = groupDoc.id;
+      if (!(groupDoc.id == "Niebieska - Brzeźniowsko - Złoczewska")) continue;
+
+      groupId = "niebieska_brzezniowsko_zloczewska";
+
+      final oldSongs = await groupDoc.reference.collection('Announcements').get();
+      for (var songDoc in oldSongs.docs) {
+        final songData = songDoc.data();
+        await firestore
+            .collection('pelgrim_groups')
+            .doc(groupId)
+            .collection('announcements')
+            .doc(songDoc.id)
+            .set({
+          'id': songDoc.id,
+          'title': songData['Title'],
+          'lyrics': songData['Lyrics'],
+        });
+      }
+    }
+  }
+
   WidgetsFlutterBinding.ensureInitialized();
 
   SystemChrome.setPreferredOrientations([
@@ -29,6 +58,8 @@ Future<void> main() async {
     androidProvider: kDebugMode ? AndroidProvider.debug : AndroidProvider.playIntegrity,
     webProvider: ReCaptchaV3Provider('6Lc3WJorAAAAANDI1jyxM-gm95pJpVDYwfwxmZB4'),
   );
+
+  // await migrateToNewStructure();
 
   await HiveSetup.init();
 

@@ -11,15 +11,15 @@ class DutyVolunteerModel {
 
   Map<String, dynamic> toMap() {
     return {
-      'userId': userId,
-      'fullName': fullName,
+      'user_id': userId,
+      'full_name': fullName,
     };
   }
 
   factory DutyVolunteerModel.fromMap(Map<String, dynamic> map) {
     return DutyVolunteerModel(
-      userId: map['userId'],
-      fullName: map['fullName'],
+      userId: map['user_id'],
+      fullName: map['full_name'],
     );
   }
 

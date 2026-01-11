@@ -28,7 +28,7 @@ class WelcomePage extends StatelessWidget {
                 child: Hero(
                   tag: "Navigate_button",
                   child: CustomNavigateButton(
-                    text: "Zaczynajmyy",
+                    text: "Zaczynajmy",
                     onPressed: () => Navigator.push(
                       context,
                       PageRouteBuilder(

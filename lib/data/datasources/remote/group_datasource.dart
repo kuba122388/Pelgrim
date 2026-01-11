@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:pelgrim/core/const/firebase_constants.dart';
 import 'package:pelgrim/data/models/group_model.dart';
+import 'package:pelgrim/data/models/user_model.dart';
 
 class GroupDataSource {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
@@ -29,29 +30,26 @@ class GroupDataSource {
     }).toList();
   }
 
-  Future<void> joinUserToGroup(String groupId, String userId, bool isAdmin) async {
+  Future<void> joinUserToGroup(String groupId, UserModel userModel) async {
     final batch = _db.batch();
 
-    final globalUserRef = _db.collection(FirebaseConstants.globalUsersCollection).doc(userId);
+    final globalUserRef = _db.collection(FirebaseConstants.globalUsersCollection).doc(userModel.id);
 
     final groupUserRef = _db
         .collection(FirebaseConstants.groupsCollection)
         .doc(groupId)
         .collection(FirebaseConstants.usersCollection)
-        .doc(userId);
+        .doc(userModel.id);
 
     batch.set(
       globalUserRef,
       {
-        "groupName": groupId,
-        "isAdmin": isAdmin,
+        "group_id": groupId,
       },
       SetOptions(merge: true),
     );
 
-    batch.set(groupUserRef, {
-      "isAdmin": isAdmin,
-    });
+    batch.set(groupUserRef, userModel.toMap());
 
     await batch.commit();
   }
@@ -59,20 +57,14 @@ class GroupDataSource {
   Future<void> setAdminStatus(String groupId, String userId, bool isAdmin) async {
     final batch = _db.batch();
 
-    final globalUserRef = _db.collection(FirebaseConstants.globalUsersCollection).doc(userId);
-
     final groupUserRef = _db
         .collection(FirebaseConstants.groupsCollection)
         .doc(groupId)
         .collection(FirebaseConstants.usersCollection)
         .doc(userId);
 
-    batch.update(globalUserRef, {
-      "isAdmin": isAdmin,
-    });
-
     batch.update(groupUserRef, {
-      "isAdmin": isAdmin,
+      "is_admin": isAdmin,
     });
 
     await batch.commit();

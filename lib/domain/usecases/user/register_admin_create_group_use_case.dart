@@ -63,8 +63,7 @@ class RegisterAdminCreateGroupUseCase {
 
       await _groupRepository.joinUserToGroup(
         groupId: group.id,
-        userId: userId,
-        isAdmin: true,
+        user: user,
       );
       return UserSession(user: user, group: group);
     } catch (e) {

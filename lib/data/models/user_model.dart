@@ -40,24 +40,24 @@ class UserModel extends HiveObject {
   Map<String, dynamic> toMap() {
     return {
       'id': id,
-      'firstName': firstName,
-      'lastName': lastName,
+      'first_name': firstName,
+      'last_name': lastName,
       'email': email,
       'phone': phone,
-      'groupId': groupId,
-      'isAdmin': isAdmin,
+      'group_id': groupId,
+      'is_admin': isAdmin,
     };
   }
 
   factory UserModel.fromMap(Map<String, dynamic> map) {
     return UserModel(
       id: map["id"],
-      firstName: map['firstName'],
-      lastName: map['lastName'],
+      firstName: map['first_name'],
+      lastName: map['last_name'],
       email: map['email'],
       phone: map['phone'],
-      groupId: map['groupId'],
-      isAdmin: map['isAdmin'],
+      groupId: map['group_id'],
+      isAdmin: map['is_admin'],
     );
   }
 

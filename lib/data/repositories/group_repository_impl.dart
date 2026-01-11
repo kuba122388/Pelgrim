@@ -1,7 +1,9 @@
 import 'package:pelgrim/core/errors/repository_exception.dart';
 import 'package:pelgrim/data/datasources/remote/group_datasource.dart';
 import 'package:pelgrim/data/models/group_model.dart';
+import 'package:pelgrim/data/models/user_model.dart';
 import 'package:pelgrim/domain/entities/group.dart';
+import 'package:pelgrim/domain/entities/user.dart';
 import 'package:pelgrim/domain/repositories/group_repository.dart';
 
 class GroupRepositoryImpl extends GroupRepository {
@@ -39,10 +41,9 @@ class GroupRepositoryImpl extends GroupRepository {
   }
 
   @override
-  Future<void> joinUserToGroup(
-      {required String groupId, required String userId, required bool isAdmin}) async {
+  Future<void> joinUserToGroup({required String groupId, required User user}) async {
     try {
-      await _groupDataSource.joinUserToGroup(groupId, userId, isAdmin);
+      await _groupDataSource.joinUserToGroup(groupId, UserModel.fromEntity(user));
     } catch (e) {
       throw Exception("Dołączenie użytkownika do grupy nie powiodło się: $e");
     }

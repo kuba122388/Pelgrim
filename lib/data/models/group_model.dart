@@ -30,19 +30,19 @@ class GroupModel extends HiveObject {
 
   Map<String, dynamic> toMap() {
     return {
-      'groupColor': groupColor,
-      'groupCity': groupCity,
+      'group_color': groupColor,
+      'group_city': groupCity,
       'color': color.toARGB32().toRadixString(16),
-      'secondColor': secondColor.toARGB32().toRadixString(16),
+      'second_color': secondColor.toARGB32().toRadixString(16),
     };
   }
 
   factory GroupModel.fromMap(Map<String, dynamic> json) {
     return GroupModel(
-      groupColor: json["groupColor"],
-      groupCity: json["groupCity"],
+      groupColor: json["group_color"],
+      groupCity: json["group_city"],
       color: Color(int.parse(json["color"], radix: 16)),
-      secondColor: Color(int.parse(json["secondColor"], radix: 16)),
+      secondColor: Color(int.parse(json["second_color"], radix: 16)),
     );
   }
 
