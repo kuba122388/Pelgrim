@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:pelgrim/domain/entities/user.dart';
 import 'package:pelgrim/presentation/providers/user_provider.dart';
 import 'package:pelgrim/presentation/user/all_users/all_users_page.dart';
 import 'package:pelgrim/presentation/user/announcements/announcements_page.dart';
@@ -26,39 +25,6 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   int _selectedIndex = 0;
-  late List<Widget> _pages;
-  late List<Widget> _topBars;
-  final GlobalKey<SongsPageState> _songsPageKey = GlobalKey<SongsPageState>();
-
-  @override
-  void initState() {
-    super.initState();
-
-    final isAdmin = context.read<UserProvider>().user!.isAdmin;
-
-    _pages = [
-      const AnnouncementsPage(),
-      const PlayingNowPage(),
-      SongsPage(key: _songsPageKey),
-      const GroupDutiesPage(),
-      const InformantPage(),
-      const ContactPage(),
-      const ImagePage(),
-      if (isAdmin) const AllUsersPage(),
-      const HelpPage()
-    ];
-    _topBars = [
-      const CustomTopBar(),
-      const PlayingNowTopbar(),
-      const SongsTopBar(),
-      const CustomTopBar(),
-      const CustomTopBar(),
-      const CustomTopBar(),
-      const CustomTopBar(),
-      if (isAdmin) const CustomTopBar(),
-      const CustomTopBar()
-    ];
-  }
 
   void _onItemTapped(int index) {
     setState(() {
@@ -69,18 +35,45 @@ class _MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
-    final User? myUser = context.watch<UserProvider>().user;
+    final user = context.watch<UserProvider>().user;
+    final isAdmin = user?.isAdmin ?? false;
+
+    final pages = [
+      const AnnouncementsPage(),
+      const PlayingNowPage(),
+      const SongsPage(),
+      const GroupDutiesPage(),
+      const InformantPage(),
+      const ContactPage(),
+      const ImagePage(),
+      if (isAdmin) const AllUsersPage(),
+      const HelpPage(),
+    ];
+
+    final topBars = [
+      const CustomTopBar(),
+      const PlayingNowTopbar(),
+      const SongsTopBar(),
+      const CustomTopBar(),
+      const CustomTopBar(),
+      const CustomTopBar(),
+      const CustomTopBar(),
+      if (isAdmin) const CustomTopBar(),
+      const CustomTopBar(),
+    ];
+
+    if (_selectedIndex >= pages.length) {
+      _selectedIndex = 0;
+    }
 
     return Scaffold(
-      appBar: _topBars.isNotEmpty ? _topBars[_selectedIndex] as PreferredSizeWidget : _loading(),
+      appBar: topBars[_selectedIndex] as PreferredSizeWidget,
       drawer: BurgerMenu(
-          onItemTapped: _onItemTapped, selectedIndex: _selectedIndex, currentUser: myUser!),
-      body: _pages.isNotEmpty ? _pages[_selectedIndex] : const CircularProgressIndicator(),
+        onItemTapped: _onItemTapped,
+        selectedIndex: _selectedIndex,
+        currentUser: user!,
+      ),
+      body: pages[_selectedIndex],
     );
-  }
-
-  PreferredSizeWidget _loading() {
-    return const PreferredSize(
-        preferredSize: Size.fromHeight(80), child: CircularProgressIndicator());
   }
 }

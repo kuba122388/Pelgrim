@@ -50,17 +50,14 @@ class DutyDataSource {
     DutyVolunteerModel volunteer,
   ) async {
     try {
-      final ref = _db
+      final dutyRef = _db
           .collection(FirebaseConstants.groupsCollection)
           .doc(groupId)
           .collection(FirebaseConstants.dutiesCollection)
-          .doc(dutyId)
-          .collection(FirebaseConstants.volunteersCollection)
-          .doc(volunteer.userId);
+          .doc(dutyId);
 
-      await ref.set({
-        ...volunteer.toMap(),
-        'joinedAt': FieldValue.serverTimestamp(),
+      dutyRef.update({
+        "volunteers": FieldValue.arrayUnion([volunteer.toMap()]),
       });
     } catch (e) {
       print('Błąd podczas dodawania wolontariusza: $e');
@@ -71,18 +68,18 @@ class DutyDataSource {
   Future<void> removeVolunteer(
     String groupId,
     String dutyId,
-    String userId,
+    DutyVolunteerModel volunteer,
   ) async {
     try {
-      final ref = _db
+      final dutyRef = _db
           .collection(FirebaseConstants.groupsCollection)
           .doc(groupId)
           .collection(FirebaseConstants.dutiesCollection)
-          .doc(dutyId)
-          .collection(FirebaseConstants.volunteersCollection)
-          .doc(userId);
+          .doc(dutyId);
 
-      await ref.delete();
+      await dutyRef.update({
+        "volunteers": FieldValue.arrayRemove([volunteer.toMap()]),
+      });
     } catch (e) {
       print('Błąd podczas usuwania wolontariusza: $e');
       rethrow;

@@ -27,7 +27,7 @@ class DutyBox extends StatelessWidget {
 
     final String slots = List.generate(
       total,
-      (i) => i < filled ? 'X' : '-',
+      (i) => i < filled ? '[X]' : '[-]',
     ).join(' ');
 
     return Card(
@@ -58,7 +58,7 @@ class DutyBox extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 8),
-            Text('Slots: $slots'),
+            Text('Ochotnicy: $slots'),
             const SizedBox(height: 8),
             ElevatedButton(
               onPressed: () => dutyProvider.toggleSignup(

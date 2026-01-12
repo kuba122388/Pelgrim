@@ -10,5 +10,5 @@ abstract class DutyRepository {
 
   Future<void> addVolunteer(String groupId, String dutyId, DutyVolunteer volunteer);
 
-  Future<void> removeVolunteer(String groupId, String dutyId, String userId);
+  Future<void> removeVolunteer(String groupId, String dutyId, DutyVolunteer volunteer);
 }

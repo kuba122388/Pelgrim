@@ -19,7 +19,7 @@ class ToggleDutySignUpUseCase {
     }
 
     if (isSignedUp) {
-      await _repository.removeVolunteer(groupId, duty.id!, dutyVolunteer.userId);
+      await _repository.removeVolunteer(groupId, duty.id!, dutyVolunteer);
     } else {
       await _repository.addVolunteer(groupId, duty.id!, dutyVolunteer);
     }

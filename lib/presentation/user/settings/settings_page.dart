@@ -4,8 +4,9 @@ import 'package:pelgrim/domain/entities/group.dart';
 import 'package:pelgrim/domain/entities/user.dart';
 import 'package:pelgrim/presentation/providers/user_provider.dart';
 import 'package:pelgrim/presentation/user/settings/special_topbar.dart';
-import 'package:pelgrim/presentation/welcome/pages/welcome_page.dart';
 import 'package:provider/provider.dart';
+
+import '../../welcome/pages/welcome_page.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});

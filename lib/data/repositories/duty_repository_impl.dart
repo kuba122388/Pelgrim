@@ -49,9 +49,10 @@ class DutyRepositoryImpl implements DutyRepository {
   }
 
   @override
-  Future<void> removeVolunteer(String groupId, String dutyId, String userId) {
+  Future<void> removeVolunteer(String groupId, String dutyId, DutyVolunteer volunteer) {
     try {
-      return _dutyService.removeVolunteer(groupId, dutyId, userId);
+      return _dutyService.removeVolunteer(
+          groupId, dutyId, DutyVolunteerModel.fromEntity(volunteer));
     } catch (e) {
       throw Exception("Nie udało się dodać dyżuru: $e");
     }

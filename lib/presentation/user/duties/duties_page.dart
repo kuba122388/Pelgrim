@@ -27,22 +27,22 @@ class _GroupDutiesPageState extends State<GroupDutiesPage> {
     final duties = context.watch<DutyProvider>().duties;
     final user = context.watch<UserProvider>().user!;
 
-    if (duties.isEmpty) {
-      return const Center(child: Text("Brak służb."));
-    }
-
     return Stack(
       children: [
         Padding(
           padding: const EdgeInsets.all(20),
-          child: ListView.builder(
-            itemCount: duties.length,
-            itemBuilder: (context, index) {
-              return DutyBox(
-                duty: duties[index],
-              );
-            },
-          ),
+          child: duties.isEmpty
+              ? const Center(
+                  child: Text("Brak służb."),
+                )
+              : ListView.builder(
+                  itemCount: duties.length,
+                  itemBuilder: (context, index) {
+                    return DutyBox(
+                      duty: duties[index],
+                    );
+                  },
+                ),
         ),
         if (user.isAdmin)
           Positioned(
