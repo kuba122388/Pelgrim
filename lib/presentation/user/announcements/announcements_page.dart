@@ -174,7 +174,7 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
                               ],
                             ),
                             const SizedBox(height: 10),
-                            Expanded(child: _displayAnnouncements(groupInfo.id, user)),
+                            Expanded(child: _displayAnnouncements(groupInfo.id!, user)),
                           ],
                         ),
                       )
@@ -191,38 +191,43 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
 
   StreamBuilder<List<Announcement>> _displayAnnouncements(String groupId, User myUser) {
     return StreamBuilder<List<Announcement>>(
-      stream: _getAnnouncementsStreamUseCase.execute(groupId),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        } else if (snapshot.hasError) {
-          return Center(child: Text('Błąd: ${snapshot.error}'));
-        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return const Center(
-            child: Text(
-              'Brak ogłoszeń',
-              style: TextStyle(fontFamily: 'Lexend', color: FONT_BLACK_COLOR),
-            ),
-          );
-        } else {
+        stream: _getAnnouncementsStreamUseCase.execute(groupId),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (snapshot.hasError) {
+            return Center(child: Text('Błąd: ${snapshot.error}'));
+          }
+
           final List<Announcement> announcements = snapshot.data!;
+
           final filtered =
               _important ? announcements.where((a) => a.important).toList() : announcements;
+
+          if (filtered.isEmpty) {
+            return const Center(
+              child: Text(
+                'Brak ogłoszeń',
+                style: TextStyle(fontFamily: 'Lexend', color: FONT_BLACK_COLOR),
+              ),
+            );
+          }
 
           return SingleChildScrollView(
             child: Column(
               children: filtered
-                  .map((announcement) => AnnouncementCard(
-                        userId: _userProvider.user!.id,
-                        isAdmin: _userProvider.user!.isAdmin,
-                        announcement: announcement,
-                        onDelete: () => _deleteAnnouncement(announcement, groupId),
-                      ))
+                  .map(
+                    (announcement) => AnnouncementCard(
+                      currentUserId: _userProvider.user!.id,
+                      isAdmin: _userProvider.user!.isAdmin,
+                      announcement: announcement,
+                      onDelete: () => _deleteAnnouncement(announcement, groupId),
+                    ),
+                  )
                   .toList(),
             ),
           );
-        }
-      },
-    );
+        });
   }
 }

@@ -22,10 +22,17 @@ class GroupRepositoryImpl extends GroupRepository {
   }
 
   @override
-  Future<void> createGroup(Group group) async {
+  Future<Group> createGroup(Group group) async {
     try {
-      GroupModel groupModel = GroupModel.fromEntity(group);
+      final groupModel = GroupModel.create(
+        groupColor: group.groupColor,
+        groupCity: group.groupCity,
+        color: group.color,
+        secondColor: group.secondColor,
+      );
       await _groupDataSource.createGroup(groupModel);
+
+      return groupModel.toEntity();
     } catch (e) {
       throw Exception("Wystąpił problem z utworzeniem grupy: $e");
     }

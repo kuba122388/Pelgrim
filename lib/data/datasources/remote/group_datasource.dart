@@ -17,9 +17,13 @@ class GroupDataSource {
     DocumentSnapshot docSnap =
         await _db.collection(FirebaseConstants.groupsCollection).doc(groupId).get();
 
-    // NOTE: ZMIENIĆ MIEJSCE USTAWIEŃ W FIREBASE
+    final data = docSnap.data() as Map<String, dynamic>?;
 
-    return GroupModel.fromMap(docSnap.data() as Map<String, dynamic>);
+    if (data == null) {
+      throw Exception("Document not found");
+    }
+
+    return GroupModel.fromMap(data).copyWith(id: docSnap.id);
   }
 
   Future<List<String>> getAllGroupNames() async {

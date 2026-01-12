@@ -24,7 +24,7 @@ class _PlayingNowPageState extends State<PlayingNowPage> {
     super.initState();
 
     final Group groupInfo = context.read<UserProvider>().groupInfo!;
-    _groupId = groupInfo.id;
+    _groupId = groupInfo.id!;
   }
 
   @override

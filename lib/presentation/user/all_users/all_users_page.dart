@@ -45,7 +45,7 @@ class _AllUsersPageState extends State<AllUsersPage> {
 
   Future<void> _loadUsers() async {
     try {
-      final allUsers = await _getAllUsersByGroupUseCase.execute(_userProvider.groupInfo!.id);
+      final allUsers = await _getAllUsersByGroupUseCase.execute(_userProvider.groupInfo!.id!);
 
       if (!mounted) return;
 

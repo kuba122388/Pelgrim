@@ -216,7 +216,7 @@ class _ImagePageState extends State<ImagePage> {
                 ),
                 InkWell(
                   onTap: () async =>
-                      await _uploadImages(groupName: groupInfo.id, userEmail: myUser.email),
+                      await _uploadImages(groupName: groupInfo.id!, userEmail: myUser.email),
                   child: Container(
                     height: 50,
                     padding: const EdgeInsets.symmetric(horizontal: 30),

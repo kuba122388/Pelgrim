@@ -6,7 +6,7 @@ class GetGroupUseCase {
 
   GetGroupUseCase(this._groupRepository);
 
-  Future<Group> execute(String groupName) async {
-    return _groupRepository.getGroupById(groupName);
+  Future<Group> execute(String groupId) async {
+    return _groupRepository.getGroupById(groupId);
   }
 }

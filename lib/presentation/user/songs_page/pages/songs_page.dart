@@ -25,7 +25,7 @@ class SongsPageState extends State<SongsPage> {
 
   void _onSearchChanged() {
     _debounce?.cancel();
-    _debounce = Timer(const Duration(milliseconds: 300), () {
+    _debounce = Timer(const Duration(milliseconds: 200), () {
       setState(() {});
     });
   }
@@ -36,8 +36,10 @@ class SongsPageState extends State<SongsPage> {
 
     _searchEngineController = TextEditingController()..addListener(_onSearchChanged);
 
-    _groupId = context.read<UserProvider>().groupInfo!.id;
-    context.read<SongProvider>().startSongList(_groupId);
+    _groupId = context.read<UserProvider>().groupInfo!.id!;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<SongProvider>().startSongList(_groupId);
+    });
   }
 
   @override
@@ -58,6 +60,8 @@ class SongsPageState extends State<SongsPage> {
     }
 
     final provider = context.watch<SongProvider>();
+
+    final songIndexMap = {for (var i = 0; i < provider.songs.length; i++) provider.songs[i].id!: i};
     final songs = filteredSongs(provider.songs);
 
     final screenWidth = MediaQuery.of(context).size.width;
@@ -76,7 +80,7 @@ class SongsPageState extends State<SongsPage> {
                 boxShadow: const [BOX_SHADOW_CONTAINER],
               ),
               width: screenWidth * 0.72,
-              margin: const EdgeInsets.symmetric(vertical: 30),
+              margin: const EdgeInsets.symmetric(vertical: 20),
               padding: const EdgeInsets.symmetric(horizontal: 5),
               child: TextField(
                 onTapOutside: (event) {
@@ -123,10 +127,12 @@ class SongsPageState extends State<SongsPage> {
                           ),
                         )
                       : ListView.builder(
+                          padding: const EdgeInsets.symmetric(horizontal: 10.0),
                           itemCount: songs.length,
                           itemBuilder: (_, i) {
                             final song = songs[i];
-                            final displayTitle = "${i + 1}. ${song.title}";
+                            final originalIndex = songIndexMap[song.id!] ?? i;
+                            final displayTitle = "${originalIndex + 1}. ${song.title}";
 
                             return GestureDetector(
                               onTap: () async {

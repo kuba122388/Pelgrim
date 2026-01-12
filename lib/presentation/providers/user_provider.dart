@@ -58,7 +58,7 @@ class UserProvider extends ChangeNotifier {
 
   // Note: User Methods
 
-  String get userGroupId => groupInfo != null ? groupInfo!.id : "";
+  String get userGroupId => user!.groupId;
 
   String? get authenticatedUserId => _isUserAuthenticatedUseCase.execute();
 
@@ -75,9 +75,6 @@ class UserProvider extends ChangeNotifier {
       await _saveLocalSessionUseCase.execute(userSession);
 
       _userSession = userSession;
-      print("SKHJFASHJKSFHJAKHJFKSAHJKF");
-      print(_userSession!.user.groupId);
-      print(_userSession!.group.id);
     } catch (e) {
       _userSession = null;
       rethrow;
@@ -91,11 +88,9 @@ class UserProvider extends ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
-    print("SESJA?");
-
     try {
       final session = await _loadLocalSessionUseCase.execute();
-      print("SESJA $session");
+
       if (session != null) {
         _userSession = session;
       }

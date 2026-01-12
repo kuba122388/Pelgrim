@@ -17,24 +17,27 @@ class GroupModelAdapter extends TypeAdapter<GroupModel> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return GroupModel(
-      groupColor: fields[0] as String,
-      groupCity: fields[1] as String,
-      color: fields[2] as Color,
-      secondColor: fields[3] as Color,
+      id: fields[0] as String,
+      groupColor: fields[1] as String,
+      groupCity: fields[2] as String,
+      color: fields[3] as Color,
+      secondColor: fields[4] as Color,
     );
   }
 
   @override
   void write(BinaryWriter writer, GroupModel obj) {
     writer
-      ..writeByte(4)
+      ..writeByte(5)
       ..writeByte(0)
-      ..write(obj.groupColor)
+      ..write(obj.id)
       ..writeByte(1)
-      ..write(obj.groupCity)
+      ..write(obj.groupColor)
       ..writeByte(2)
-      ..write(obj.color)
+      ..write(obj.groupCity)
       ..writeByte(3)
+      ..write(obj.color)
+      ..writeByte(4)
       ..write(obj.secondColor);
   }
 

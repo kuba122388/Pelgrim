@@ -31,7 +31,7 @@ class _AllImagesPageState extends State<AllImagesPage> {
           ),
           Expanded(
             child: FutureBuilder<List<String>>(
-              future: _loadAllImageUrls(groupInfo.id),
+              future: _loadAllImageUrls(groupInfo.id!),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());

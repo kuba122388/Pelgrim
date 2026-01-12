@@ -39,15 +39,16 @@ class RegisterAdminCreateGroupUseCase {
         password: password,
       );
 
-      Group group = Group(
+      Group groupToCreate = Group(
+        id: null,
         color: color,
         secondColor: secondColor,
         groupColor: groupColor,
         groupCity: groupCity,
       );
 
-      groupId = group.id;
-      await _groupRepository.createGroup(group);
+      final createdGroup = await _groupRepository.createGroup(groupToCreate);
+      groupId = createdGroup.id!;
 
       User user = User(
         id: userId,
@@ -56,16 +57,16 @@ class RegisterAdminCreateGroupUseCase {
         lastName: lastName,
         phone: phone,
         isAdmin: true,
-        groupId: group.id,
+        groupId: groupId,
       );
 
       await _userRepository.createUser(user);
 
       await _groupRepository.joinUserToGroup(
-        groupId: group.id,
+        groupId: groupId,
         user: user,
       );
-      return UserSession(user: user, group: group);
+      return UserSession(user: user, group: createdGroup);
     } catch (e) {
       if (userId != null) {
         await _authRepository.deleteAccount(userId);

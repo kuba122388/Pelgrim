@@ -23,7 +23,7 @@ class _ContactPageState extends State<ContactPage> {
   @override
   void initState() {
     super.initState();
-    _group = context.read<UserProvider>().groupInfo!.id;
+    _group = context.read<UserProvider>().groupInfo!.id!;
     _contactProvider = context.read<ContactProvider>();
     _loadContactInfo();
   }

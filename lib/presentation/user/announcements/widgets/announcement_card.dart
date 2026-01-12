@@ -4,7 +4,7 @@ import 'package:pelgrim/domain/entities/announcement.dart';
 
 class AnnouncementCard extends StatelessWidget {
   final Announcement announcement;
-  final String userId;
+  final String currentUserId;
   final bool isAdmin;
   final Future<void> Function()? onDelete;
 
@@ -12,7 +12,7 @@ class AnnouncementCard extends StatelessWidget {
     super.key,
     required this.announcement,
     required this.onDelete,
-    required this.userId,
+    required this.currentUserId,
     required this.isAdmin,
   });
 
@@ -45,7 +45,7 @@ class AnnouncementCard extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.only(right: 5),
                   child: Text(
-                    announcement.anonymous == false ? announcement.authorId : 'Autor Anonimowy',
+                    announcement.anonymous == false ? announcement.authorName : 'Autor Anonimowy',
                     style: const TextStyle(fontFamily: 'Lexend'),
                   ),
                 ),
@@ -85,7 +85,7 @@ class AnnouncementCard extends StatelessWidget {
             ),
 
             // Note: Wyświetl jeśli jest to autor lub admin
-            if (announcement.authorId == userId || isAdmin)
+            if (announcement.authorId == currentUserId || isAdmin)
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
