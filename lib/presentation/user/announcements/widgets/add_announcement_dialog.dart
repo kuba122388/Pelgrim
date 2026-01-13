@@ -168,12 +168,22 @@ class _AddAnnouncementDialogState extends State<AddAnnouncementDialog> {
 
     setState(() => _isProcessing = true);
 
-    await widget.onConfirm(
-      content: _controller.text.trim(),
-      isImportant: _isImportant,
-      isAnonymous: _isAnonymous,
-    );
+    try {
+      await widget.onConfirm(
+        content: _controller.text.trim(),
+        isImportant: _isImportant,
+        isAnonymous: _isAnonymous,
+      );
 
-    if (mounted) Navigator.pop(context);
+      if (mounted) Navigator.pop(context);
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isProcessing = false);
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Nie udało się dodać ogłoszenia')),
+        );
+      }
+    }
   }
 }

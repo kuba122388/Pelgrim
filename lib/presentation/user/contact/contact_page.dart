@@ -25,7 +25,9 @@ class _ContactPageState extends State<ContactPage> {
     super.initState();
     _group = context.read<UserProvider>().groupInfo!.id!;
     _contactProvider = context.read<ContactProvider>();
-    _loadContactInfo();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadContactInfo();
+    });
   }
 
   Future<void> _loadContactInfo() async {
@@ -90,11 +92,12 @@ class _ContactPageState extends State<ContactPage> {
                           maxLines: null,
                           expands: true,
                           decoration: const InputDecoration(
-                              border: InputBorder.none,
-                              contentPadding: EdgeInsets.zero,
-                              hintText:
-                                  "Tutaj wypisz wszystkie niezbędne kontakty w dowolnym formacie",
-                              hintMaxLines: 2),
+                            border: InputBorder.none,
+                            contentPadding: EdgeInsets.zero,
+                            hintText:
+                                "Tutaj wypisz wszystkie niezbędne kontakty w dowolnym formacie",
+                            hintMaxLines: 2,
+                          ),
                           style: const TextStyle(
                             fontFamily: 'Lexend',
                             fontSize: 14,
@@ -107,8 +110,11 @@ class _ContactPageState extends State<ContactPage> {
                             padding: const EdgeInsets.only(right: 15.0),
                             child: Consumer<ContactProvider>(
                               builder: (context, provider, child) {
-                                if (provider.isLoading)
-                                  return const CircularProgressIndicator(); // Dodaj obsługę ładowania!
+                                if (provider.isLoading) {
+                                  return const Center(
+                                    child: CircularProgressIndicator(),
+                                  ); // Dodaj obsługę ładowania!
+                                }
                                 return Text(
                                   _isEditing ? _controller.text : provider.contactDescription,
                                   style: const TextStyle(

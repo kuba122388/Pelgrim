@@ -6,7 +6,7 @@ class GetAnnouncementsStreamUseCase {
 
   GetAnnouncementsStreamUseCase(this._announcementRepository);
 
-  Stream<List<Announcement>> execute(String groupName) {
-    return _announcementRepository.getAnnouncementsStream(groupName);
+  Stream<List<Announcement>> execute(String groupId) {
+    return _announcementRepository.getAnnouncementsStream(groupId);
   }
 }

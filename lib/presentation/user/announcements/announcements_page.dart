@@ -2,13 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:pelgrim/core/const/app_consts.dart';
-import 'package:pelgrim/core/di/service_locator.dart';
 import 'package:pelgrim/domain/entities/announcement.dart';
-import 'package:pelgrim/domain/entities/group.dart';
 import 'package:pelgrim/domain/entities/user.dart';
-import 'package:pelgrim/domain/usecases/announcement/add_announcement_use_case.dart';
-import 'package:pelgrim/domain/usecases/announcement/delete_announcement_use_case.dart';
-import 'package:pelgrim/domain/usecases/announcement/get_announcements_stream_use_case.dart';
+import 'package:pelgrim/presentation/providers/announcement_provider.dart';
 import 'package:pelgrim/presentation/providers/user_provider.dart';
 import 'package:pelgrim/presentation/user/announcements/widgets/add_announcement_dialog.dart';
 import 'package:pelgrim/presentation/user/announcements/widgets/add_announcement_trigger.dart';
@@ -24,12 +20,8 @@ class AnnouncementsPage extends StatefulWidget {
 }
 
 class _AnnouncementsPageState extends State<AnnouncementsPage> {
-  final AddAnnouncementUseCase _addAnnouncement = sl<AddAnnouncementUseCase>();
-  final DeleteAnnouncementUseCase _deleteAnnouncementUseCase = sl<DeleteAnnouncementUseCase>();
-  final GetAnnouncementsStreamUseCase _getAnnouncementsStreamUseCase =
-      sl<GetAnnouncementsStreamUseCase>();
-
   late final UserProvider _userProvider;
+  late final AnnouncementProvider _announcementProvider;
 
   bool _important = false;
 
@@ -37,10 +29,13 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
   void initState() {
     super.initState();
     _userProvider = context.read<UserProvider>();
-  }
+    _announcementProvider = context.read<AnnouncementProvider>();
 
-  void refresh() {
-    setState(() {});
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _announcementProvider.startAnnouncementStream(
+        _userProvider.userGroupId,
+      );
+    });
   }
 
   Future<void> _deleteAnnouncement(
@@ -52,7 +47,7 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
       builder: (_) => DeleteAnnouncementDialog(
         announcement: announcement,
         onConfirm: () async {
-          await _deleteAnnouncementUseCase.execute(
+          await _announcementProvider.deleteAnnouncement(
             groupId,
             announcement.id!,
           );
@@ -63,11 +58,14 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final Group groupInfo = _userProvider.groupInfo!;
     final User user = _userProvider.user!;
 
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top;
+
+    final List<Announcement> announcements = _announcementProvider.announcementList;
+
+    final filtered = _important ? announcements.where((a) => a.important).toList() : announcements;
 
     return SafeArea(
       child: SingleChildScrollView(
@@ -113,7 +111,7 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
                                   anonymous: isAnonymous,
                                 );
 
-                                await _addAnnouncement.execute(
+                                await _announcementProvider.addAnnouncement(
                                   _userProvider.userGroupId,
                                   announcement,
                                 );
@@ -174,7 +172,32 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
                               ],
                             ),
                             const SizedBox(height: 10),
-                            Expanded(child: _displayAnnouncements(groupInfo.id!, user)),
+                            Expanded(
+                              child: _announcementProvider.isInitialLoading
+                                  ? const Center(
+                                      child: CircularProgressIndicator(),
+                                    )
+                                  : filtered.isEmpty
+                                      ? const Center(
+                                          child: Text(
+                                            'Brak ogłoszeń',
+                                            style: TextStyle(
+                                                fontFamily: 'Lexend', color: FONT_BLACK_COLOR),
+                                          ),
+                                        )
+                                      : ListView.builder(
+                                          itemCount: filtered.length,
+                                          itemBuilder: (_, i) => AnnouncementCard(
+                                            currentUserId: _userProvider.user!.id,
+                                            isAdmin: _userProvider.user!.isAdmin,
+                                            announcement: filtered[i],
+                                            onDelete: () => _deleteAnnouncement(
+                                              filtered[i],
+                                              _userProvider.userGroupId,
+                                            ),
+                                          ),
+                                        ),
+                            ),
                           ],
                         ),
                       )
@@ -187,47 +210,5 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
         ),
       ),
     );
-  }
-
-  StreamBuilder<List<Announcement>> _displayAnnouncements(String groupId, User myUser) {
-    return StreamBuilder<List<Announcement>>(
-        stream: _getAnnouncementsStreamUseCase.execute(groupId),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          if (snapshot.hasError) {
-            return Center(child: Text('Błąd: ${snapshot.error}'));
-          }
-
-          final List<Announcement> announcements = snapshot.data!;
-
-          final filtered =
-              _important ? announcements.where((a) => a.important).toList() : announcements;
-
-          if (filtered.isEmpty) {
-            return const Center(
-              child: Text(
-                'Brak ogłoszeń',
-                style: TextStyle(fontFamily: 'Lexend', color: FONT_BLACK_COLOR),
-              ),
-            );
-          }
-
-          return SingleChildScrollView(
-            child: Column(
-              children: filtered
-                  .map(
-                    (announcement) => AnnouncementCard(
-                      currentUserId: _userProvider.user!.id,
-                      isAdmin: _userProvider.user!.isAdmin,
-                      announcement: announcement,
-                      onDelete: () => _deleteAnnouncement(announcement, groupId),
-                    ),
-                  )
-                  .toList(),
-            ),
-          );
-        });
   }
 }
