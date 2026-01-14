@@ -79,7 +79,7 @@ class _ContactPageState extends State<ContactPage> {
             Expanded(
               child: Container(
                 padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
-                width: screenWidth * 0.75,
+                width: screenWidth * 0.8,
                 decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(20),

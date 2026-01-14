@@ -2,6 +2,8 @@ import 'package:pelgrim/core/errors/use_case_exception.dart';
 import 'package:pelgrim/domain/repositories/group_repository.dart';
 import 'package:pelgrim/domain/repositories/user_repository.dart';
 
+import '../../entities/user.dart';
+
 class SetAdminStatusUseCase {
   final GroupRepository _groupRepository;
   final UserRepository _userRepository;
@@ -14,7 +16,7 @@ class SetAdminStatusUseCase {
   Future<void> execute({
     required String currentUserId,
     required String groupId,
-    required String targetUserId,
+    required User targetUser,
     required bool isAdmin,
   }) async {
     final currentUser = await _userRepository.getUserById(currentUserId);
@@ -25,7 +27,7 @@ class SetAdminStatusUseCase {
 
     await _groupRepository.setAdminStatus(
       groupId: groupId,
-      userId: targetUserId,
+      user: targetUser,
       isAdmin: isAdmin,
     );
   }

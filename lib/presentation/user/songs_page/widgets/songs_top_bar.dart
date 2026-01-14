@@ -2,20 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:pelgrim/presentation/providers/user_provider.dart';
 import 'package:provider/provider.dart';
 
-import '../../../register/widgets/register_topbar.dart';
+import '../../../widgets/topbar_clipper.dart';
+import '../../settings/settings_page.dart';
+import '../pages/add_song_page.dart';
 
-class BaseSongsTopBar extends StatelessWidget implements PreferredSizeWidget {
-  final Widget leading;
-  final List<Widget> actions;
-
-  const BaseSongsTopBar({
+class SongsTopBar extends StatelessWidget implements PreferredSizeWidget {
+  const SongsTopBar({
     super.key,
-    required this.leading,
-    this.actions = const [],
   });
 
   @override
-  Size get preferredSize => const Size.fromHeight(80);
+  Size get preferredSize => const Size.fromHeight(72);
 
   @override
   Widget build(BuildContext context) {
@@ -29,10 +26,13 @@ class BaseSongsTopBar extends StatelessWidget implements PreferredSizeWidget {
     final Color secondColor = groupInfo.secondColor;
     final bool isLight = secondColor == const Color(0xFFFFFFFF);
 
+    final isAdmin = context.read<UserProvider>().user!.isAdmin;
+
     return ClipPath(
       clipper: TopBarClipper(),
       child: Container(
         width: screenWidth,
+        height: statusBar + 72,
         padding: EdgeInsets.only(top: statusBar + 8),
         decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -48,8 +48,15 @@ class BaseSongsTopBar extends StatelessWidget implements PreferredSizeWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  leading,
-                  Expanded(
+                  InkWell(
+                    onTap: () => Scaffold.of(context).openDrawer(),
+                    child: Image.asset('./images/burger-bar.png', width: 25),
+                  ),
+                  const SizedBox(
+                    width: 25,
+                  ),
+                  SizedBox(
+                    width: screenWidth * 0.45,
                     child: Center(
                       child: Text(
                         groupInfo.groupColor,
@@ -62,7 +69,25 @@ class BaseSongsTopBar extends StatelessWidget implements PreferredSizeWidget {
                       ),
                     ),
                   ),
-                  Row(mainAxisSize: MainAxisSize.min, children: actions),
+                  if (isAdmin)
+                    InkWell(
+                      child: Image.asset('./images/plus.png', width: 25),
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const AddSongPage(),
+                        ),
+                      ),
+                    ),
+                  InkWell(
+                    child: Image.asset('./images/settings.png', width: 25),
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const SettingsPage(),
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),

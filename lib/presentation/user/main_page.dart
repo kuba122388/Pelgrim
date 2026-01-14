@@ -9,7 +9,7 @@ import 'package:pelgrim/presentation/user/informant/informant_page.dart';
 import 'package:pelgrim/presentation/user/playing_now/playing_now_page.dart';
 import 'package:pelgrim/presentation/user/playing_now/playing_now_topbar.dart';
 import 'package:pelgrim/presentation/user/songs_page/pages/songs_page.dart';
-import 'package:pelgrim/presentation/user/songs_page/widgets/songs_topbar.dart';
+import 'package:pelgrim/presentation/user/songs_page/widgets/songs_top_bar.dart';
 import 'package:pelgrim/presentation/widgets/burger.dart';
 import 'package:pelgrim/presentation/widgets/custom_topbar.dart';
 import 'package:provider/provider.dart';

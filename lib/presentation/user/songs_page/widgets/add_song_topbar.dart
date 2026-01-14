@@ -4,7 +4,7 @@ import 'package:pelgrim/domain/entities/user.dart';
 import 'package:pelgrim/presentation/providers/user_provider.dart';
 import 'package:provider/provider.dart';
 
-import '../../../register/widgets/register_topbar.dart';
+import '../../../widgets/topbar_clipper.dart';
 
 class AddSongTopBar extends StatefulWidget implements PreferredSizeWidget {
   final Future<void> Function() onAccept;

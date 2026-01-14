@@ -15,7 +15,7 @@ abstract class GroupRepository {
 
   Future<void> setAdminStatus({
     required String groupId,
-    required String userId,
+    required User user,
     required bool isAdmin,
   });
 

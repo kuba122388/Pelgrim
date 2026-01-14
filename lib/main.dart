@@ -6,6 +6,8 @@ import 'package:flutter/services.dart';
 import 'package:pelgrim/app.dart';
 import 'package:pelgrim/core/config/firebase_options.dart';
 import 'package:pelgrim/core/storage/hive_setup.dart';
+import 'package:pelgrim/presentation/providers/all_users_provider.dart';
+import 'package:pelgrim/presentation/providers/announcement_provider.dart';
 import 'package:pelgrim/presentation/providers/contact_provider.dart';
 import 'package:pelgrim/presentation/providers/duty_provider.dart';
 import 'package:pelgrim/presentation/providers/song_provider.dart';
@@ -82,6 +84,12 @@ Future<void> main() async {
         ),
         ChangeNotifierProvider<SongProvider>(
           create: (_) => sl<SongProvider>(),
+        ),
+        ChangeNotifierProvider<AnnouncementProvider>(
+          create: (_) => sl<AnnouncementProvider>(),
+        ),
+        ChangeNotifierProvider<AllUsersProvider>(
+          create: (_) => sl<AllUsersProvider>(),
         )
       ],
       child: const MyApp(),

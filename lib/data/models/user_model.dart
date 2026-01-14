@@ -54,10 +54,10 @@ class UserModel extends HiveObject {
       id: map["id"],
       firstName: map['first_name'],
       lastName: map['last_name'],
-      email: map['email'],
-      phone: map['phone'],
-      groupId: map['group_id'],
-      isAdmin: map['is_admin'],
+      email: map['email'] ?? "",
+      phone: map['phone'] ?? "",
+      groupId: map['group_id'] ?? "",
+      isAdmin: map['is_admin'] ?? "",
     );
   }
 

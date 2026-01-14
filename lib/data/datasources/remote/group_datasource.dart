@@ -34,40 +34,51 @@ class GroupDataSource {
     }).toList();
   }
 
-  Future<void> joinUserToGroup(String groupId, UserModel userModel) async {
+  Future<void> joinUserToGroup(String groupId, UserModel user) async {
     final batch = _db.batch();
 
-    final globalUserRef = _db.collection(FirebaseConstants.globalUsersCollection).doc(userModel.id);
+    final globalUserRef = _db.collection(FirebaseConstants.globalUsersCollection).doc(user.id);
 
     final groupUserRef = _db
         .collection(FirebaseConstants.groupsCollection)
         .doc(groupId)
         .collection(FirebaseConstants.usersCollection)
-        .doc(userModel.id);
+        .doc(user.id);
+
+    batch.set(globalUserRef, user.toMap());
 
     batch.set(
-      globalUserRef,
+      groupUserRef,
       {
-        "group_id": groupId,
+        "is_admin": user.isAdmin,
+        "first_name": user.firstName,
+        "last_name": user.lastName,
       },
       SetOptions(merge: true),
     );
 
-    batch.set(groupUserRef, userModel.toMap());
-
     await batch.commit();
   }
 
-  Future<void> setAdminStatus(String groupId, String userId, bool isAdmin) async {
+  Future<void> setAdminStatus(String groupId, UserModel user, bool isAdmin) async {
     final batch = _db.batch();
 
     final groupUserRef = _db
         .collection(FirebaseConstants.groupsCollection)
         .doc(groupId)
         .collection(FirebaseConstants.usersCollection)
-        .doc(userId);
+        .doc(user.id);
+
+    final globalUserRef = _db.collection(FirebaseConstants.globalUsersCollection).doc(user.id);
 
     batch.update(groupUserRef, {
+      "id": user.id,
+      "is_admin": isAdmin,
+      "first_name": user.firstName,
+      "last_name": user.lastName,
+    });
+
+    batch.update(globalUserRef, {
       "is_admin": isAdmin,
     });
 

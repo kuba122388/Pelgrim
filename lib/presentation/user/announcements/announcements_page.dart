@@ -65,66 +65,39 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
 
     final List<Announcement> announcements = _announcementProvider.announcementList;
 
+    final announcementProvider = context.watch<AnnouncementProvider>();
+
     final filtered = _important ? announcements.where((a) => a.important).toList() : announcements;
 
     return SafeArea(
-      child: SingleChildScrollView(
-        physics: const NeverScrollableScrollPhysics(),
-        child: SizedBox(
-          width: screenWidth,
-          height: screenHeight,
-          child: Column(
-            children: [
-              Padding(
-                padding: EdgeInsets.only(top: screenHeight * 0.02, bottom: screenHeight * 0.01),
-                child: const Text(
-                  'Dodaj Ogłoszenie',
-                  style: TextStyle(
-                    fontFamily: 'Lexend',
-                    fontWeight: FontWeight.bold,
-                    color: FONT_BLACK_COLOR,
-                    fontSize: 18,
-                    shadows: [APP_TEXT_SHADOW],
-                  ),
+      child: SizedBox(
+        width: screenWidth,
+        child: Column(
+          children: [
+            Padding(
+              padding: EdgeInsets.only(top: screenHeight * 0.02, bottom: screenHeight * 0.01),
+              child: const Text(
+                'Dodaj Ogłoszenie',
+                style: TextStyle(
+                  fontFamily: 'Lexend',
+                  fontWeight: FontWeight.bold,
+                  color: FONT_BLACK_COLOR,
+                  fontSize: 18,
+                  shadows: [APP_TEXT_SHADOW],
                 ),
               ),
-              Expanded(
-                child: SizedBox(
-                  width: screenWidth * 0.85,
-                  child: Column(
-                    children: [
-                      InkWell(
-                        onTap: () {
-                          showDialog(
-                            context: context,
-                            builder: (_) => AddAnnouncementDialog(
-                              onConfirm: (
-                                  {required content,
-                                  required isImportant,
-                                  required isAnonymous}) async {
-                                final announcement = Announcement(
-                                  authorId: user.id,
-                                  authorName: user.fullName,
-                                  content: content,
-                                  createdAt: DateTime.now(),
-                                  important: isImportant,
-                                  anonymous: isAnonymous,
-                                );
-
-                                await _announcementProvider.addAnnouncement(
-                                  _userProvider.userGroupId,
-                                  announcement,
-                                );
-                              },
-                            ),
-                          );
-                        },
-                        child: const AddAnnouncementRow(),
-                      ),
-                      SizedBox(height: screenHeight * 0.01),
-                      Container(
-                        height: screenHeight * 0.73,
+            ),
+            Expanded(
+              child: SizedBox(
+                width: screenWidth * 0.85,
+                child: Column(
+                  children: [
+                    _buildAddAnnouncementButton(context, user),
+                    const SizedBox(height: 10),
+                    Expanded(
+                      child: Container(
                         padding: const EdgeInsets.only(top: 15, left: 15, right: 15),
+                        margin: const EdgeInsets.only(bottom: 10),
                         decoration: BoxDecoration(
                             color: BACKGROUND_CONTAINERS_COLOR,
                             border: Border.all(color: Colors.black),
@@ -173,7 +146,7 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
                             ),
                             const SizedBox(height: 10),
                             Expanded(
-                              child: _announcementProvider.isInitialLoading
+                              child: announcementProvider.isInitialLoading
                                   ? const Center(
                                       child: CircularProgressIndicator(),
                                     )
@@ -200,15 +173,43 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
                             ),
                           ],
                         ),
-                      )
-                    ],
-                  ),
+                      ),
+                    )
+                  ],
                 ),
-              )
-            ],
-          ),
+              ),
+            ),
+          ],
         ),
       ),
+    );
+  }
+
+  InkWell _buildAddAnnouncementButton(BuildContext context, User user) {
+    return InkWell(
+      onTap: () {
+        showDialog(
+          context: context,
+          builder: (_) => AddAnnouncementDialog(
+            onConfirm: ({required content, required isImportant, required isAnonymous}) async {
+              final announcement = Announcement(
+                authorId: user.id,
+                authorName: user.fullName,
+                content: content,
+                createdAt: DateTime.now(),
+                important: isImportant,
+                anonymous: isAnonymous,
+              );
+
+              await _announcementProvider.addAnnouncement(
+                _userProvider.userGroupId,
+                announcement,
+              );
+            },
+          ),
+        );
+      },
+      child: const AddAnnouncementRow(),
     );
   }
 }

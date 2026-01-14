@@ -59,11 +59,11 @@ class GroupRepositoryImpl extends GroupRepository {
   @override
   Future<void> setAdminStatus({
     required String groupId,
-    required String userId,
+    required User user,
     required bool isAdmin,
   }) async {
     try {
-      await _groupDataSource.setAdminStatus(groupId, userId, isAdmin);
+      await _groupDataSource.setAdminStatus(groupId, UserModel.fromEntity(user), isAdmin);
     } catch (e) {
       throw Exception("Nadawanie uprawnień nie powiodło się: $e");
     }

@@ -3,6 +3,8 @@ import 'package:pelgrim/domain/entities/group.dart';
 import 'package:pelgrim/presentation/providers/user_provider.dart';
 import 'package:provider/provider.dart';
 
+import '../../widgets/topbar_clipper.dart';
+
 class SpecialTopBar extends StatefulWidget implements PreferredSizeWidget {
   const SpecialTopBar({super.key});
 
@@ -54,9 +56,9 @@ class _SpecialTopBarState extends State<SpecialTopBar> {
                           onTap: () => {Navigator.of(context).pop()},
                           child: Image.asset('./images/back-arrow-2.png', width: 30)),
                       SizedBox(
-                          width: screenWidth * 0.5,
-                          child: Center(
-                              child: Text(
+                        width: screenWidth * 0.5,
+                        child: Center(
+                          child: Text(
                             title,
                             style: TextStyle(
                               color: secondColor == const Color(0xFFFFFFFF)
@@ -66,7 +68,9 @@ class _SpecialTopBarState extends State<SpecialTopBar> {
                               fontWeight: FontWeight.bold,
                             ),
                             maxLines: 1,
-                          ))),
+                          ),
+                        ),
+                      ),
                       const SizedBox(width: 25)
                     ],
                   ),
@@ -82,22 +86,5 @@ class _SpecialTopBarState extends State<SpecialTopBar> {
             ),
           ),
         ));
-  }
-}
-
-class TopBarClipper extends CustomClipper<Path> {
-  @override
-  Path getClip(Size size) {
-    Path path = Path();
-    path.lineTo(0, size.height - 20);
-    path.quadraticBezierTo(size.width / 2, size.height + 20, size.width, size.height - 20);
-    path.lineTo(size.width, 0);
-    path.close();
-    return path;
-  }
-
-  @override
-  bool shouldReclip(CustomClipper<Path> oldClipper) {
-    return false;
   }
 }

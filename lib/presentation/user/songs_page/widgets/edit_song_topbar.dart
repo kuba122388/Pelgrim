@@ -4,7 +4,7 @@ import 'package:pelgrim/domain/entities/user.dart';
 import 'package:pelgrim/presentation/providers/user_provider.dart';
 import 'package:provider/provider.dart';
 
-import '../../../register/widgets/register_topbar.dart';
+import '../../../widgets/topbar_clipper.dart';
 
 class EditSongTopbar extends StatefulWidget implements PreferredSizeWidget {
   final VoidCallback onAccept;
@@ -36,65 +36,64 @@ class _EditSongTopbarState extends State<EditSongTopbar> {
     Color firstColor = groupInfo.color;
     Color secondColor = groupInfo.secondColor;
 
-    return PreferredSize(
-        preferredSize: const Size.fromHeight(80),
-        child: ClipPath(
-          clipper: TopBarClipper(),
-          child: Container(
-            width: screenWidth,
-            height: screenHeight * 0.1 + statusBar,
-            padding: EdgeInsets.only(top: statusBar + 8),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [firstColor, secondColor],
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
+    return ClipPath(
+      clipper: TopBarClipper(),
+      child: Container(
+        width: screenWidth,
+        height: screenHeight * 0.1 + statusBar,
+        padding: EdgeInsets.only(top: statusBar + 8),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [firstColor, secondColor],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            SizedBox(
+              width: screenWidth * 0.9,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const SizedBox(width: 10),
+                  InkWell(
+                    onTap: () => {Navigator.of(context).pop()},
+                    child: Image.asset('./images/delete.png', width: 35),
+                  ),
+                  SizedBox(
+                    width: screenWidth * 0.42,
+                    child: Center(
+                      child: Text(
+                        title,
+                        style: TextStyle(
+                          color:
+                              secondColor == const Color(0xFFFFFFFF) ? Colors.black : Colors.white,
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        maxLines: 1,
+                      ),
+                    ),
+                  ),
+                  InkWell(
+                      onTap: () => {widget.onAccept()},
+                      child: Image.asset('./images/accept.png', width: 35)),
+                  const SizedBox(width: 10),
+                ],
               ),
             ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                SizedBox(
-                  width: screenWidth * 0.9,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const SizedBox(width: 10),
-                      InkWell(
-                        onTap: () => {Navigator.of(context).pop()},
-                        child: Image.asset('./images/delete.png', width: 35),
-                      ),
-                      SizedBox(
-                          width: screenWidth * 0.42,
-                          child: Center(
-                              child: Text(
-                            title,
-                            style: TextStyle(
-                              color: secondColor == const Color(0xFFFFFFFF)
-                                  ? Colors.black
-                                  : Colors.white,
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            maxLines: 1,
-                          ))),
-                      InkWell(
-                          onTap: () => {widget.onAccept()},
-                          child: Image.asset('./images/accept.png', width: 35)),
-                      const SizedBox(width: 10),
-                    ],
-                  ),
-                ),
-                Text(
-                  subtitle,
-                  style: TextStyle(
-                    color: secondColor == const Color(0xFFFFFFFF) ? Colors.black : Colors.white,
-                    fontSize: 16,
-                  ),
-                ),
-              ],
+            Text(
+              subtitle,
+              style: TextStyle(
+                color: secondColor == const Color(0xFFFFFFFF) ? Colors.black : Colors.white,
+                fontSize: 16,
+              ),
             ),
-          ),
-        ));
+          ],
+        ),
+      ),
+    );
   }
 }

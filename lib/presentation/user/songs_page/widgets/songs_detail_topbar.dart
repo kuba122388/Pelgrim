@@ -7,7 +7,7 @@ import 'package:pelgrim/presentation/user/settings/settings_page.dart';
 import 'package:pelgrim/presentation/user/songs_page/pages/edit_song_page.dart';
 import 'package:provider/provider.dart';
 
-import '../../../register/widgets/register_topbar.dart';
+import '../../../widgets/topbar_clipper.dart';
 
 class SongsDetailTopbar extends StatefulWidget implements PreferredSizeWidget {
   final Song song;

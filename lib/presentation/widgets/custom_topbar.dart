@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:pelgrim/domain/entities/group.dart';
-import 'package:pelgrim/presentation/user/settings/settings_page.dart';
 import 'package:pelgrim/presentation/providers/user_provider.dart';
+import 'package:pelgrim/presentation/user/settings/settings_page.dart';
+import 'package:pelgrim/presentation/widgets/topbar_clipper.dart';
 import 'package:provider/provider.dart';
 
 class CustomTopBar extends StatefulWidget implements PreferredSizeWidget {
@@ -97,22 +98,5 @@ class _CustomTopBarState extends State<CustomTopBar> {
         ),
       ),
     );
-  }
-}
-
-class TopBarClipper extends CustomClipper<Path> {
-  @override
-  Path getClip(Size size) {
-    Path path = Path();
-    path.lineTo(0, size.height - 20);
-    path.quadraticBezierTo(size.width / 2, size.height + 20, size.width, size.height - 20);
-    path.lineTo(size.width, 0);
-    path.close();
-    return path;
-  }
-
-  @override
-  bool shouldReclip(CustomClipper<Path> oldClipper) {
-    return false;
   }
 }
