@@ -3,10 +3,12 @@ import 'package:pelgrim/core/const/firebase_constants.dart';
 import 'package:pelgrim/data/models/song_model.dart';
 
 class SongDataSource {
-  final FirebaseFirestore _db = FirebaseFirestore.instance;
+  final FirebaseFirestore firestore;
+
+  const SongDataSource(this.firestore);
 
   Stream<List<SongModel>> watchSongs(String groupId) {
-    return _db
+    return firestore
         .collection(FirebaseConstants.groupsCollection)
         .doc(groupId)
         .collection(FirebaseConstants.songsCollection)
@@ -16,13 +18,13 @@ class SongDataSource {
   }
 
   Future<void> streamSong(String groupId, SongModel song) async {
-    await _db.collection(FirebaseConstants.groupsCollection).doc(groupId).update({
+    await firestore.collection(FirebaseConstants.groupsCollection).doc(groupId).update({
       'playingNow': song.toMap(),
     });
   }
 
   Stream<SongModel?> getPlayingNowStream(String groupId) {
-    return _db
+    return firestore
         .collection(FirebaseConstants.groupsCollection)
         .doc(groupId)
         .snapshots()
@@ -41,7 +43,7 @@ class SongDataSource {
   }
 
   Future<void> addSong(String groupId, SongModel song) async {
-    await _db
+    await firestore
         .collection(FirebaseConstants.groupsCollection)
         .doc(groupId)
         .collection(FirebaseConstants.songsCollection)
@@ -49,7 +51,7 @@ class SongDataSource {
   }
 
   Future<void> editSong(String groupId, SongModel song) async {
-    await _db
+    await firestore
         .collection(FirebaseConstants.groupsCollection)
         .doc(groupId)
         .collection(FirebaseConstants.songsCollection)
@@ -58,7 +60,7 @@ class SongDataSource {
   }
 
   Future<SongModel?> getSong(String groupId, String songId) async {
-    final DocumentSnapshot<Map<String, dynamic>> docSnap = await _db
+    final DocumentSnapshot<Map<String, dynamic>> docSnap = await firestore
         .collection(FirebaseConstants.groupsCollection)
         .doc(groupId)
         .collection(FirebaseConstants.songsCollection)
@@ -75,7 +77,7 @@ class SongDataSource {
   }
 
   Future<void> deleteSong(String groupId, String songId) async {
-    _db
+    firestore
         .collection(FirebaseConstants.groupsCollection)
         .doc(groupId)
         .collection(FirebaseConstants.songsCollection)

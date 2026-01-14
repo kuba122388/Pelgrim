@@ -59,25 +59,28 @@ class _RegisterTopBarState extends State<RegisterTopBar> {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   SizedBox(
-                      width: screenWidth * 0.5,
-                      child: Center(
-                          child: Text(
+                    width: screenWidth * 0.5,
+                    child: Center(
+                      child: Text(
                         widget.title == '' ? 'Uzupełnij kolor pielgrzymki' : widget.title,
                         style: TextStyle(
                           color: _getSecondColor() == const Color(0xFFFFFFFF)
-                              ? Colors.black
+                              ? Colors.black54
                               : Colors.white,
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
                         ),
                         maxLines: 1,
-                      ))),
+                      ),
+                    ),
+                  ),
                 ],
               ),
               Text(
                 widget.subtitle == '' ? 'Uzupełnij miejscowość pielgrzymki' : widget.subtitle,
                 style: TextStyle(
-                  color: _getSecondColor() == const Color(0xFFFFFFFF) ? Colors.black : Colors.white,
+                  color:
+                      _getSecondColor() == const Color(0xFFFFFFFF) ? Colors.black54 : Colors.white,
                   fontSize: 16,
                 ),
               ),

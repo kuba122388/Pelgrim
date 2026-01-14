@@ -4,11 +4,13 @@ import 'package:pelgrim/data/models/duty_model.dart';
 import 'package:pelgrim/data/models/duty_volunteer_model.dart';
 
 class DutyDataSource {
-  final FirebaseFirestore _db = FirebaseFirestore.instance;
+  final FirebaseFirestore firestore;
+
+  const DutyDataSource(this.firestore);
 
   Future<void> addDuty(String groupId, DutyModel dutyModel) async {
     try {
-      await _db
+      await firestore
           .collection(FirebaseConstants.groupsCollection)
           .doc(groupId)
           .collection(FirebaseConstants.dutiesCollection)
@@ -21,7 +23,7 @@ class DutyDataSource {
 
   Future<void> deleteDuty(String groupId, String dutyId) async {
     try {
-      await _db
+      await firestore
           .collection(FirebaseConstants.groupsCollection)
           .doc(groupId)
           .collection(FirebaseConstants.dutiesCollection)
@@ -34,7 +36,7 @@ class DutyDataSource {
   }
 
   Stream<List<DutyModel>> getDutiesStream(String group) {
-    return _db
+    return firestore
         .collection(FirebaseConstants.groupsCollection)
         .doc(group)
         .collection(FirebaseConstants.dutiesCollection)
@@ -50,7 +52,7 @@ class DutyDataSource {
     DutyVolunteerModel volunteer,
   ) async {
     try {
-      final dutyRef = _db
+      final dutyRef = firestore
           .collection(FirebaseConstants.groupsCollection)
           .doc(groupId)
           .collection(FirebaseConstants.dutiesCollection)
@@ -71,7 +73,7 @@ class DutyDataSource {
     DutyVolunteerModel volunteer,
   ) async {
     try {
-      final dutyRef = _db
+      final dutyRef = firestore
           .collection(FirebaseConstants.groupsCollection)
           .doc(groupId)
           .collection(FirebaseConstants.dutiesCollection)

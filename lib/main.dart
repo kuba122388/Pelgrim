@@ -10,6 +10,9 @@ import 'package:pelgrim/presentation/providers/all_users_provider.dart';
 import 'package:pelgrim/presentation/providers/announcement_provider.dart';
 import 'package:pelgrim/presentation/providers/contact_provider.dart';
 import 'package:pelgrim/presentation/providers/duty_provider.dart';
+import 'package:pelgrim/presentation/providers/help_provider.dart';
+import 'package:pelgrim/presentation/providers/images_provider.dart';
+import 'package:pelgrim/presentation/providers/informant_provider.dart';
 import 'package:pelgrim/presentation/providers/song_provider.dart';
 import 'package:pelgrim/presentation/providers/user_provider.dart';
 import 'package:provider/provider.dart';
@@ -90,6 +93,15 @@ Future<void> main() async {
         ),
         ChangeNotifierProvider<AllUsersProvider>(
           create: (_) => sl<AllUsersProvider>(),
+        ),
+        ChangeNotifierProvider<HelpProvider>(
+          create: (_) => sl<HelpProvider>(),
+        ),
+        ChangeNotifierProvider<InformantProvider>(
+          create: (_) => sl<InformantProvider>(),
+        ),
+        ChangeNotifierProvider<ImagesProvider>(
+          create: (_) => sl<ImagesProvider>(),
         )
       ],
       child: const MyApp(),

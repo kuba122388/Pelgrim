@@ -1,5 +1,5 @@
 import 'package:pelgrim/core/errors/repository_exception.dart';
-import 'package:pelgrim/data/datasources/remote/group_datasource.dart';
+import 'package:pelgrim/data/datasources/remote/group_data_source.dart';
 import 'package:pelgrim/data/models/group_model.dart';
 import 'package:pelgrim/data/models/user_model.dart';
 import 'package:pelgrim/domain/entities/group.dart';
@@ -39,9 +39,10 @@ class GroupRepositoryImpl extends GroupRepository {
   }
 
   @override
-  Future<List<String>> getAllGroupNames() async {
+  Future<List<Group>> getAllGroups() async {
     try {
-      return await _groupDataSource.getAllGroupNames();
+      final list = await _groupDataSource.getAllGroups();
+      return list.map((m) => m.toEntity()).toList();
     } catch (e) {
       throw Exception("Wystąpił problem z pobraniem grup: $e");
     }

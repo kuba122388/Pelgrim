@@ -8,6 +8,8 @@ import 'package:pelgrim/presentation/register/widgets/register_topbar.dart';
 import 'package:pelgrim/presentation/widgets/welcome_background.dart';
 import 'package:provider/provider.dart';
 
+import '../../../domain/entities/group.dart';
+
 class RegisterUserPage extends StatefulWidget {
   const RegisterUserPage({super.key});
 
@@ -38,10 +40,10 @@ class _RegisterUserPageState extends State<RegisterUserPage> {
 
   bool _isRegister = false;
 
-  String? _selectedPilgrimage;
+  Group? _selectedPilgrimage;
   Color _pickerColor = const Color(0xffffffff);
 
-  List<String> _allGroups = [];
+  List<Group> _allGroups = [];
 
   @override
   void initState() {
@@ -121,8 +123,8 @@ class _RegisterUserPageState extends State<RegisterUserPage> {
     int diffB = 121;
 
     double newR = (baseColor.r + (diffR / 255)).clamp(0.0, 1.0);
-    double newG = (baseColor.g + (diffG / 255)).clamp(0.0, 255);
-    double newB = (baseColor.b + (diffB / 255)).clamp(0.0, 255);
+    double newG = (baseColor.g + (diffG / 255)).clamp(0.0, 1.0);
+    double newB = (baseColor.b + (diffB / 255)).clamp(0.0, 1.0);
     return Color.from(alpha: baseColor.a, red: newR, green: newG, blue: newB);
   }
 
@@ -165,7 +167,7 @@ class _RegisterUserPageState extends State<RegisterUserPage> {
           firstName: _controllerFirstName.text.trim(),
           lastName: _controllerLastName.text.trim(),
           phone: _controllerPhone.text.trim(),
-          groupId: _selectedPilgrimage!,
+          groupId: _selectedPilgrimage!.id!,
         );
       }
 
@@ -317,7 +319,7 @@ class _RegisterUserPageState extends State<RegisterUserPage> {
                   Visibility(
                     visible: !_isRegister,
                     child: DropdownButtonFormField(
-                      padding: const EdgeInsets.only(right: 10, bottom: 10),
+                      padding: const EdgeInsets.only(right: 10),
                       isExpanded: true,
                       isDense: _selectedPilgrimage == null ? true : false,
                       menuMaxHeight: screenHeight * 0.3,
@@ -325,16 +327,16 @@ class _RegisterUserPageState extends State<RegisterUserPage> {
                           const TextStyle(fontFamily: 'Lexend', fontSize: 18, color: Colors.black),
                       hint: Text(_allGroups.isEmpty ? 'Ładowanie grup...' : 'Wybierz pielgrzymkę'),
                       initialValue: _selectedPilgrimage,
-                      items: _allGroups.map((String pilgrimage) {
+                      items: _allGroups.map((Group pilgrimage) {
                         return DropdownMenuItem(
                           value: pilgrimage,
                           child: Text(
-                            pilgrimage,
+                            pilgrimage.name,
                             softWrap: true,
                           ),
                         );
                       }).toList(),
-                      onChanged: (String? newValue) {
+                      onChanged: (Group? newValue) {
                         setState(() {
                           _selectedPilgrimage = newValue;
                         });

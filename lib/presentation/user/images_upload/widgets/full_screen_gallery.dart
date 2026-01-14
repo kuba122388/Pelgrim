@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 class FullScreenGalleryPage extends StatelessWidget {
@@ -12,7 +13,7 @@ class FullScreenGalleryPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final PageController controller = PageController(initialPage: initialIndex);
+    final controller = PageController(initialPage: initialIndex);
 
     return Scaffold(
       backgroundColor: Colors.black,
@@ -24,9 +25,11 @@ class FullScreenGalleryPage extends StatelessWidget {
             itemBuilder: (context, index) {
               return InteractiveViewer(
                 child: Center(
-                  child: Image.network(
-                    imageUrls[index],
+                  child: CachedNetworkImage(
+                    imageUrl: imageUrls[index],
                     fit: BoxFit.contain,
+                    placeholder: (_, __) => const CircularProgressIndicator(),
+                    errorWidget: (_, __, ___) => const Icon(Icons.broken_image),
                   ),
                 ),
               );

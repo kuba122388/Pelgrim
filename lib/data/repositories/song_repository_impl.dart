@@ -1,5 +1,5 @@
 import 'package:pelgrim/data/datasources/local/local_song_list_storage.dart';
-import 'package:pelgrim/data/datasources/remote/song_datasource.dart';
+import 'package:pelgrim/data/datasources/remote/song_data_source.dart';
 import 'package:pelgrim/data/models/song_model.dart';
 import 'package:pelgrim/domain/entities/song.dart';
 import 'package:pelgrim/domain/repositories/song_repository.dart';

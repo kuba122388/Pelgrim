@@ -1,4 +1,4 @@
-import 'package:pelgrim/data/datasources/remote/duty_datasource.dart';
+import 'package:pelgrim/data/datasources/remote/duty_data_source.dart';
 import 'package:pelgrim/data/models/duty_model.dart';
 import 'package:pelgrim/data/models/duty_volunteer_model.dart';
 import 'package:pelgrim/domain/entities/duty.dart';
@@ -6,14 +6,14 @@ import 'package:pelgrim/domain/entities/duty_volunteer.dart';
 import 'package:pelgrim/domain/repositories/duty_repository.dart';
 
 class DutyRepositoryImpl implements DutyRepository {
-  final DutyDataSource _dutyService;
+  final DutyDataSource _dutyDataSource;
 
-  DutyRepositoryImpl(this._dutyService);
+  DutyRepositoryImpl(this._dutyDataSource);
 
   @override
   Future<void> addDuty(String groupName, Duty duty) {
     try {
-      return _dutyService.addDuty(groupName, DutyModel.fromEntity(duty));
+      return _dutyDataSource.addDuty(groupName, DutyModel.fromEntity(duty));
     } catch (e) {
       throw Exception("Nie udało się dodać dyżuru: $e");
     }
@@ -22,7 +22,7 @@ class DutyRepositoryImpl implements DutyRepository {
   @override
   Future<void> deleteDuty(String groupName, String dutyId) {
     try {
-      return _dutyService.deleteDuty(groupName, dutyId);
+      return _dutyDataSource.deleteDuty(groupName, dutyId);
     } catch (e) {
       throw Exception("Nie udało się dodać dyżuru: $e");
     }
@@ -31,7 +31,7 @@ class DutyRepositoryImpl implements DutyRepository {
   @override
   Stream<List<Duty>> getDutiesStream(String groupName) {
     try {
-      return _dutyService
+      return _dutyDataSource
           .getDutiesStream(groupName)
           .map((models) => models.map((e) => e.toEntity()).toList());
     } catch (e) {
@@ -42,7 +42,8 @@ class DutyRepositoryImpl implements DutyRepository {
   @override
   Future<void> addVolunteer(String groupId, String dutyId, DutyVolunteer volunteer) {
     try {
-      return _dutyService.addVolunteer(groupId, dutyId, DutyVolunteerModel.fromEntity(volunteer));
+      return _dutyDataSource.addVolunteer(
+          groupId, dutyId, DutyVolunteerModel.fromEntity(volunteer));
     } catch (e) {
       throw Exception("Nie udało się dodać dyżuru: $e");
     }
@@ -51,7 +52,7 @@ class DutyRepositoryImpl implements DutyRepository {
   @override
   Future<void> removeVolunteer(String groupId, String dutyId, DutyVolunteer volunteer) {
     try {
-      return _dutyService.removeVolunteer(
+      return _dutyDataSource.removeVolunteer(
           groupId, dutyId, DutyVolunteerModel.fromEntity(volunteer));
     } catch (e) {
       throw Exception("Nie udało się dodać dyżuru: $e");

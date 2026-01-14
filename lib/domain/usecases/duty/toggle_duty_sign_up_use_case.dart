@@ -3,9 +3,9 @@ import 'package:pelgrim/domain/entities/duty_volunteer.dart';
 import 'package:pelgrim/domain/repositories/duty_repository.dart';
 
 class ToggleDutySignUpUseCase {
-  final DutyRepository _repository;
+  final DutyRepository _dutyRepository;
 
-  ToggleDutySignUpUseCase(this._repository);
+  ToggleDutySignUpUseCase(this._dutyRepository);
 
   Future<void> execute(String groupId, Duty duty, DutyVolunteer dutyVolunteer) async {
     final bool isSignedUp = duty.volunteers.any((v) => v.userId == dutyVolunteer.userId);
@@ -19,9 +19,9 @@ class ToggleDutySignUpUseCase {
     }
 
     if (isSignedUp) {
-      await _repository.removeVolunteer(groupId, duty.id!, dutyVolunteer);
+      await _dutyRepository.removeVolunteer(groupId, duty.id!, dutyVolunteer);
     } else {
-      await _repository.addVolunteer(groupId, duty.id!, dutyVolunteer);
+      await _dutyRepository.addVolunteer(groupId, duty.id!, dutyVolunteer);
     }
   }
 }

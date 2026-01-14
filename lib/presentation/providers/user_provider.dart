@@ -193,7 +193,7 @@ class UserProvider extends ChangeNotifier {
     }
   }
 
-  Future<List<String>> fetchAllGroups() async {
+  Future<List<Group>> fetchAllGroups() async {
     try {
       return await _getAllGroupNamesUseCase.execute();
     } catch (e) {

@@ -42,9 +42,10 @@ class WelcomeBackground extends StatelessWidget {
                 fontSize: 36,
                 shadows: [
                   Shadow(
-                      color: AppColors.loginShadow,
-                      offset: AppStyles.loginShadowOffset,
-                      blurRadius: 10)
+                    color: AppColors.loginShadow,
+                    offset: AppStyles.loginShadowOffset,
+                    blurRadius: 10,
+                  )
                 ],
               ),
             ),

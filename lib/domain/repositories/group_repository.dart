@@ -6,7 +6,7 @@ abstract class GroupRepository {
 
   Future<Group> getGroupById(String groupId);
 
-  Future<List<String>> getAllGroupNames();
+  Future<List<Group>> getAllGroups();
 
   Future<void> joinUserToGroup({
     required String groupId,

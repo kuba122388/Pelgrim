@@ -1,10 +1,9 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:pelgrim/core/const/app_consts.dart';
-import 'package:pelgrim/domain/entities/group.dart';
-import 'package:pelgrim/domain/entities/user.dart';
 import 'package:pelgrim/presentation/providers/user_provider.dart';
 import 'package:provider/provider.dart';
+
+import '../../providers/help_provider.dart';
 
 class HelpPage extends StatefulWidget {
   const HelpPage({super.key});
@@ -16,83 +15,55 @@ class HelpPage extends StatefulWidget {
 class _HelpPageState extends State<HelpPage> {
   TextEditingController titleController = TextEditingController();
   TextEditingController contentController = TextEditingController();
-  bool processing = false;
 
   @override
   void dispose() {
-    super.dispose();
     titleController.dispose();
     contentController.dispose();
+    super.dispose();
   }
 
-  Future<void> sendMsg(String groupName, String userEmail) async {
-    if (processing == true) return;
-    setState(() {
-      processing = true;
-    });
+  Future<void> _send(BuildContext context) async {
+    final helpProvider = context.read<HelpProvider>();
+    final messenger = ScaffoldMessenger.of(context);
 
-    if (titleController.text == '' || contentController.text == '') {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          duration: Duration(seconds: 2),
-          content: Center(
-            child: Padding(
-              padding: EdgeInsets.symmetric(vertical: 4.0),
-              child: Text(
-                'Temat lub opis zgłoszenia jest pusty',
-                style: TextStyle(fontSize: 16),
-              ),
-            ),
-          ),
-        ),
+    final userProvider = context.read<UserProvider>();
+    final user = userProvider.user!;
+
+    if (titleController.text.isEmpty || contentController.text.isEmpty) {
+      messenger.showSnackBar(
+        const SnackBar(content: Text('Temat lub treść nie może być pusta')),
       );
-      setState(() {
-        processing = false;
-      });
       return;
     }
 
-    userEmail = userEmail.replaceAll(RegExp(r'[@.]'), '_');
-
     try {
-      await FirebaseFirestore.instance
-          .collection('Problems')
-          .doc(groupName)
-          .collection(userEmail)
-          .add(<String, dynamic>{
-        'Title': titleController.text,
-        'Content': contentController.text,
-        'Solved': false
-      });
+      await helpProvider.send(
+        title: titleController.text,
+        content: contentController.text,
+        groupId: user.groupId,
+        userEmail: user.email,
+      );
+
       titleController.clear();
       contentController.clear();
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          duration: Duration(seconds: 2),
-          padding: EdgeInsets.symmetric(vertical: 4.0),
-          content:
-              Center(child: Text('Wiadomość wysłano pomyślnie!', style: TextStyle(fontSize: 16)))));
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          duration: const Duration(seconds: 2),
-          padding: const EdgeInsets.symmetric(vertical: 4.0),
-          content: Center(
-              child: Text('Problem z wysyłaniem - $e', style: const TextStyle(fontSize: 16)))));
-    } finally {
-      setState(() {
-        processing = false;
-      });
+
+      messenger.showSnackBar(
+        const SnackBar(content: Text('Wiadomość wysłano pomyślnie!')),
+      );
+    } catch (_) {
+      messenger.showSnackBar(
+        const SnackBar(content: Text('Wystąpił błąd podczas wysyłania')),
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final UserProvider userProvider = context.read<UserProvider>();
-
-    final User myUser = userProvider.user!;
-    final Group groupInfo = userProvider.groupInfo!;
-
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top;
+
+    final HelpProvider helpProvider = context.watch<HelpProvider>();
 
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
@@ -110,9 +81,9 @@ class _HelpPageState extends State<HelpPage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Padding(
-                  padding: EdgeInsets.only(top: screenHeight * 0.03),
-                  child: const Text(
+                const Padding(
+                  padding: EdgeInsets.only(top: 20),
+                  child: Text(
                     'Natknąłeś/aś się na problem z aplikacją?\nMoże masz pomysł czego jej brakuje?\n\nTutaj możesz to wszystko opisać',
                     textAlign: TextAlign.center,
                     style: TextStyle(
@@ -125,16 +96,16 @@ class _HelpPageState extends State<HelpPage> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Padding(
-                      padding: EdgeInsets.only(left: 22, bottom: screenHeight * 0.02),
-                      child: const Text(
+                    const Padding(
+                      padding: EdgeInsets.only(left: 22, bottom: 15),
+                      child: Text(
                         'Temat',
                         style: TextStyle(fontFamily: 'Lexend', fontSize: FONT_SIZE_BIG),
                       ),
                     ),
                     Container(
                       width: screenWidth * 0.75,
-                      margin: EdgeInsets.only(bottom: screenHeight * 0.03),
+                      margin: const EdgeInsets.only(bottom: 30),
                       padding: const EdgeInsets.symmetric(horizontal: 22),
                       decoration: BoxDecoration(
                           color: Colors.white,
@@ -144,15 +115,10 @@ class _HelpPageState extends State<HelpPage> {
                         textCapitalization: TextCapitalization.sentences,
                         controller: titleController,
                         decoration: const InputDecoration(
-                            border: InputBorder.none, hintText: 'Wpisz temat zgłoszenia'),
+                            border: InputBorder.none, hintText: 'Temat zgłoszenia'),
                         style: const TextStyle(fontSize: FONT_SIZE_MEDIUM, fontFamily: 'Lexend'),
                       ),
                     ),
-                  ],
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
                     Padding(
                       padding: EdgeInsets.only(left: 22, bottom: screenHeight * 0.02),
                       child: const Text(
@@ -186,9 +152,8 @@ class _HelpPageState extends State<HelpPage> {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     InkWell(
-                      onTap: () => sendMsg(groupInfo.id!, myUser.email),
+                      onTap: () => helpProvider.isProcessing ? null : _send(context),
                       child: Container(
-                        width: screenWidth * 0.3,
                         padding: const EdgeInsets.symmetric(vertical: 7, horizontal: 10),
                         decoration: BoxDecoration(
                             boxShadow: const [BOX_SHADOW_CONTAINER],
@@ -197,12 +162,16 @@ class _HelpPageState extends State<HelpPage> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
-                            const Padding(
-                              padding: EdgeInsets.only(left: 8),
+                            Padding(
+                              padding: const EdgeInsets.only(left: 8),
                               child: Text(
-                                'Wyślij',
-                                style: TextStyle(fontFamily: 'Lexend', fontSize: FONT_SIZE_MEDIUM),
+                                helpProvider.isProcessing ? 'Wysyłanie...' : 'Wyślij',
+                                style: const TextStyle(
+                                    fontFamily: 'Lexend', fontSize: FONT_SIZE_MEDIUM),
                               ),
+                            ),
+                            const SizedBox(
+                              width: 8,
                             ),
                             Image.asset('./images/send.png', width: 20)
                           ],
@@ -216,7 +185,7 @@ class _HelpPageState extends State<HelpPage> {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     Text(
-                      'Autor aplikacji: Jakub Bak\nTel: 516-378-064',
+                      'Autor aplikacji: Jakub Bak',
                       style: TextStyle(fontFamily: 'Lexend', color: LIST_TILE_INACTIVE_COLOR),
                       textAlign: TextAlign.end,
                     ),

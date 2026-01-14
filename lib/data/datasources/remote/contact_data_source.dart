@@ -3,11 +3,13 @@ import 'package:pelgrim/core/const/firebase_constants.dart';
 import 'package:pelgrim/data/models/contact_model.dart';
 
 class ContactDataSource {
-  final FirebaseFirestore _db = FirebaseFirestore.instance;
+  final FirebaseFirestore firestore;
+
+  const ContactDataSource(this.firestore);
 
   Future<ContactModel> getContactInfo(String groupName) async {
     try {
-      DocumentSnapshot doc = await _db
+      DocumentSnapshot doc = await firestore
           .collection(FirebaseConstants.groupsCollection)
           .doc(groupName)
           .collection(FirebaseConstants.contactsCollection)
@@ -26,7 +28,7 @@ class ContactDataSource {
 
   Future<void> setContactInfo(String groupName, ContactModel contactModel) async {
     try {
-      await _db
+      await firestore
           .collection(FirebaseConstants.groupsCollection)
           .doc(groupName)
           .collection(FirebaseConstants.contactsCollection)

@@ -1,18 +1,27 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:get_it/get_it.dart';
 import 'package:pelgrim/data/datasources/local/local_song_list_storage.dart';
 import 'package:pelgrim/data/datasources/local/local_user_storage.dart';
-import 'package:pelgrim/data/datasources/remote/announcement_datasource.dart';
-import 'package:pelgrim/data/datasources/remote/auth_datasource.dart';
-import 'package:pelgrim/data/datasources/remote/contact_datasource.dart';
-import 'package:pelgrim/data/datasources/remote/duty_datasource.dart';
-import 'package:pelgrim/data/datasources/remote/group_datasource.dart';
-import 'package:pelgrim/data/datasources/remote/song_datasource.dart';
-import 'package:pelgrim/data/datasources/remote/user_datasource.dart';
+import 'package:pelgrim/data/datasources/remote/announcement_data_source.dart';
+import 'package:pelgrim/data/datasources/remote/auth_data_source.dart';
+import 'package:pelgrim/data/datasources/remote/contact_data_source.dart';
+import 'package:pelgrim/data/datasources/remote/duty_data_source.dart';
+import 'package:pelgrim/data/datasources/remote/group_data_source.dart';
+import 'package:pelgrim/data/datasources/remote/help_remote_data_source.dart';
+import 'package:pelgrim/data/datasources/remote/images_storage_data_source.dart';
+import 'package:pelgrim/data/datasources/remote/informant_data_source.dart';
+import 'package:pelgrim/data/datasources/remote/song_data_source.dart';
+import 'package:pelgrim/data/datasources/remote/user_data_source.dart';
 import 'package:pelgrim/data/repositories/announcement_repository_impl.dart';
 import 'package:pelgrim/data/repositories/auth_repository_impl.dart';
 import 'package:pelgrim/data/repositories/contact_repository_impl.dart';
 import 'package:pelgrim/data/repositories/duty_repository_impl.dart';
 import 'package:pelgrim/data/repositories/group_repository_impl.dart';
+import 'package:pelgrim/data/repositories/help_repository_impl.dart';
+import 'package:pelgrim/data/repositories/images_repository_impl.dart';
+import 'package:pelgrim/data/repositories/informant_repository_impl.dart';
 import 'package:pelgrim/data/repositories/song_repository_impl.dart';
 import 'package:pelgrim/data/repositories/user_repository_impl.dart';
 import 'package:pelgrim/data/repositories/user_session_repository_impl.dart';
@@ -21,6 +30,9 @@ import 'package:pelgrim/domain/repositories/auth_repository.dart';
 import 'package:pelgrim/domain/repositories/contact_repository.dart';
 import 'package:pelgrim/domain/repositories/duty_repository.dart';
 import 'package:pelgrim/domain/repositories/group_repository.dart';
+import 'package:pelgrim/domain/repositories/help_repository.dart';
+import 'package:pelgrim/domain/repositories/images_repository.dart';
+import 'package:pelgrim/domain/repositories/informant_repository.dart';
 import 'package:pelgrim/domain/repositories/song_repository.dart';
 import 'package:pelgrim/domain/repositories/user_repository.dart';
 import 'package:pelgrim/domain/repositories/user_session_repository.dart';
@@ -40,6 +52,11 @@ import 'package:pelgrim/domain/usecases/group/delete_group_use_case.dart';
 import 'package:pelgrim/domain/usecases/group/get_all_group_names_use_case.dart';
 import 'package:pelgrim/domain/usecases/group/get_group_use_case.dart';
 import 'package:pelgrim/domain/usecases/group/set_admin_status_use_case.dart';
+import 'package:pelgrim/domain/usecases/help/send_help_request_use_case.dart';
+import 'package:pelgrim/domain/usecases/images/get_all_images_use_case.dart';
+import 'package:pelgrim/domain/usecases/informant/delete_informant_image_use_case.dart';
+import 'package:pelgrim/domain/usecases/informant/get_informant_images_use_case.dart';
+import 'package:pelgrim/domain/usecases/informant/upload_informant_images_use_case.dart';
 import 'package:pelgrim/domain/usecases/session/clear_local_session_use_case.dart';
 import 'package:pelgrim/domain/usecases/session/load_local_session_use_case.dart';
 import 'package:pelgrim/domain/usecases/session/save_local_session_use_case.dart';
@@ -60,22 +77,37 @@ import 'package:pelgrim/presentation/providers/all_users_provider.dart';
 import 'package:pelgrim/presentation/providers/announcement_provider.dart';
 import 'package:pelgrim/presentation/providers/contact_provider.dart';
 import 'package:pelgrim/presentation/providers/duty_provider.dart';
+import 'package:pelgrim/presentation/providers/help_provider.dart';
+import 'package:pelgrim/presentation/providers/images_provider.dart';
+import 'package:pelgrim/presentation/providers/informant_provider.dart';
 import 'package:pelgrim/presentation/providers/song_provider.dart';
 import 'package:pelgrim/presentation/providers/user_provider.dart';
+
+import '../../domain/usecases/images/upload_images_use_case.dart';
 
 final sl = GetIt.instance;
 
 void setupLocator() {
+  sl.registerLazySingleton(() => FirebaseFirestore.instance);
+  sl.registerLazySingleton(() => FirebaseAuth.instance);
+  sl.registerLazySingleton(() => FirebaseStorage.instance);
+
   // --- 1. Data Sources (Services) ---
-  sl.registerLazySingleton<AnnouncementDataSource>(() => AnnouncementDataSource());
-  sl.registerLazySingleton<AuthDataSource>(() => AuthDataSource());
-  sl.registerLazySingleton<ContactDataSource>(() => ContactDataSource());
-  sl.registerLazySingleton<DutyDataSource>(() => DutyDataSource());
-  sl.registerLazySingleton<GroupDataSource>(() => GroupDataSource());
-  sl.registerLazySingleton<SongDataSource>(() => SongDataSource());
-  sl.registerLazySingleton<UserDataSource>(() => UserDataSource());
+  sl.registerLazySingleton<AnnouncementDataSource>(
+      () => AnnouncementDataSource(sl<FirebaseFirestore>()));
+  sl.registerLazySingleton<AuthDataSource>(() => AuthDataSource(sl<FirebaseAuth>()));
+  sl.registerLazySingleton<ContactDataSource>(() => ContactDataSource(sl<FirebaseFirestore>()));
+  sl.registerLazySingleton<DutyDataSource>(() => DutyDataSource(sl<FirebaseFirestore>()));
+  sl.registerLazySingleton<GroupDataSource>(() => GroupDataSource(sl<FirebaseFirestore>()));
+  sl.registerLazySingleton<SongDataSource>(() => SongDataSource(sl<FirebaseFirestore>()));
+  sl.registerLazySingleton<UserDataSource>(() => UserDataSource(sl<FirebaseFirestore>()));
   sl.registerLazySingleton<LocalUserStorage>(() => LocalUserStorage());
   sl.registerLazySingleton<LocalSongListStorage>(() => LocalSongListStorage());
+  sl.registerLazySingleton<HelpDataSource>(() => HelpDataSource(sl<FirebaseFirestore>()));
+  sl.registerLazySingleton<InformantStorageDataSource>(
+      () => InformantStorageDataSource(sl<FirebaseStorage>()));
+  sl.registerLazySingleton<ImagesStorageDataSource>(
+      () => ImagesStorageDataSource(sl<FirebaseStorage>()));
 
   // --- 2. Repositories ---
   sl.registerLazySingleton<AnnouncementRepository>(
@@ -117,6 +149,21 @@ void setupLocator() {
   sl.registerLazySingleton<UserSessionRepository>(
     () => UserSessionRepositoryImpl(
       sl<LocalUserStorage>(),
+    ),
+  );
+  sl.registerLazySingleton<HelpRepository>(
+    () => HelpRepositoryImpl(
+      sl<HelpDataSource>(),
+    ),
+  );
+  sl.registerLazySingleton<InformantRepository>(
+    () => InformantRepositoryImpl(
+      sl<InformantStorageDataSource>(),
+    ),
+  );
+  sl.registerLazySingleton<ImagesRepository>(
+    () => ImagesRepositoryImpl(
+      sl<ImagesStorageDataSource>(),
     ),
   );
 
@@ -165,6 +212,15 @@ void setupLocator() {
       sl<AuthRepository>(), sl<GroupRepository>(), sl<UserRepository>()));
   sl.registerLazySingleton(() => RegisterUserJoinGroupUseCase(
       sl<AuthRepository>(), sl<GroupRepository>(), sl<UserRepository>()));
+
+  sl.registerLazySingleton(() => SendHelpRequestUseCase(sl<HelpRepository>()));
+
+  sl.registerLazySingleton(() => DeleteInformantImageUseCase(sl<InformantRepository>()));
+  sl.registerLazySingleton(() => GetInformantImagesUseCase(sl<InformantRepository>()));
+  sl.registerLazySingleton(() => UploadInformantImagesUseCase(sl<InformantRepository>()));
+
+  sl.registerLazySingleton(() => GetAllImagesUseCase(sl<ImagesRepository>()));
+  sl.registerLazySingleton(() => UploadImagesUseCase(sl<ImagesRepository>()));
 
   // --- 4. Providers ---
   sl.registerLazySingleton(
@@ -222,5 +278,23 @@ void setupLocator() {
       sl<SetAdminStatusUseCase>(),
       sl<GetUserByIdUseCase>(),
     ),
+  );
+
+  sl.registerLazySingleton(
+    () => HelpProvider(
+      sl<SendHelpRequestUseCase>(),
+    ),
+  );
+
+  sl.registerLazySingleton(
+    () => InformantProvider(
+      sl<GetInformantImagesUseCase>(),
+      sl<UploadInformantImagesUseCase>(),
+      sl<DeleteInformantImageUseCase>(),
+    ),
+  );
+
+  sl.registerLazySingleton(
+    () => ImagesProvider(sl<GetAllImagesUseCase>(), sl<UploadImagesUseCase>()),
   );
 }

@@ -113,7 +113,7 @@ class _ContactPageState extends State<ContactPage> {
                                 if (provider.isLoading) {
                                   return const Center(
                                     child: CircularProgressIndicator(),
-                                  ); // Dodaj obsługę ładowania!
+                                  );
                                 }
                                 return Text(
                                   _isEditing ? _controller.text : provider.contactDescription,

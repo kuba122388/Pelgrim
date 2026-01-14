@@ -1,3 +1,4 @@
+import 'package:pelgrim/domain/entities/group.dart';
 import 'package:pelgrim/domain/repositories/group_repository.dart';
 
 class GetAllGroupNamesUseCase {
@@ -5,7 +6,7 @@ class GetAllGroupNamesUseCase {
 
   GetAllGroupNamesUseCase(this._groupRepository);
 
-  Future<List<String>> execute() async {
-    return _groupRepository.getAllGroupNames();
+  Future<List<Group>> execute() async {
+    return _groupRepository.getAllGroups();
   }
 }
