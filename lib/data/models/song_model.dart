@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hive/hive.dart';
 
 import '../../domain/entities/song.dart';
@@ -7,29 +8,44 @@ part 'song_model.g.dart';
 @HiveType(typeId: 3)
 class SongModel extends HiveObject {
   @HiveField(0)
-  String? id;
+  final String? id;
 
   @HiveField(1)
-  String title;
+  final String title;
 
   @HiveField(2)
-  String lyrics;
+  final String lyrics;
 
-  SongModel({this.id, required this.title, required this.lyrics});
+  @HiveField(3)
+  final DateTime updatedAt;
+
+  SongModel({
+    this.id,
+    required this.title,
+    required this.lyrics,
+    required this.updatedAt,
+  });
 
   Map<String, dynamic> toMap() {
     return {
       'id': id,
       'title': title,
       'lyrics': lyrics,
+      'updated_at': FieldValue.serverTimestamp(),
     };
   }
 
-  factory SongModel.fromMap(Map<String, dynamic> map) {
+  factory SongModel.fromMap(
+    Map<String, dynamic> map, {
+    required String id,
+  }) {
+    final ts = map['updated_at'] as Timestamp?;
+
     return SongModel(
-      id: map['id'] ?? '',
+      id: id,
       title: map['title'] ?? '',
       lyrics: map['lyrics'] ?? '',
+      updatedAt: ts?.toDate() ?? DateTime.fromMillisecondsSinceEpoch(0),
     );
   }
 
@@ -38,6 +54,7 @@ class SongModel extends HiveObject {
       id: entity.id,
       title: entity.title,
       lyrics: entity.lyrics,
+      updatedAt: DateTime.now(),
     );
   }
 

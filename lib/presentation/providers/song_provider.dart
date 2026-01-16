@@ -5,13 +5,13 @@ import 'package:pelgrim/domain/entities/song.dart';
 import 'package:pelgrim/domain/usecases/song/delete_song_use_case.dart';
 import 'package:pelgrim/domain/usecases/song/edit_song_use_case.dart';
 import 'package:pelgrim/domain/usecases/song/get_local_song_list_use_case.dart';
+import 'package:pelgrim/domain/usecases/song/get_song_list_use_case.dart';
 import 'package:pelgrim/domain/usecases/song/stream_song_use_case.dart';
 import 'package:pelgrim/domain/usecases/song/watch_playing_now_use_case.dart';
-import 'package:pelgrim/domain/usecases/song/watch_song_list_use_case.dart';
 
 class SongProvider extends ChangeNotifier {
   final GetLocalSongListUseCase _getLocalSongListUseCase;
-  final WatchSongListUseCase _watchSongListUseCase;
+  final GetSongListUseCase _getSongListUseCase;
   final WatchPlayingNowUseCase _watchPlayingNowUseCase;
   final StreamSongUseCase _streamSongUseCase;
   final EditSongUseCase _editSongUseCase;
@@ -32,7 +32,7 @@ class SongProvider extends ChangeNotifier {
 
   SongProvider(
     this._getLocalSongListUseCase,
-    this._watchSongListUseCase,
+    this._getSongListUseCase,
     this._watchPlayingNowUseCase,
     this._streamSongUseCase,
     this._editSongUseCase,
@@ -53,10 +53,9 @@ class SongProvider extends ChangeNotifier {
       _isLoading = false;
       notifyListeners();
     }
-
     _subSongList?.cancel();
-    _subSongList = _watchSongListUseCase.execute(groupId).listen((remote) {
-      _songs = remote;
+    _subSongList = _getSongListUseCase.execute(groupId).listen((remoteChanges) async {
+      _songs = remoteChanges;
       _isLoading = false;
       notifyListeners();
     });

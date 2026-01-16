@@ -65,10 +65,10 @@ import 'package:pelgrim/domain/usecases/song/add_song_use_case.dart';
 import 'package:pelgrim/domain/usecases/song/delete_song_use_case.dart';
 import 'package:pelgrim/domain/usecases/song/edit_song_use_case.dart';
 import 'package:pelgrim/domain/usecases/song/get_local_song_list_use_case.dart';
+import 'package:pelgrim/domain/usecases/song/get_song_list_use_case.dart';
 import 'package:pelgrim/domain/usecases/song/get_song_use_case.dart';
 import 'package:pelgrim/domain/usecases/song/stream_song_use_case.dart';
 import 'package:pelgrim/domain/usecases/song/watch_playing_now_use_case.dart';
-import 'package:pelgrim/domain/usecases/song/watch_song_list_use_case.dart';
 import 'package:pelgrim/domain/usecases/user/get_all_users_by_group_use_case.dart';
 import 'package:pelgrim/domain/usecases/user/get_user_by_id_use_case.dart';
 import 'package:pelgrim/domain/usecases/user/register_admin_create_group_use_case.dart';
@@ -205,7 +205,7 @@ void setupLocator() {
   sl.registerLazySingleton(() => GetSongUseCase(sl<SongRepository>()));
   sl.registerLazySingleton(() => StreamSongUseCase(sl<SongRepository>()));
   sl.registerLazySingleton(() => WatchPlayingNowUseCase(sl<SongRepository>()));
-  sl.registerLazySingleton(() => WatchSongListUseCase((sl<SongRepository>())));
+  sl.registerLazySingleton(() => GetSongListUseCase((sl<SongRepository>())));
 
   sl.registerLazySingleton(() => GetAllUsersByGroupUseCase(sl<UserRepository>()));
   sl.registerLazySingleton(() => GetUserByIdUseCase(sl<UserRepository>()));
@@ -260,7 +260,7 @@ void setupLocator() {
   sl.registerLazySingleton(
     () => SongProvider(
       sl<GetLocalSongListUseCase>(),
-      sl<WatchSongListUseCase>(),
+      sl<GetSongListUseCase>(),
       sl<WatchPlayingNowUseCase>(),
       sl<StreamSongUseCase>(),
       sl<EditSongUseCase>(),

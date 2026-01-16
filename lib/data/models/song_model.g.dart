@@ -20,19 +20,22 @@ class SongModelAdapter extends TypeAdapter<SongModel> {
       id: fields[0] as String?,
       title: fields[1] as String,
       lyrics: fields[2] as String,
+      updatedAt: fields[3] as DateTime,
     );
   }
 
   @override
   void write(BinaryWriter writer, SongModel obj) {
     writer
-      ..writeByte(3)
+      ..writeByte(4)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
       ..write(obj.title)
       ..writeByte(2)
-      ..write(obj.lyrics);
+      ..write(obj.lyrics)
+      ..writeByte(3)
+      ..write(obj.updatedAt);
   }
 
   @override

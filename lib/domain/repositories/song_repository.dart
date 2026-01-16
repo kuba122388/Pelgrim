@@ -1,9 +1,11 @@
 import 'package:pelgrim/domain/entities/song.dart';
 
 abstract class SongRepository {
-  Stream<List<Song>> watchSongList(String groupId);
+  Stream<List<Song>> getSongs(String groupId);
 
   Future<List<Song>> getLocalSongList(String groupId);
+
+  Future<DateTime?> getLastSync(String groupId);
 
   Future<void> addSong(String groupId, Song song);
 

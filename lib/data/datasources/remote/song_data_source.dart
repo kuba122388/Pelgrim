@@ -7,14 +7,19 @@ class SongDataSource {
 
   const SongDataSource(this.firestore);
 
-  Stream<List<SongModel>> watchSongs(String groupId) {
-    return firestore
+  Stream<List<SongModel>> getSongs(String groupId, {DateTime? lastSync}) {
+    var query = firestore
         .collection(FirebaseConstants.groupsCollection)
         .doc(groupId)
-        .collection(FirebaseConstants.songsCollection)
-        .orderBy('title')
-        .snapshots()
-        .map((snapshot) => snapshot.docs.map((d) => SongModel.fromMap(d.data())).toList());
+        .collection(FirebaseConstants.songsCollection);
+
+    if (lastSync != null) {
+      return query.where('updated_at', isGreaterThan: Timestamp.fromDate(lastSync)).snapshots().map(
+          (snapshot) => snapshot.docs.map((d) => SongModel.fromMap(d.data(), id: d.id)).toList());
+    }
+
+    return query.orderBy('title').snapshots().map(
+        (snapshot) => snapshot.docs.map((d) => SongModel.fromMap(d.data(), id: d.id)).toList());
   }
 
   Future<void> streamSong(String groupId, SongModel song) async {
@@ -38,6 +43,7 @@ class SongDataSource {
 
       return SongModel.fromMap(
         data['playingNow'] as Map<String, dynamic>,
+        id: "",
       );
     });
   }
@@ -73,11 +79,12 @@ class SongDataSource {
 
     return SongModel.fromMap(
       docSnap.data()!,
+      id: docSnap.id,
     );
   }
 
   Future<void> deleteSong(String groupId, String songId) async {
-    firestore
+    await firestore
         .collection(FirebaseConstants.groupsCollection)
         .doc(groupId)
         .collection(FirebaseConstants.songsCollection)
