@@ -14,6 +14,7 @@ import 'package:pelgrim/domain/usecases/session/save_local_session_use_case.dart
 import 'package:pelgrim/domain/usecases/session/sync_user_session_use_case.dart';
 import 'package:pelgrim/domain/usecases/user/register_admin_create_group_use_case.dart';
 import 'package:pelgrim/domain/usecases/user/register_user_join_group_use_case.dart';
+import 'package:pelgrim/domain/usecases/user/send_password_reset_use_case.dart';
 
 class UserProvider extends ChangeNotifier {
   // Note: Usecases
@@ -28,6 +29,7 @@ class UserProvider extends ChangeNotifier {
   final RegisterAdminCreateGroupUseCase _registerAdminCreateGroupUseCase;
   final RegisterUserJoinGroupUseCase _registerUserJoinGroupUseCase;
   final GetAllGroupNamesUseCase _getAllGroupNamesUseCase;
+  final SendPasswordResetUseCase _sendPasswordResetUseCase;
 
   UserProvider(
     this._signInUseCase,
@@ -40,6 +42,7 @@ class UserProvider extends ChangeNotifier {
     this._registerAdminCreateGroupUseCase,
     this._registerUserJoinGroupUseCase,
     this._getAllGroupNamesUseCase,
+    this._sendPasswordResetUseCase,
   );
 
   // Note: Variables
@@ -198,6 +201,18 @@ class UserProvider extends ChangeNotifier {
       return await _getAllGroupNamesUseCase.execute();
     } catch (e) {
       rethrow;
+    }
+  }
+
+  Future<void> resetPassword(String email) async {
+    _isLoading = true;
+    notifyListeners();
+
+    try {
+      await _sendPasswordResetUseCase.execute(email.trim());
+    } finally {
+      _isLoading = false;
+      notifyListeners();
     }
   }
 }

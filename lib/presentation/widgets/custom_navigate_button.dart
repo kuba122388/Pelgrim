@@ -5,8 +5,10 @@ import '../../core/const/app_sizes.dart';
 class CustomNavigateButton extends StatelessWidget {
   final String text;
   final Function onPressed;
+  final bool trailingIcon;
 
-  const CustomNavigateButton({super.key, required this.text, required this.onPressed});
+  const CustomNavigateButton(
+      {super.key, required this.text, required this.onPressed, this.trailingIcon = true});
 
   @override
   Widget build(BuildContext context) {
@@ -22,10 +24,11 @@ class CustomNavigateButton extends StatelessWidget {
       onPressed: () => onPressed(),
       child: Stack(
         children: [
-          Align(
-            alignment: Alignment.centerRight,
-            child: Image.asset('images/arrow-right.png', height: 20),
-          ),
+          if (trailingIcon == true)
+            Align(
+              alignment: Alignment.centerRight,
+              child: Image.asset('images/arrow-right.png', height: 20),
+            ),
           Align(
             alignment: Alignment.center,
             child: Text(

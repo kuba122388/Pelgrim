@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../widgets/topbar_clipper.dart';
+import '../../../widgets/topbar_clipper.dart';
 
 class RegisterTopBar extends StatefulWidget implements PreferredSizeWidget {
   final String title;

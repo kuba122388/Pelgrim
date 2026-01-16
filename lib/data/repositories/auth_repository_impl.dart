@@ -47,4 +47,13 @@ class AuthRepositoryImpl extends AuthRepository {
   String? getCurrentUserId() {
     return _authDataSource.getCurrentUserId();
   }
+
+  @override
+  Future<void> sendPasswordReset(String email) {
+    try {
+      return _authDataSource.sendPasswordReset(email);
+    } catch (_) {
+      rethrow;
+    }
+  }
 }

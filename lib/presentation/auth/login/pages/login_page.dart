@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:pelgrim/core/const/app_consts.dart';
 import 'package:pelgrim/core/const/app_sizes.dart';
-import 'package:pelgrim/presentation/login/pages/login_approved.dart';
-import 'package:pelgrim/presentation/login/widgets/labeled_text_field.dart';
+import 'package:pelgrim/presentation/auth/forgot_password/forgot_password_page.dart';
 import 'package:pelgrim/presentation/providers/user_provider.dart';
-import 'package:pelgrim/presentation/register/pages/register_user_page.dart';
 import 'package:pelgrim/presentation/widgets/custom_navigate_button.dart';
 import 'package:pelgrim/presentation/widgets/welcome_background.dart';
 import 'package:provider/provider.dart';
+
+import '../../register/pages/register_user_page.dart';
+import '../widgets/labeled_text_field.dart';
+import 'login_approved.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -79,7 +81,14 @@ class _LoginPageState extends State<LoginPage> {
                               Align(
                                 alignment: Alignment.centerRight,
                                 child: InkWell(
-                                  onTap: () {}, // TODO
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => const ForgotPasswordPage(),
+                                      ),
+                                    );
+                                  },
                                   child: const Text(
                                     'Zapomniałem hasła',
                                     style: TextStyle(

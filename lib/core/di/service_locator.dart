@@ -73,6 +73,7 @@ import 'package:pelgrim/domain/usecases/user/get_all_users_by_group_use_case.dar
 import 'package:pelgrim/domain/usecases/user/get_user_by_id_use_case.dart';
 import 'package:pelgrim/domain/usecases/user/register_admin_create_group_use_case.dart';
 import 'package:pelgrim/domain/usecases/user/register_user_join_group_use_case.dart';
+import 'package:pelgrim/domain/usecases/user/send_password_reset_use_case.dart';
 import 'package:pelgrim/presentation/providers/all_users_provider.dart';
 import 'package:pelgrim/presentation/providers/announcement_provider.dart';
 import 'package:pelgrim/presentation/providers/contact_provider.dart';
@@ -222,6 +223,8 @@ void setupLocator() {
   sl.registerLazySingleton(() => GetAllImagesUseCase(sl<ImagesRepository>()));
   sl.registerLazySingleton(() => UploadImagesUseCase(sl<ImagesRepository>()));
 
+  sl.registerLazySingleton(() => SendPasswordResetUseCase(sl<AuthRepository>()));
+
   // --- 4. Providers ---
   sl.registerLazySingleton(
     () => ContactProvider(
@@ -250,6 +253,7 @@ void setupLocator() {
       sl<RegisterAdminCreateGroupUseCase>(),
       sl<RegisterUserJoinGroupUseCase>(),
       sl<GetAllGroupNamesUseCase>(),
+      sl<SendPasswordResetUseCase>(),
     ),
   );
 

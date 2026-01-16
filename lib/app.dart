@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pelgrim/presentation/login/pages/login_approved.dart';
+import 'package:pelgrim/presentation/auth/login/pages/login_approved.dart';
 import 'package:pelgrim/presentation/welcome/pages/welcome_page.dart';
 import 'package:provider/provider.dart';
 

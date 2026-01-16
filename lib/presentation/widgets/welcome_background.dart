@@ -9,11 +9,15 @@ import 'package:pelgrim/presentation/widgets/wave_painter.dart';
 class WelcomeBackground extends StatelessWidget {
   final bool elevated;
   final String heroTag;
+  final double textElevation;
+  final double imageElevation;
 
   const WelcomeBackground({
     super.key,
     this.elevated = false,
     this.heroTag = "Default Welcome",
+    this.textElevation = 0.0,
+    this.imageElevation = 0.0,
   });
 
   @override
@@ -30,7 +34,8 @@ class WelcomeBackground extends StatelessWidget {
         ),
         Positioned(
           width: size.width,
-          top: screenHeight * (AppSizes.welcomeTitleTop - AppSizes.loginContentOffset),
+          top: screenHeight * (AppSizes.welcomeTitleTop - AppSizes.loginContentOffset) +
+              textElevation,
           child: const Center(
             child: Text(
               'Witaj pielgrzymie!',
@@ -52,7 +57,7 @@ class WelcomeBackground extends StatelessWidget {
           ),
         ),
         Transform.translate(
-          offset: Offset(0, -elevationOffset),
+          offset: Offset(0, -elevationOffset + imageElevation),
           child: Hero(
             tag: heroTag,
             child: Stack(

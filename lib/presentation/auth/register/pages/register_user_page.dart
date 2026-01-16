@@ -2,13 +2,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:pelgrim/core/const/app_consts.dart';
+import 'package:pelgrim/presentation/auth/register/widgets/custom_text_field.dart';
+import 'package:pelgrim/presentation/auth/register/widgets/register_topbar.dart';
 import 'package:pelgrim/presentation/providers/user_provider.dart';
-import 'package:pelgrim/presentation/register/widgets/custom_text_field.dart';
-import 'package:pelgrim/presentation/register/widgets/register_topbar.dart';
 import 'package:pelgrim/presentation/widgets/welcome_background.dart';
 import 'package:provider/provider.dart';
 
-import '../../../domain/entities/group.dart';
+import '../../../../domain/entities/group.dart';
 
 class RegisterUserPage extends StatefulWidget {
   const RegisterUserPage({super.key});
