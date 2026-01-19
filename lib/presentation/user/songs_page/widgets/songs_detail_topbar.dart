@@ -7,6 +7,7 @@ import 'package:pelgrim/presentation/user/settings/settings_page.dart';
 import 'package:pelgrim/presentation/user/songs_page/pages/edit_song_page.dart';
 import 'package:provider/provider.dart';
 
+import '../../../providers/song_provider.dart';
 import '../../../widgets/topbar_clipper.dart';
 
 class SongsDetailTopbar extends StatefulWidget implements PreferredSizeWidget {
@@ -107,7 +108,12 @@ class _SongsDetailTopbarState extends State<SongsDetailTopbar> {
                         child: InkWell(
                           onTap: () async {
                             final result = await _showDeleteDialog(context);
-                            if (result == true) Navigator.of(context).pop();
+                            if (result == true) {
+                              final songProvider = context.read<SongProvider>();
+                              await songProvider.deleteSong(_groupId, widget.song.id!);
+                              Navigator.of(context).pop(true);
+                            }
+                            ;
                           },
                           child: Image.asset(
                             './images/trash.png',

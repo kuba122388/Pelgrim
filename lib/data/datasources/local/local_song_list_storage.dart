@@ -16,9 +16,15 @@ class LocalSongListStorage {
         localMap[s.id!] = s;
       }
     }
+    print("SONGS");
+    print(remoteSongs.length);
 
     for (var song in remoteSongs) {
-      localMap[song.id!] = song;
+      if (song.deleted) {
+        localMap.remove(song.id);
+      } else {
+        localMap[song.id!] = song;
+      }
     }
 
     await box.put(groupId, localMap.values.toList());

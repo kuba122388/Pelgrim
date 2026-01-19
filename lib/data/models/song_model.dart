@@ -19,11 +19,15 @@ class SongModel extends HiveObject {
   @HiveField(3)
   final DateTime updatedAt;
 
+  @HiveField(4)
+  final bool deleted;
+
   SongModel({
     this.id,
     required this.title,
     required this.lyrics,
     required this.updatedAt,
+    this.deleted = false,
   });
 
   Map<String, dynamic> toMap() {
@@ -31,6 +35,7 @@ class SongModel extends HiveObject {
       'id': id,
       'title': title,
       'lyrics': lyrics,
+      'deleted': deleted,
       'updated_at': FieldValue.serverTimestamp(),
     };
   }
@@ -46,6 +51,7 @@ class SongModel extends HiveObject {
       title: map['title'] ?? '',
       lyrics: map['lyrics'] ?? '',
       updatedAt: ts?.toDate() ?? DateTime.fromMillisecondsSinceEpoch(0),
+      deleted: map['deleted'] == true,
     );
   }
 

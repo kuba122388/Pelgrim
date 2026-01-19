@@ -58,12 +58,16 @@ class SongRepositoryImpl extends SongRepository {
           .listen((remoteSongs) async {
         if (remoteSongs.isEmpty) return;
 
+        print("REMOTE SONGS");
+        print(remoteSub);
+
         await _localSongListStorage.updateLocalSongs(groupId, remoteSongs);
 
         final updatedLocal = await _localSongListStorage.getSongList(groupId);
         if (updatedLocal != null && !controller.isClosed) {
           controller.add(updatedLocal.map((e) => e.toEntity()).toList());
         }
+
       });
     }();
 

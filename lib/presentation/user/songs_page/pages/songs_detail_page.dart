@@ -5,6 +5,8 @@ import 'package:pelgrim/presentation/providers/user_provider.dart';
 import 'package:pelgrim/presentation/user/songs_page/widgets/songs_detail_topbar.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../domain/entities/song.dart';
+
 class SongsDetailPage extends StatefulWidget {
   final String songId;
 
@@ -41,7 +43,7 @@ class _SongsDetailPageState extends State<SongsDetailPage> {
 
     final song = songProvider.songs.firstWhere(
       (s) => s.id == widget.songId,
-      orElse: () => throw Exception('Song not found'),
+      orElse: () => Song(id: '', title: '', lyrics: ''),
     );
 
     final isPlayingNow = songProvider.playingNowSong?.id == song.id;

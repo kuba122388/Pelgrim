@@ -56,6 +56,7 @@ class SongProvider extends ChangeNotifier {
     _subSongList?.cancel();
     _subSongList = _getSongListUseCase.execute(groupId).listen((remoteChanges) async {
       _songs = remoteChanges;
+      _songs.sort((a, b) => a.title.compareTo(b.title));
       _isLoading = false;
       notifyListeners();
     });

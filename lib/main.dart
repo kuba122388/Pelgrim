@@ -31,18 +31,20 @@ Future<void> main() async {
   //
   //     groupId = "niebieska_brzezniowsko_zloczewska";
   //
-  //     final oldSongs = await groupDoc.reference.collection('Announcements').get();
+  //     final oldSongs = await groupDoc.reference.collection('Songs').get();
   //     for (var songDoc in oldSongs.docs) {
   //       final songData = songDoc.data();
   //       await firestore
   //           .collection('pelgrim_groups')
   //           .doc(groupId)
-  //           .collection('announcements')
+  //           .collection('songs')
   //           .doc(songDoc.id)
   //           .set({
   //         'id': songDoc.id,
   //         'title': songData['Title'],
   //         'lyrics': songData['Lyrics'],
+  //         'updated_at': DateTime.now(),
+  //         'deleted': false,
   //       });
   //     }
   //   }

@@ -89,6 +89,9 @@ class SongDataSource {
         .doc(groupId)
         .collection(FirebaseConstants.songsCollection)
         .doc(songId)
-        .delete();
+        .update({
+      'deleted': true,
+      'updated_at': FieldValue.serverTimestamp(),
+    });
   }
 }
