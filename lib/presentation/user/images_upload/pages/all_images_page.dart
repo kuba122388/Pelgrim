@@ -4,8 +4,9 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:pelgrim/presentation/providers/images_provider.dart';
 import 'package:pelgrim/presentation/providers/user_provider.dart';
 import 'package:pelgrim/presentation/user/images_upload/widgets/full_screen_gallery.dart';
-import 'package:pelgrim/presentation/user/settings/special_topbar.dart';
 import 'package:provider/provider.dart';
+
+import '../../../widgets/special_topbar.dart';
 
 class AllImagesPage extends StatefulWidget {
   const AllImagesPage({super.key});

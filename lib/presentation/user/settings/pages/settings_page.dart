@@ -3,10 +3,10 @@ import 'package:pelgrim/core/const/app_consts.dart';
 import 'package:pelgrim/domain/entities/group.dart';
 import 'package:pelgrim/domain/entities/user.dart';
 import 'package:pelgrim/presentation/providers/user_provider.dart';
-import 'package:pelgrim/presentation/user/settings/special_topbar.dart';
 import 'package:provider/provider.dart';
 
-import '../../welcome/pages/welcome_page.dart';
+import '../../../welcome/pages/welcome_page.dart';
+import '../../../widgets/special_topbar.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -78,7 +78,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 ),
               ),
               GestureDetector(
-                onTap: () => _signOut(context),
+                onTap: () async => await _signOut(context),
                 child: Container(
                   padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 40),
                   decoration: BoxDecoration(
@@ -166,8 +166,8 @@ class _SettingsPageState extends State<SettingsPage> {
   Future<void> _signOut(BuildContext context) async {
     final UserProvider userProvider = context.read<UserProvider>();
 
-    userProvider.signOut();
-    Future.delayed(const Duration(milliseconds: 1500));
+    await userProvider.signOut();
+
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(builder: (context) => const WelcomePage()),

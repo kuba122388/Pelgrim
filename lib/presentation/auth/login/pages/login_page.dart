@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pelgrim/core/const/app_consts.dart';
 import 'package:pelgrim/core/const/app_sizes.dart';
-import 'package:pelgrim/presentation/auth/forgot_password/forgot_password_page.dart';
+import 'package:pelgrim/presentation/auth/forgot_password/pages/forgot_password_page.dart';
 import 'package:pelgrim/presentation/providers/user_provider.dart';
 import 'package:pelgrim/presentation/widgets/custom_navigate_button.dart';
 import 'package:pelgrim/presentation/widgets/welcome_background.dart';
@@ -131,8 +131,9 @@ class _LoginPageState extends State<LoginPage> {
                                     child: const Text(
                                       'Kliknij tutaj!',
                                       style: TextStyle(
-                                          color: LOGIN_ALTERNATE_OPTION,
-                                          fontWeight: FontWeight.bold),
+                                        color: LOGIN_ALTERNATE_OPTION,
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                     ),
                                   ),
                                 ],

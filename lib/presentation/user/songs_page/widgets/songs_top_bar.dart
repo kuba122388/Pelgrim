@@ -3,7 +3,7 @@ import 'package:pelgrim/presentation/providers/user_provider.dart';
 import 'package:provider/provider.dart';
 
 import '../../../widgets/topbar_clipper.dart';
-import '../../settings/settings_page.dart';
+import '../../settings/pages/settings_page.dart';
 import '../pages/add_song_page.dart';
 
 class SongsTopBar extends StatelessWidget implements PreferredSizeWidget {

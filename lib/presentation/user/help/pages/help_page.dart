@@ -3,7 +3,7 @@ import 'package:pelgrim/core/const/app_consts.dart';
 import 'package:pelgrim/presentation/providers/user_provider.dart';
 import 'package:provider/provider.dart';
 
-import '../../providers/help_provider.dart';
+import '../../../providers/help_provider.dart';
 
 class HelpPage extends StatefulWidget {
   const HelpPage({super.key});

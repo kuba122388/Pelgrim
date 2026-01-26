@@ -3,7 +3,7 @@ import 'package:pelgrim/domain/entities/group.dart';
 import 'package:pelgrim/presentation/providers/user_provider.dart';
 import 'package:provider/provider.dart';
 
-import '../../widgets/topbar_clipper.dart';
+import 'topbar_clipper.dart';
 
 class SpecialTopBar extends StatefulWidget implements PreferredSizeWidget {
   const SpecialTopBar({super.key});

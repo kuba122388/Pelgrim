@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:pelgrim/presentation/providers/user_provider.dart';
 import 'package:provider/provider.dart';
 
-import '../../widgets/custom_navigate_button.dart';
-import '../../widgets/welcome_background.dart';
+import '../../../widgets/custom_navigate_button.dart';
+import '../../../widgets/welcome_background.dart';
 
 class ForgotPasswordPage extends StatefulWidget {
   const ForgotPasswordPage({super.key});
@@ -40,6 +40,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
       );
       Navigator.pop(context);
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(e.toString()),
