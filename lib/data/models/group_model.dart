@@ -42,10 +42,10 @@ class GroupModel extends HiveObject {
   factory GroupModel.fromMap(Map<String, dynamic> json) {
     return GroupModel(
       id: json["id"] ?? "",
-      groupColor: json["group_color"],
-      groupCity: json["group_city"],
-      color: Color(int.parse(json["color"], radix: 16)),
-      secondColor: Color(int.parse(json["second_color"], radix: 16)),
+      groupColor: json["group_color"] ?? "",
+      groupCity: json["group_city"] ?? "",
+      color: Color(int.parse(json["color"] ?? const Color(0xFF000000), radix: 16)),
+      secondColor: Color(int.parse(json["second_color"] ?? const Color(0xFFFFFFFF), radix: 16)),
     );
   }
 

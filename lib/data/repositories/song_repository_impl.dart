@@ -26,7 +26,7 @@ class SongRepositoryImpl extends SongRepository {
   }
 
   @override
-  Future<Song?> getSong(String groupId, String songId) async {
+  Future<Song?> getSongById(String groupId, String songId) async {
     try {
       final SongModel? model = await _songDataSource.getSong(groupId, songId);
 
@@ -37,7 +37,7 @@ class SongRepositoryImpl extends SongRepository {
   }
 
   @override
-  Future<void> deleteSong(String groupId, String songId) {
+  Future<void> deleteSongById(String groupId, String songId) {
     return _songDataSource.deleteSong(groupId, songId);
   }
 

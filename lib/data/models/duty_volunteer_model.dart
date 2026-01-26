@@ -18,8 +18,8 @@ class DutyVolunteerModel {
 
   factory DutyVolunteerModel.fromMap(Map<String, dynamic> map) {
     return DutyVolunteerModel(
-      userId: map['user_id'],
-      fullName: map['full_name'],
+      userId: map['user_id'] ?? "",
+      fullName: map['full_name'] ?? "",
     );
   }
 

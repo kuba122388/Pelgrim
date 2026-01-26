@@ -17,15 +17,13 @@ class AddSongPage extends StatefulWidget {
 class _AddSongPageState extends State<AddSongPage> {
   final AddSongUseCase _addSongUseCase = sl<AddSongUseCase>();
 
-  late final TextEditingController _titleController;
-  late final TextEditingController _lyricsController;
+  final TextEditingController _titleController = TextEditingController();
+  final TextEditingController _lyricsController = TextEditingController();
   late final String _groupId;
 
   @override
   void initState() {
     super.initState();
-    _titleController = TextEditingController();
-    _lyricsController = TextEditingController();
     _groupId = context.read<UserProvider>().userGroupId;
   }
 

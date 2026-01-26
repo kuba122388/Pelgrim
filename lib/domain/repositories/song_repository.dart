@@ -11,9 +11,9 @@ abstract class SongRepository {
 
   Future<void> editSong(String groupId, Song song);
 
-  Future<Song?> getSong(String groupId, String songId);
+  Future<Song?> getSongById(String groupId, String songId);
 
-  Future<void> deleteSong(String groupId, String songId);
+  Future<void> deleteSongById(String groupId, String songId);
 
   Future<void> streamSong(String groupId, Song song);
 

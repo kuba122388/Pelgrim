@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:pelgrim/domain/entities/song.dart';
-import 'package:pelgrim/domain/usecases/song/delete_song_use_case.dart';
+import 'package:pelgrim/domain/usecases/song/delete_song_by_id_use_case.dart';
 import 'package:pelgrim/domain/usecases/song/edit_song_use_case.dart';
 import 'package:pelgrim/domain/usecases/song/get_local_song_list_use_case.dart';
 import 'package:pelgrim/domain/usecases/song/get_song_list_use_case.dart';
@@ -15,7 +15,7 @@ class SongProvider extends ChangeNotifier {
   final WatchPlayingNowUseCase _watchPlayingNowUseCase;
   final StreamSongUseCase _streamSongUseCase;
   final EditSongUseCase _editSongUseCase;
-  final DeleteSongUseCase _deleteSongUseCase;
+  final DeleteSongByIdUseCase _deleteSongUseCase;
 
   StreamSubscription? _subSongList;
   StreamSubscription? _subPlayingNow;

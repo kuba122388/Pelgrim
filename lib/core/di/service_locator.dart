@@ -50,7 +50,7 @@ import 'package:pelgrim/domain/usecases/duty/get_duties_use_case.dart';
 import 'package:pelgrim/domain/usecases/duty/toggle_duty_sign_up_use_case.dart';
 import 'package:pelgrim/domain/usecases/group/delete_group_use_case.dart';
 import 'package:pelgrim/domain/usecases/group/get_all_group_names_use_case.dart';
-import 'package:pelgrim/domain/usecases/group/get_group_use_case.dart';
+import 'package:pelgrim/domain/usecases/group/get_group_by_id_use_case.dart';
 import 'package:pelgrim/domain/usecases/group/set_admin_status_use_case.dart';
 import 'package:pelgrim/domain/usecases/help/send_help_request_use_case.dart';
 import 'package:pelgrim/domain/usecases/images/get_all_images_use_case.dart';
@@ -62,11 +62,11 @@ import 'package:pelgrim/domain/usecases/session/load_local_session_use_case.dart
 import 'package:pelgrim/domain/usecases/session/save_local_session_use_case.dart';
 import 'package:pelgrim/domain/usecases/session/sync_user_session_use_case.dart';
 import 'package:pelgrim/domain/usecases/song/add_song_use_case.dart';
-import 'package:pelgrim/domain/usecases/song/delete_song_use_case.dart';
+import 'package:pelgrim/domain/usecases/song/delete_song_by_id_use_case.dart';
 import 'package:pelgrim/domain/usecases/song/edit_song_use_case.dart';
 import 'package:pelgrim/domain/usecases/song/get_local_song_list_use_case.dart';
+import 'package:pelgrim/domain/usecases/song/get_song_by_id_use_case.dart';
 import 'package:pelgrim/domain/usecases/song/get_song_list_use_case.dart';
-import 'package:pelgrim/domain/usecases/song/get_song_use_case.dart';
 import 'package:pelgrim/domain/usecases/song/stream_song_use_case.dart';
 import 'package:pelgrim/domain/usecases/song/watch_playing_now_use_case.dart';
 import 'package:pelgrim/domain/usecases/user/get_all_users_by_group_use_case.dart';
@@ -188,7 +188,7 @@ void setupLocator() {
 
   sl.registerLazySingleton(() => DeleteGroupUseCase(sl<GroupRepository>()));
   sl.registerLazySingleton(() => GetAllGroupNamesUseCase(sl<GroupRepository>()));
-  sl.registerLazySingleton(() => GetGroupUseCase(sl<GroupRepository>()));
+  sl.registerLazySingleton(() => GetGroupByIdUseCase(sl<GroupRepository>()));
   sl.registerLazySingleton(
       () => SetAdminStatusUseCase(sl<GroupRepository>(), sl<UserRepository>()));
 
@@ -199,10 +199,10 @@ void setupLocator() {
       sl<UserRepository>(), sl<GroupRepository>(), sl<UserSessionRepository>()));
 
   sl.registerLazySingleton(() => AddSongUseCase(sl<SongRepository>()));
-  sl.registerLazySingleton(() => DeleteSongUseCase(sl<SongRepository>()));
+  sl.registerLazySingleton(() => DeleteSongByIdUseCase(sl<SongRepository>()));
   sl.registerLazySingleton(() => EditSongUseCase(sl<SongRepository>()));
   sl.registerLazySingleton(() => GetLocalSongListUseCase(sl<SongRepository>()));
-  sl.registerLazySingleton(() => GetSongUseCase(sl<SongRepository>()));
+  sl.registerLazySingleton(() => GetSongByIdUseCase(sl<SongRepository>()));
   sl.registerLazySingleton(() => StreamSongUseCase(sl<SongRepository>()));
   sl.registerLazySingleton(() => WatchPlayingNowUseCase(sl<SongRepository>()));
   sl.registerLazySingleton(() => GetSongListUseCase((sl<SongRepository>())));
@@ -264,7 +264,7 @@ void setupLocator() {
       sl<WatchPlayingNowUseCase>(),
       sl<StreamSongUseCase>(),
       sl<EditSongUseCase>(),
-      sl<DeleteSongUseCase>(),
+      sl<DeleteSongByIdUseCase>(),
     ),
   );
 
