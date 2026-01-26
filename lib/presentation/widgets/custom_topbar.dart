@@ -20,9 +20,7 @@ class _CustomTopBarState extends State<CustomTopBar> {
   Widget build(BuildContext context) {
     final Group groupInfo = context.read<UserProvider>().groupInfo!;
 
-    final screenWidth = MediaQuery.of(context).size.width;
     final statusBar = MediaQuery.of(context).padding.top;
-    final screenHeight = MediaQuery.of(context).size.height - statusBar;
 
     String title = groupInfo.groupColor;
     String subtitle = groupInfo.groupCity;
@@ -30,13 +28,10 @@ class _CustomTopBarState extends State<CustomTopBar> {
     Color secondColor = groupInfo.secondColor;
 
     return PreferredSize(
-      preferredSize: const Size.fromHeight(80),
+      preferredSize: Size.fromHeight(statusBar),
       child: ClipPath(
         clipper: TopBarClipper(),
-        child: Container(
-          width: screenWidth,
-          height: screenHeight * 0.1 + statusBar,
-          padding: EdgeInsets.only(top: statusBar + 8),
+        child: DecoratedBox(
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [firstColor, secondColor],
@@ -44,21 +39,24 @@ class _CustomTopBarState extends State<CustomTopBar> {
               end: Alignment.bottomCenter,
             ),
           ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              SizedBox(
-                width: screenWidth * 0.9,
-                child: Row(
+          child: Padding(
+            padding: EdgeInsets.only(left: 20.0, right: 20.0, top: statusBar + 10),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     InkWell(
-                        onTap: () => {
-                              Scaffold.of(context).openDrawer(),
-                            },
-                        child: Image.asset('./images/burger-bar.png', width: 25)),
-                    SizedBox(
-                      width: screenWidth * 0.5,
+                      onTap: () => {
+                        Scaffold.of(context).openDrawer(),
+                      },
+                      child: Image.asset(
+                        './images/burger-bar.png',
+                        width: 25,
+                      ),
+                    ),
+                    Expanded(
                       child: Center(
                         child: Text(
                           title,
@@ -74,26 +72,30 @@ class _CustomTopBarState extends State<CustomTopBar> {
                       ),
                     ),
                     InkWell(
-                        onTap: () => {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const SettingsPage(),
-                                ),
-                              ),
-                            },
-                        child: Image.asset('./images/settings.png', width: 25)),
+                      onTap: () => {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const SettingsPage(),
+                          ),
+                        ),
+                      },
+                      child: Image.asset(
+                        './images/settings.png',
+                        width: 25,
+                      ),
+                    ),
                   ],
                 ),
-              ),
-              Text(
-                subtitle,
-                style: TextStyle(
-                  color: secondColor == const Color(0xFFFFFFFF) ? Colors.black : Colors.white,
-                  fontSize: 16,
+                Text(
+                  subtitle,
+                  style: TextStyle(
+                    color: secondColor == const Color(0xFFFFFFFF) ? Colors.black : Colors.white,
+                    fontSize: 16,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

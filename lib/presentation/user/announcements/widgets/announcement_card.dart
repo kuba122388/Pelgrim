@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:pelgrim/core/const/app_consts.dart';
 import 'package:pelgrim/domain/entities/announcement.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class AnnouncementCard extends StatelessWidget {
   final Announcement announcement;
@@ -74,9 +76,18 @@ class AnnouncementCard extends StatelessWidget {
                 Flexible(
                   child: Padding(
                     padding: const EdgeInsets.only(top: 5, bottom: 10),
-                    child: SelectableText(
-                      announcement.content,
+                    child: SelectableLinkify(
+                      text: announcement.content,
                       style: const TextStyle(fontSize: FONT_SIZE_SMALL),
+                      linkStyle: const TextStyle(color: Colors.blue),
+                      onOpen: (link) async {
+                        final Uri url = Uri.parse(link.url);
+                        if (await canLaunchUrl(url)) {
+                          await launchUrl(url, mode: LaunchMode.externalApplication);
+                        } else {
+                          throw 'Nie można otworzyć $url';
+                        }
+                      },
                     ),
                   ),
                 ),

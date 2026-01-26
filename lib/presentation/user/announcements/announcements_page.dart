@@ -60,126 +60,126 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
   Widget build(BuildContext context) {
     final User user = _userProvider.user!;
 
-    final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top;
-
     final List<Announcement> announcements = _announcementProvider.announcementList;
 
     final announcementProvider = context.watch<AnnouncementProvider>();
 
     final filtered = _important ? announcements.where((a) => a.important).toList() : announcements;
 
-    return SafeArea(
-      child: SizedBox(
-        width: screenWidth,
-        child: Column(
-          children: [
-            Padding(
-              padding: EdgeInsets.only(top: screenHeight * 0.02, bottom: screenHeight * 0.01),
-              child: const Text(
-                'Dodaj Ogłoszenie',
-                style: TextStyle(
-                  fontFamily: 'Lexend',
-                  fontWeight: FontWeight.bold,
-                  color: FONT_BLACK_COLOR,
-                  fontSize: 18,
-                  shadows: [APP_TEXT_SHADOW],
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: SafeArea(
+        child: Center(
+          child: Column(
+            children: [
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 10.0),
+                child: Text(
+                  'Dodaj Ogłoszenie',
+                  style: TextStyle(
+                    fontFamily: 'Lexend',
+                    fontWeight: FontWeight.bold,
+                    color: FONT_BLACK_COLOR,
+                    fontSize: 18,
+                    shadows: [APP_TEXT_SHADOW],
+                  ),
                 ),
               ),
-            ),
-            Expanded(
-              child: SizedBox(
-                width: screenWidth * 0.85,
-                child: Column(
-                  children: [
-                    _buildAddAnnouncementButton(context, user),
-                    const SizedBox(height: 10),
-                    Expanded(
-                      child: Container(
-                        padding: const EdgeInsets.only(top: 15, left: 15, right: 15),
-                        margin: const EdgeInsets.only(bottom: 10),
-                        decoration: BoxDecoration(
-                            color: BACKGROUND_CONTAINERS_COLOR,
-                            border: Border.all(color: Colors.black),
-                            borderRadius: BorderRadius.circular(10)),
-                        child: Column(
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                const Text(
-                                  'Tablica ogłoszeń',
-                                  style: TextStyle(
-                                    fontFamily: 'Lexend',
-                                    fontWeight: FontWeight.bold,
-                                    color: FONT_BLACK_COLOR,
-                                    fontSize: FONT_SIZE_BIG,
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                  child: Column(
+                    children: [
+                      _buildAddAnnouncementButton(context, user),
+                      const SizedBox(height: 10),
+                      Expanded(
+                        child: Container(
+                          padding: const EdgeInsets.only(top: 15, left: 15, right: 15),
+                          margin: const EdgeInsets.only(bottom: 10),
+                          decoration: BoxDecoration(
+                              color: BACKGROUND_CONTAINERS_COLOR,
+                              border: Border.all(color: Colors.black),
+                              borderRadius: BorderRadius.circular(10)),
+                          child: Column(
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  const Text(
+                                    'Tablica ogłoszeń',
+                                    style: TextStyle(
+                                      fontFamily: 'Lexend',
+                                      fontWeight: FontWeight.bold,
+                                      color: FONT_BLACK_COLOR,
+                                      fontSize: FONT_SIZE_BIG,
+                                    ),
                                   ),
-                                ),
-                                Row(
-                                  children: [
-                                    SizedBox(
-                                      width: 36,
-                                      height: 24,
-                                      child: Checkbox(
-                                        value: _important,
-                                        onChanged: (bool? value) {
-                                          setState(() {
-                                            _important = value!;
-                                          });
-                                        },
-                                        activeColor: Colors.grey,
+                                  Row(
+                                    children: [
+                                      SizedBox(
+                                        width: 36,
+                                        height: 24,
+                                        child: Checkbox(
+                                          value: _important,
+                                          onChanged: (bool? value) {
+                                            setState(() {
+                                              _important = value!;
+                                            });
+                                          },
+                                          activeColor: Colors.grey,
+                                        ),
                                       ),
-                                    ),
-                                    const Text(
-                                      'Ważne',
-                                      style: TextStyle(
-                                        fontFamily: 'Lexend',
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: FONT_SIZE_SMALL,
-                                        color: FONT_BLACK_COLOR,
+                                      const Text(
+                                        'Ważne',
+                                        style: TextStyle(
+                                          fontFamily: 'Lexend',
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: FONT_SIZE_SMALL,
+                                          color: FONT_BLACK_COLOR,
+                                        ),
                                       ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 10),
-                            Expanded(
-                              child: announcementProvider.isInitialLoading
-                                  ? const Center(
-                                      child: CircularProgressIndicator(),
-                                    )
-                                  : filtered.isEmpty
-                                      ? const Center(
-                                          child: Text(
-                                            'Brak ogłoszeń',
-                                            style: TextStyle(
-                                                fontFamily: 'Lexend', color: FONT_BLACK_COLOR),
-                                          ),
-                                        )
-                                      : ListView.builder(
-                                          itemCount: filtered.length,
-                                          itemBuilder: (_, i) => AnnouncementCard(
-                                            currentUserId: _userProvider.user!.id,
-                                            isAdmin: _userProvider.user!.isAdmin,
-                                            announcement: filtered[i],
-                                            onDelete: () => _deleteAnnouncement(
-                                              filtered[i],
-                                              _userProvider.userGroupId,
+                                    ],
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 10),
+                              Expanded(
+                                child: announcementProvider.isInitialLoading
+                                    ? const Center(
+                                        child: CircularProgressIndicator(),
+                                      )
+                                    : filtered.isEmpty
+                                        ? const Center(
+                                            child: Text(
+                                              'Brak ogłoszeń',
+                                              style: TextStyle(
+                                                  fontFamily: 'Lexend', color: FONT_BLACK_COLOR),
+                                            ),
+                                          )
+                                        : ListView.builder(
+                                            itemCount: filtered.length,
+                                            itemBuilder: (_, i) => AnnouncementCard(
+                                              currentUserId: _userProvider.user!.id,
+                                              isAdmin: _userProvider.user!.isAdmin,
+                                              announcement: filtered[i],
+                                              onDelete: () => _deleteAnnouncement(
+                                                filtered[i],
+                                                _userProvider.userGroupId,
+                                              ),
                                             ),
                                           ),
-                                        ),
-                            ),
-                          ],
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                    )
-                  ],
+                      )
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
