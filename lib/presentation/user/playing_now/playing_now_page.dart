@@ -46,50 +46,51 @@ class _PlayingNowPageState extends State<PlayingNowPage> {
             }
             final currentSong = snapshot.data!;
             return Container(
-                decoration: BoxDecoration(
-                  boxShadow: const [BOX_SHADOW_CONTAINER],
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                margin: EdgeInsets.symmetric(vertical: screenHeight * 0.02),
-                padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-                width: screenWidth * 0.91,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      currentSong.title,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(fontFamily: 'Lexend', fontSize: 22),
-                    ),
-                    const Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                      SizedBox(
-                        width: 50,
-                        child: Divider(
-                          color: Colors.black,
-                        ),
+              decoration: BoxDecoration(
+                boxShadow: const [BOX_SHADOW_CONTAINER],
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              margin: EdgeInsets.symmetric(vertical: screenHeight * 0.02),
+              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+              width: screenWidth * 0.91,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    currentSong.title,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(fontFamily: 'Lexend', fontSize: 22),
+                  ),
+                  const Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                    SizedBox(
+                      width: 50,
+                      child: Divider(
+                        color: Colors.black,
                       ),
-                    ]),
-                    Expanded(
-                      child: Scrollbar(
-                        thumbVisibility: true,
-                        child: SingleChildScrollView(
-                          child: SizedBox(
-                            width: screenWidth * 0.9,
-                            child: Text(
-                              currentSong.lyrics,
-                              style: const TextStyle(
-                                fontFamily: 'Lexend',
-                                fontSize: 14,
-                                color: Colors.black,
-                              ),
+                    ),
+                  ]),
+                  Expanded(
+                    child: Scrollbar(
+                      thumbVisibility: true,
+                      child: SingleChildScrollView(
+                        child: SizedBox(
+                          width: screenWidth * 0.9,
+                          child: Text(
+                            currentSong.lyrics,
+                            style: const TextStyle(
+                              fontFamily: 'Lexend',
+                              fontSize: 14,
+                              color: Colors.black,
                             ),
                           ),
                         ),
                       ),
                     ),
-                  ],
-                ));
+                  ),
+                ],
+              ),
+            );
           },
         ),
       ),

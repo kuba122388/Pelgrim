@@ -38,6 +38,7 @@ class AnnouncementDataSource {
         .doc(groupName)
         .collection(FirebaseConstants.announcementsCollection)
         .orderBy('created_at', descending: true)
+        .limit(20)
         .snapshots()
         .map((querySnapshot) {
       return querySnapshot.docs.map((doc) {

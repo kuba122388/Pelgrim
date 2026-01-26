@@ -69,7 +69,9 @@ class SongProvider extends ChangeNotifier {
   }
 
   Future<void> streamSong(String groupId, Song song) async {
-    await _streamSongUseCase.execute(groupId, song);
+    try {
+      await _streamSongUseCase.execute(groupId, song);
+    } catch (_) {}
   }
 
   Future<void> editSong(String groupId, Song song) async {

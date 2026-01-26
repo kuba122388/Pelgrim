@@ -306,7 +306,7 @@ class _RegisterUserPageState extends State<RegisterUserPage> {
         ),
         const Padding(padding: EdgeInsets.only(bottom: 10)),
         Container(
-          padding: const EdgeInsets.only(bottom: 20),
+          padding: const EdgeInsets.only(bottom: 10),
           height: screenHeight * 0.50,
           child: CupertinoScrollbar(
             thumbVisibility: true,
@@ -316,31 +316,35 @@ class _RegisterUserPageState extends State<RegisterUserPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Visibility(
-                    visible: !_isRegister,
-                    child: DropdownButtonFormField(
-                      padding: const EdgeInsets.only(right: 10),
-                      isExpanded: true,
-                      isDense: _selectedPilgrimage == null ? true : false,
-                      menuMaxHeight: screenHeight * 0.3,
-                      style:
-                          const TextStyle(fontFamily: 'Lexend', fontSize: 18, color: Colors.black),
-                      hint: Text(_allGroups.isEmpty ? 'Ładowanie grup...' : 'Wybierz pielgrzymkę'),
-                      initialValue: _selectedPilgrimage,
-                      items: _allGroups.map((Group pilgrimage) {
-                        return DropdownMenuItem(
-                          value: pilgrimage,
-                          child: Text(
-                            pilgrimage.name,
-                            softWrap: true,
-                          ),
-                        );
-                      }).toList(),
-                      onChanged: (Group? newValue) {
-                        setState(() {
-                          _selectedPilgrimage = newValue;
-                        });
-                      },
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 8.0),
+                    child: Visibility(
+                      visible: !_isRegister,
+                      child: DropdownButtonFormField(
+                        padding: const EdgeInsets.only(right: 10),
+                        isExpanded: true,
+                        isDense: _selectedPilgrimage == null ? true : false,
+                        menuMaxHeight: screenHeight * 0.3,
+                        style: const TextStyle(
+                            fontFamily: 'Lexend', fontSize: 18, color: Colors.black),
+                        hint:
+                            Text(_allGroups.isEmpty ? 'Ładowanie grup...' : 'Wybierz pielgrzymkę'),
+                        initialValue: _selectedPilgrimage,
+                        items: _allGroups.map((Group pilgrimage) {
+                          return DropdownMenuItem(
+                            value: pilgrimage,
+                            child: Text(
+                              pilgrimage.name,
+                              softWrap: true,
+                            ),
+                          );
+                        }).toList(),
+                        onChanged: (Group? newValue) {
+                          setState(() {
+                            _selectedPilgrimage = newValue;
+                          });
+                        },
+                      ),
                     ),
                   ),
                   CustomTextField(

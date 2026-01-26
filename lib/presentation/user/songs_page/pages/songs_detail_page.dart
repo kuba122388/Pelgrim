@@ -46,7 +46,8 @@ class _SongsDetailPageState extends State<SongsDetailPage> {
       orElse: () => Song(id: '', title: '', lyrics: ''),
     );
 
-    final isPlayingNow = songProvider.playingNowSong?.id == song.id;
+    final isPlayingNow = songProvider.playingNowSong?.title == song.title &&
+        songProvider.playingNowSong?.lyrics == song.lyrics;
 
     Color firstColorHere = isPlayingNow ? groupInfo.color : Colors.white;
     Color secondColorHere = isPlayingNow ? groupInfo.secondColor : Colors.white;

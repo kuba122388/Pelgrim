@@ -21,12 +21,10 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final TextEditingController _controllerEmail = TextEditingController();
   final TextEditingController _controllerPassword = TextEditingController();
-  late final UserProvider _userProvider;
 
   @override
   void initState() {
     super.initState();
-    _userProvider = context.read<UserProvider>();
   }
 
   @override
@@ -164,10 +162,10 @@ class _LoginPageState extends State<LoginPage> {
     );
 
     try {
-      await _userProvider.signIn(
-        email: _controllerEmail.text,
-        password: _controllerPassword.text,
-      );
+      await context.read<UserProvider>().signIn(
+            email: _controllerEmail.text,
+            password: _controllerPassword.text,
+          );
 
       await Future.delayed(const Duration(milliseconds: 1400));
 

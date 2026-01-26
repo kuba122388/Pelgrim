@@ -74,10 +74,9 @@ class AnnouncementCard extends StatelessWidget {
                 Flexible(
                   child: Padding(
                     padding: const EdgeInsets.only(top: 5, bottom: 10),
-                    child: Text(
+                    child: SelectableText(
                       announcement.content,
                       style: const TextStyle(fontSize: FONT_SIZE_SMALL),
-                      softWrap: true,
                     ),
                   ),
                 ),

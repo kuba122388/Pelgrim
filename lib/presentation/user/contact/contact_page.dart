@@ -134,6 +134,29 @@ class _ContactPageState extends State<ContactPage> {
               Padding(
                 padding: const EdgeInsets.only(top: 30),
                 child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                  if (_isEditing) ...[
+                    InkWell(
+                      onTap: () {
+                        setState(() {
+                          _isEditing = !_isEditing;
+                        });
+                      },
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          boxShadow: const [BOX_SHADOW_CONTAINER],
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        child: const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
+                          child: Icon(Icons.close),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(
+                      width: 20.0,
+                    )
+                  ],
                   InkWell(
                     onTap: () {
                       if (_isEditing) {
@@ -145,9 +168,10 @@ class _ContactPageState extends State<ContactPage> {
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 40),
                       decoration: BoxDecoration(
-                          color: Colors.white,
-                          boxShadow: const [BOX_SHADOW_CONTAINER],
-                          borderRadius: BorderRadius.circular(15)),
+                        color: Colors.white,
+                        boxShadow: const [BOX_SHADOW_CONTAINER],
+                        borderRadius: BorderRadius.circular(15),
+                      ),
                       child: Center(
                         child: Text(
                           _isEditing ? 'Zapisz' : 'Edytuj',

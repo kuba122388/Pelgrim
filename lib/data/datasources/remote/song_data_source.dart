@@ -24,7 +24,10 @@ class SongDataSource {
 
   Future<void> streamSong(String groupId, SongModel song) async {
     await firestore.collection(FirebaseConstants.groupsCollection).doc(groupId).update({
-      'playingNow': song.toMap(),
+      'playing_now': {
+        'title': song.title,
+        'lyrics': song.lyrics,
+      }
     });
   }
 
@@ -39,10 +42,10 @@ class SongDataSource {
       final data = snapshot.data();
       if (data == null) return null;
 
-      if (data['playingNow'] == null) return null;
+      if (data['playing_now'] == null) return null;
 
       return SongModel.fromMap(
-        data['playingNow'] as Map<String, dynamic>,
+        data['playing_now'] as Map<String, dynamic>,
         id: "",
       );
     });
