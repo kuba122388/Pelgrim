@@ -3,17 +3,17 @@ import 'package:pelgrim/core/const/firebase_constants.dart';
 import 'package:pelgrim/data/models/contact_model.dart';
 
 class ContactDataSource {
-  final FirebaseFirestore firestore;
+  final FirebaseFirestore _firestore;
 
-  const ContactDataSource(this.firestore);
+  const ContactDataSource(this._firestore);
 
   Future<ContactModel> getContactInfo(String groupName) async {
     try {
-      DocumentSnapshot doc = await firestore
+      DocumentSnapshot doc = await _firestore
           .collection(FirebaseConstants.groupsCollection)
           .doc(groupName)
           .collection(FirebaseConstants.contactsCollection)
-          .doc('MainContact')
+          .doc('main_contact')
           .get();
 
       if (!doc.exists) throw Exception("No contact found.");
@@ -28,11 +28,11 @@ class ContactDataSource {
 
   Future<void> setContactInfo(String groupName, ContactModel contactModel) async {
     try {
-      await firestore
+      await _firestore
           .collection(FirebaseConstants.groupsCollection)
           .doc(groupName)
           .collection(FirebaseConstants.contactsCollection)
-          .doc('MainContact')
+          .doc('main_contact')
           .set(contactModel.toMap());
     } catch (e) {
       rethrow;

@@ -54,8 +54,13 @@ class _AddSongPageState extends State<AddSongPage> {
       await _addSongUseCase.execute(_groupId, song);
       Navigator.of(context).pop(true);
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Center(child: Text('Wystąpił problem podczas dodawania piosenki: $e'))));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Center(
+            child: Text('Wystąpił problem podczas dodawania piosenki: $e'),
+          ),
+        ),
+      );
     }
   }
 

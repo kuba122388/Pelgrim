@@ -4,9 +4,9 @@ import 'dart:math';
 import 'package:firebase_storage/firebase_storage.dart';
 
 class ImagesStorageDataSource {
-  final FirebaseStorage storage;
+  final FirebaseStorage _storage;
 
-  ImagesStorageDataSource(this.storage);
+  ImagesStorageDataSource(this._storage);
 
   String _generateFileName(String email) {
     final userId = email.replaceAll(RegExp(r'[@.]'), '_');
@@ -21,7 +21,7 @@ class ImagesStorageDataSource {
     required String userEmail,
     required void Function(int sent, int total) onProgress,
   }) async {
-    final ref = storage.ref().child(groupId).child('images');
+    final ref = _storage.ref().child(groupId).child('images');
 
     int sent = 0;
 
@@ -34,7 +34,7 @@ class ImagesStorageDataSource {
   }
 
   Future<List<String>> getAllImages(String groupId) async {
-    final ref = storage.ref().child(groupId).child('images');
+    final ref = _storage.ref().child(groupId).child('images');
     final result = await ref.listAll();
 
     return Future.wait(

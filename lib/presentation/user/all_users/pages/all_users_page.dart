@@ -14,22 +14,17 @@ class AllUsersPage extends StatefulWidget {
 }
 
 class _AllUsersPageState extends State<AllUsersPage> {
-  late final UserProvider _userProvider;
-  late final AllUsersProvider _allUsersProvider;
-  late final User _user;
-
   final TextEditingController _searchEngineController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
 
-    _userProvider = context.read<UserProvider>();
-    _allUsersProvider = context.read<AllUsersProvider>();
-    _user = _userProvider.user!;
+    final userProvider = context.read<UserProvider>();
+    final allUsersProvider = context.read<AllUsersProvider>();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _allUsersProvider.loadUsers(_userProvider.groupInfo!.id!);
+      allUsersProvider.loadUsers(userProvider.groupInfo!.id!);
     });
   }
 
@@ -64,9 +59,10 @@ class _AllUsersPageState extends State<AllUsersPage> {
       children: [
         Container(
           decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(25),
-              boxShadow: const [BOX_SHADOW_CONTAINER]),
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(25),
+            boxShadow: const [BOX_SHADOW_CONTAINER],
+          ),
           width: screenWidth * 0.72,
           margin: const EdgeInsets.only(top: 30, bottom: 15),
           padding: const EdgeInsets.symmetric(horizontal: 5),
@@ -107,7 +103,10 @@ class _AllUsersPageState extends State<AllUsersPage> {
 
                           return GestureDetector(
                             onTap: () async {
-                              User userFullInfo = await _allUsersProvider.getUser(chosenUser.id);
+                              final allUsersProvider = context.read<AllUsersProvider>();
+                              User userFullInfo = await allUsersProvider.getUser(chosenUser.id);
+
+                              if (!context.mounted) return;
 
                               await showDialog(
                                 context: context,
@@ -118,7 +117,9 @@ class _AllUsersPageState extends State<AllUsersPage> {
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        "${chosenUser.fullName}\nTelefon: ${userFullInfo.phone}\nE-mail: ${userFullInfo.email}",
+                                        "${chosenUser.fullName}\n"
+                                        "Telefon: ${userFullInfo.phone}\n"
+                                        "E-mail: ${userFullInfo.email}",
                                         style: const TextStyle(
                                           fontSize: 16,
                                         ),
@@ -136,8 +137,10 @@ class _AllUsersPageState extends State<AllUsersPage> {
                                         ElevatedButton(
                                           onPressed: () async {
                                             final messenger = ScaffoldMessenger.of(context);
+                                            final User currentUser =
+                                                context.read<UserProvider>().user!;
 
-                                            if (chosenUser.id == _user.id) {
+                                            if (chosenUser.id == currentUser.id) {
                                               Navigator.of(ctx).pop(false);
                                               messenger.showSnackBar(
                                                 const SnackBar(
@@ -151,13 +154,15 @@ class _AllUsersPageState extends State<AllUsersPage> {
                                             }
                                             if (chosenUser.isAdmin) {
                                               await allUsersProvider.changeAdminStatus(
-                                                currentUserId: _user.id,
-                                                groupId: _user.groupId,
+                                                currentUserId: currentUser.id,
+                                                groupId: currentUser.groupId,
                                                 isAdmin: false,
                                                 targetUser: chosenUser,
                                               );
 
+                                              if (!ctx.mounted) return;
                                               Navigator.of(ctx).pop(false);
+
                                               messenger.showSnackBar(
                                                 const SnackBar(
                                                   content: Center(
@@ -182,16 +187,20 @@ class _AllUsersPageState extends State<AllUsersPage> {
                                         ElevatedButton(
                                           onPressed: () async {
                                             final messenger = ScaffoldMessenger.of(context);
+                                            final User currentUser =
+                                                context.read<UserProvider>().user!;
 
                                             if (chosenUser.isAdmin) {
                                               await allUsersProvider.changeAdminStatus(
-                                                currentUserId: _user.id,
-                                                groupId: _user.groupId,
+                                                currentUserId: currentUser.id,
+                                                groupId: currentUser.groupId,
                                                 isAdmin: true,
                                                 targetUser: chosenUser,
                                               );
 
+                                              if (!ctx.mounted) return;
                                               Navigator.of(ctx).pop(true);
+
                                               messenger.showSnackBar(
                                                 const SnackBar(
                                                   content: Center(

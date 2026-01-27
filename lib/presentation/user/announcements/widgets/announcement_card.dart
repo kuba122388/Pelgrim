@@ -23,8 +23,7 @@ class AnnouncementCard extends StatelessWidget {
         '${announcement.createdAt.month.toString().padLeft(2, '0')}.'
         '${announcement.createdAt.year} '
         '${announcement.createdAt.hour.toString().padLeft(2, '0')}:'
-        '${announcement.createdAt.minute.toString().padLeft(2, '0')}:'
-        '${announcement.createdAt.second.toString().padLeft(2, '0')}';
+        '${announcement.createdAt.minute.toString().padLeft(2, '0')}';
   }
 
   @override

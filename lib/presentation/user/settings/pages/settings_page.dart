@@ -78,7 +78,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 ),
               ),
               GestureDetector(
-                onTap: () async => await _signOut(context),
+                onTap: () => _signOut(context),
                 child: Container(
                   padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 40),
                   decoration: BoxDecoration(

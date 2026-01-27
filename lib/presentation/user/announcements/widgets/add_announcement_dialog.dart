@@ -37,8 +37,6 @@ class _AddAnnouncementDialogState extends State<AddAnnouncementDialog> {
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-
     return AlertDialog(
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -69,7 +67,6 @@ class _AddAnnouncementDialogState extends State<AddAnnouncementDialog> {
           children: [
             const Text('Treść', style: AppStyles.labelStyle),
             Container(
-              width: screenWidth * 0.7,
               margin: const EdgeInsets.only(top: 10, bottom: 20),
               padding: const EdgeInsets.symmetric(horizontal: 10),
               decoration: BoxDecoration(

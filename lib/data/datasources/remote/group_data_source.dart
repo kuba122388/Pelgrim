@@ -4,12 +4,12 @@ import 'package:pelgrim/data/models/group_model.dart';
 import 'package:pelgrim/data/models/user_model.dart';
 
 class GroupDataSource {
-  final FirebaseFirestore firestore;
+  final FirebaseFirestore _firestore;
 
-  const GroupDataSource(this.firestore);
+  const GroupDataSource(this._firestore);
 
   Future<void> createGroup(GroupModel groupModel) async {
-    await firestore
+    await _firestore
         .collection(FirebaseConstants.groupsCollection)
         .doc(groupModel.id)
         .set(groupModel.toMap());
@@ -17,7 +17,7 @@ class GroupDataSource {
 
   Future<GroupModel> getGroupById(String groupId) async {
     DocumentSnapshot docSnap =
-        await firestore.collection(FirebaseConstants.groupsCollection).doc(groupId).get();
+        await _firestore.collection(FirebaseConstants.groupsCollection).doc(groupId).get();
 
     final data = docSnap.data() as Map<String, dynamic>?;
 
@@ -29,7 +29,7 @@ class GroupDataSource {
   }
 
   Future<List<GroupModel>> getAllGroups() async {
-    final querySnapshot = await firestore.collection(FirebaseConstants.groupsCollection).get();
+    final querySnapshot = await _firestore.collection(FirebaseConstants.groupsCollection).get();
 
     return querySnapshot.docs.map((doc) {
       return GroupModel.fromMap(doc.data()).copyWith(id: doc.id);
@@ -37,12 +37,12 @@ class GroupDataSource {
   }
 
   Future<void> joinUserToGroup(String groupId, UserModel user) async {
-    final batch = firestore.batch();
+    final batch = _firestore.batch();
 
     final globalUserRef =
-        firestore.collection(FirebaseConstants.globalUsersCollection).doc(user.id);
+        _firestore.collection(FirebaseConstants.globalUsersCollection).doc(user.id);
 
-    final groupUserRef = firestore
+    final groupUserRef = _firestore
         .collection(FirebaseConstants.groupsCollection)
         .doc(groupId)
         .collection(FirebaseConstants.usersCollection)
@@ -64,16 +64,16 @@ class GroupDataSource {
   }
 
   Future<void> setAdminStatus(String groupId, UserModel user, bool isAdmin) async {
-    final batch = firestore.batch();
+    final batch = _firestore.batch();
 
-    final groupUserRef = firestore
+    final groupUserRef = _firestore
         .collection(FirebaseConstants.groupsCollection)
         .doc(groupId)
         .collection(FirebaseConstants.usersCollection)
         .doc(user.id);
 
     final globalUserRef =
-        firestore.collection(FirebaseConstants.globalUsersCollection).doc(user.id);
+        _firestore.collection(FirebaseConstants.globalUsersCollection).doc(user.id);
 
     batch.update(groupUserRef, {
       "id": user.id,
@@ -90,6 +90,6 @@ class GroupDataSource {
   }
 
   Future<void> deleteGroup(String groupId) async {
-    await firestore.collection(FirebaseConstants.groupsCollection).doc(groupId).delete();
+    await _firestore.collection(FirebaseConstants.groupsCollection).doc(groupId).delete();
   }
 }

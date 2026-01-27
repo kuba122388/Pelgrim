@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:pelgrim/core/const/app_consts.dart';
+import 'package:pelgrim/presentation/auth/login/pages/login_approved.dart';
 import 'package:pelgrim/presentation/auth/register/widgets/custom_text_field.dart';
 import 'package:pelgrim/presentation/auth/register/widgets/register_topbar.dart';
 import 'package:pelgrim/presentation/providers/user_provider.dart';
@@ -20,23 +21,23 @@ class RegisterUserPage extends StatefulWidget {
 class _RegisterUserPageState extends State<RegisterUserPage> {
   late final UserProvider _userProvider;
 
-  late final TextEditingController _controllerFirstName;
-  late final TextEditingController _controllerLastName;
-  late final TextEditingController _controllerEmail;
-  late final TextEditingController _controllerPassword;
-  late final TextEditingController _controllerPhone;
-  late final TextEditingController _controllerGroupColor;
-  late final TextEditingController _controllerGroupCity;
+  final TextEditingController _controllerFirstName = TextEditingController();
+  final TextEditingController _controllerLastName = TextEditingController();
+  final TextEditingController _controllerEmail = TextEditingController();
+  final TextEditingController _controllerPassword = TextEditingController();
+  final TextEditingController _controllerPhone = TextEditingController();
+  final TextEditingController _controllerGroupColor = TextEditingController();
+  final TextEditingController _controllerGroupCity = TextEditingController();
 
-  late final FocusNode _focusNodeFirstName;
-  late final FocusNode _focusNodeLastName;
-  late final FocusNode _focusNodeEmail;
-  late final FocusNode _focusNodePassword;
-  late final FocusNode _focusNodePhone;
-  late final FocusNode _focusNodeGroupColor;
-  late final FocusNode _focusNodeGroupCity;
+  final FocusNode _focusNodeFirstName = FocusNode();
+  final FocusNode _focusNodeLastName = FocusNode();
+  final FocusNode _focusNodeEmail = FocusNode();
+  final FocusNode _focusNodePassword = FocusNode();
+  final FocusNode _focusNodePhone = FocusNode();
+  final FocusNode _focusNodeGroupColor = FocusNode();
+  final FocusNode _focusNodeGroupCity = FocusNode();
 
-  late final ScrollController _scrollController;
+  final ScrollController _scrollController = ScrollController();
 
   bool _isRegister = false;
 
@@ -51,26 +52,8 @@ class _RegisterUserPageState extends State<RegisterUserPage> {
 
     _userProvider = context.read<UserProvider>();
 
-    _controllerFirstName = TextEditingController();
-    _controllerLastName = TextEditingController();
-    _controllerEmail = TextEditingController();
-    _controllerPassword = TextEditingController();
-    _controllerPhone = TextEditingController();
-    _controllerGroupColor = TextEditingController();
-    _controllerGroupCity = TextEditingController();
-
     _controllerGroupColor.addListener(_updateUI);
     _controllerGroupCity.addListener(_updateUI);
-
-    _focusNodeFirstName = FocusNode();
-    _focusNodeLastName = FocusNode();
-    _focusNodeEmail = FocusNode();
-    _focusNodePassword = FocusNode();
-    _focusNodePhone = FocusNode();
-    _focusNodeGroupColor = FocusNode();
-    _focusNodeGroupCity = FocusNode();
-
-    _scrollController = ScrollController();
 
     _loadInitialData();
   }
@@ -174,7 +157,12 @@ class _RegisterUserPageState extends State<RegisterUserPage> {
       if (!mounted) return;
       _showSnackBar('Rejestracja przebiegła pomyślnie!');
 
-      // Navigator.of(context).pop();
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(
+          builder: (context) => const LoginApproved(),
+        ),
+        (route) => false,
+      );
     } catch (e) {
       _showSnackBar(e.toString());
     }

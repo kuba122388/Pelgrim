@@ -191,7 +191,11 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
         showDialog(
           context: context,
           builder: (_) => AddAnnouncementDialog(
-            onConfirm: ({required content, required isImportant, required isAnonymous}) async {
+            onConfirm: ({
+              required content,
+              required isImportant,
+              required isAnonymous,
+            }) async {
               final announcement = Announcement(
                 authorId: user.id,
                 authorName: user.fullName,

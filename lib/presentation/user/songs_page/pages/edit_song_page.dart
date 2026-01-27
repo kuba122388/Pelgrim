@@ -93,9 +93,10 @@ class _EditSongPageState extends State<EditSongPage> {
                         margin: EdgeInsets.only(bottom: screenHeight * 0.01),
                         padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
                         decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(20),
-                            boxShadow: const [BOX_SHADOW_CONTAINER]),
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: const [BOX_SHADOW_CONTAINER],
+                        ),
                         child: TextField(
                           textInputAction: TextInputAction.newline,
                           controller: _lyricsController,

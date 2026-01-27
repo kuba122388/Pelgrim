@@ -3,13 +3,13 @@ import 'package:pelgrim/core/const/firebase_constants.dart';
 import 'package:pelgrim/data/models/announcement_model.dart';
 
 class AnnouncementDataSource {
-  final FirebaseFirestore firestore;
+  final FirebaseFirestore _firestore;
 
-  const AnnouncementDataSource(this.firestore);
+  const AnnouncementDataSource(this._firestore);
 
   Future<void> addAnnouncement(String groupName, AnnouncementModel announcement) async {
     try {
-      await firestore
+      await _firestore
           .collection(FirebaseConstants.groupsCollection)
           .doc(groupName)
           .collection(FirebaseConstants.announcementsCollection)
@@ -21,7 +21,7 @@ class AnnouncementDataSource {
 
   Future<void> deleteAnnouncement(String groupName, String announcementId) async {
     try {
-      await firestore
+      await _firestore
           .collection(FirebaseConstants.groupsCollection)
           .doc(groupName)
           .collection(FirebaseConstants.announcementsCollection)
@@ -33,7 +33,7 @@ class AnnouncementDataSource {
   }
 
   Stream<List<AnnouncementModel>> getAnnouncementsStream(String groupName) {
-    return firestore
+    return _firestore
         .collection(FirebaseConstants.groupsCollection)
         .doc(groupName)
         .collection(FirebaseConstants.announcementsCollection)
