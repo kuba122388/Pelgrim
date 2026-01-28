@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:pelgrim/core/const/app_consts.dart';
-import 'package:pelgrim/core/di/service_locator.dart';
 import 'package:pelgrim/domain/entities/song.dart';
-import 'package:pelgrim/domain/usecases/song/add_song_use_case.dart';
 import 'package:pelgrim/presentation/providers/user_provider.dart';
 import 'package:pelgrim/presentation/user/songs_page/widgets/add_song_topbar.dart';
 import 'package:provider/provider.dart';
+
+import '../../../../core/utils/app_snack_bars.dart';
+import '../../../providers/song_provider.dart';
 
 class AddSongPage extends StatefulWidget {
   const AddSongPage({super.key});
@@ -15,8 +16,6 @@ class AddSongPage extends StatefulWidget {
 }
 
 class _AddSongPageState extends State<AddSongPage> {
-  final AddSongUseCase _addSongUseCase = sl<AddSongUseCase>();
-
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _lyricsController = TextEditingController();
   late final String _groupId;
@@ -35,32 +34,25 @@ class _AddSongPageState extends State<AddSongPage> {
   }
 
   Future<void> _addSong() async {
-    if (_titleController.text.trim().isEmpty || _lyricsController.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          duration: Duration(seconds: 2),
-          content: Center(
-            child: Padding(
-              padding: EdgeInsets.symmetric(vertical: 4.0),
-              child: Text('Pole z tytułem lub słowami jest puste', style: TextStyle(fontSize: 16)),
-            ),
-          ),
-        ),
-      );
+    final title = _titleController.text.trim();
+    final lyrics = _lyricsController.text.trim();
+
+    if (title.isEmpty || lyrics.isEmpty) {
+      AppSnackBars.error(context, 'Pole z tytułem lub słowami jest puste.');
       return;
     }
-    Song song = Song(title: _titleController.text, lyrics: _lyricsController.text);
+
+    final songProvider = context.read<SongProvider>();
+    final song = Song(title: title, lyrics: lyrics);
+
     try {
-      await _addSongUseCase.execute(_groupId, song);
+      await songProvider.addSong(_groupId, song);
+      if (!mounted) return;
+
+      AppSnackBars.success(context, "Piosenka utworzona pomyślnie.");
       Navigator.of(context).pop(true);
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Center(
-            child: Text('Wystąpił problem podczas dodawania piosenki: $e'),
-          ),
-        ),
-      );
+      AppSnackBars.error(context, 'Wystąpił problem podczas dodawania piosenki: $e');
     }
   }
 
@@ -71,9 +63,13 @@ class _AddSongPageState extends State<AddSongPage> {
     final screenHeight = MediaQuery.of(context).size.height - statusBar;
     final keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
 
+    final isAdding = context.watch<SongProvider>().isAdding;
+
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      appBar: AddSongTopBar(onAccept: () => _addSong()),
+      appBar: AddSongTopBar(
+        onAccept: isAdding ? null : _addSong,
+      ),
       body: GestureDetector(
         behavior: HitTestBehavior.translucent,
         onTap: () {

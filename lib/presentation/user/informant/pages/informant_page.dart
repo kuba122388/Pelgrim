@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:pelgrim/core/const/app_consts.dart';
+import 'package:pelgrim/core/utils/app_snack_bars.dart';
 import 'package:pelgrim/presentation/providers/informant_provider.dart';
 import 'package:pelgrim/presentation/providers/user_provider.dart';
 import 'package:pelgrim/presentation/user/informant/widgets/image_gallery.dart';
@@ -28,7 +29,6 @@ class _InformantPageState extends State<InformantPage> {
   }
 
   Future<void> _pickAndSendImages() async {
-    final messenger = ScaffoldMessenger.of(context);
     final picker = ImagePicker();
     final pickedImages = await picker.pickMultiImage();
 
@@ -38,9 +38,7 @@ class _InformantPageState extends State<InformantPage> {
 
     if (!mounted) return;
 
-    messenger.showSnackBar(
-      const SnackBar(content: Text('Przesyłanie zdjęć...')),
-    );
+    AppSnackBars.success(context, 'Przesyłanie zdjęć...');
 
     await context.read<InformantProvider>().upload(_groupId, files);
   }
@@ -64,11 +62,12 @@ class _InformantPageState extends State<InformantPage> {
 
               if (!mounted) return;
 
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Zdjęcie zostało usunięte')),
-              );
+              AppSnackBars.success(context, 'Zdjęcie zostało usunięte');
             },
-            child: const Text('Usuń', style: TextStyle(color: Colors.red)),
+            child: const Text(
+              'Usuń',
+              style: TextStyle(color: Colors.red),
+            ),
           ),
         ],
       ),
@@ -77,7 +76,7 @@ class _InformantPageState extends State<InformantPage> {
 
   @override
   Widget build(BuildContext context) {
-    final myUser = context.watch<UserProvider>().user!;
+    final myUser = context.read<UserProvider>().user!;
     final provider = context.watch<InformantProvider>();
 
     final screenHeight = MediaQuery.of(context).size.height;

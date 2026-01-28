@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:pelgrim/core/const/app_consts.dart';
+import 'package:pelgrim/core/utils/app_snack_bars.dart';
 import 'package:pelgrim/presentation/auth/login/pages/login_approved.dart';
 import 'package:pelgrim/presentation/auth/register/widgets/custom_text_field.dart';
 import 'package:pelgrim/presentation/auth/register/widgets/register_topbar.dart';
@@ -121,12 +122,12 @@ class _RegisterUserPageState extends State<RegisterUserPage> {
         _controllerLastName.text.isEmpty ||
         _controllerEmail.text.isEmpty ||
         _controllerPassword.text.isEmpty) {
-      _showSnackBar('Proszę wypełnić wszystkie pola');
+      AppSnackBars.error(context, 'Proszę wypełnić wszystkie pola');
       return;
     }
 
     if (!_isRegister && _selectedPilgrimage == null) {
-      _showSnackBar('Wybierz pielgrzymkę z listy');
+      AppSnackBars.error(context, 'Wybierz pielgrzymkę z listy');
       return;
     }
 
@@ -155,7 +156,7 @@ class _RegisterUserPageState extends State<RegisterUserPage> {
       }
 
       if (!mounted) return;
-      _showSnackBar('Rejestracja przebiegła pomyślnie!');
+      AppSnackBars.success(context, 'Rejestracja przebiegła pomyślnie!');
 
       Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(
@@ -164,14 +165,8 @@ class _RegisterUserPageState extends State<RegisterUserPage> {
         (route) => false,
       );
     } catch (e) {
-      _showSnackBar(e.toString());
+      AppSnackBars.error(context, e.toString());
     }
-  }
-
-  void _showSnackBar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message, textAlign: TextAlign.center)),
-    );
   }
 
   @override

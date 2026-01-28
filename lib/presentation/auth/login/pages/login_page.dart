@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pelgrim/core/const/app_consts.dart';
 import 'package:pelgrim/core/const/app_sizes.dart';
+import 'package:pelgrim/core/utils/app_snack_bars.dart';
 import 'package:pelgrim/presentation/auth/forgot_password/pages/forgot_password_page.dart';
 import 'package:pelgrim/presentation/providers/user_provider.dart';
 import 'package:pelgrim/presentation/widgets/custom_navigate_button.dart';
@@ -104,8 +105,8 @@ class _LoginPageState extends State<LoginPage> {
                                 child: CustomNavigateButton(
                                   text: "Zaloguj",
                                   onPressed: () {
-                                    signInWithEmailAndPassword();
                                     FocusScope.of(context).unfocus();
+                                    _signIn();
                                   },
                                 ),
                               ),
@@ -153,16 +154,10 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Future<void> signInWithEmailAndPassword() async {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        behavior: SnackBarBehavior.floating,
-        content: Text("Logowanie...", textAlign: TextAlign.center),
-        duration: Duration(milliseconds: 1500),
-      ),
-    );
-
+  Future<void> _signIn() async {
     try {
+      AppSnackBars.info(context, "Logowanie...", duration: 1);
+
       await context.read<UserProvider>().signIn(
             email: _controllerEmail.text,
             password: _controllerPassword.text,
@@ -173,19 +168,14 @@ class _LoginPageState extends State<LoginPage> {
       if (!mounted) return;
 
       Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const LoginApproved(),
-          ),
-          (route) => false);
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          behavior: SnackBarBehavior.floating,
-          content: Text("Nieprawidłowy E-mail lub hasło", textAlign: TextAlign.center),
-          duration: Duration(milliseconds: 2000),
+        context,
+        MaterialPageRoute(
+          builder: (context) => const LoginApproved(),
         ),
+        (route) => false,
       );
+    } catch (e) {
+      AppSnackBars.error(context, "Nieprawidłowy E-mail lub hasło");
     }
   }
 }

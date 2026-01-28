@@ -53,6 +53,7 @@ class GroupDataSource {
     batch.set(
       groupUserRef,
       {
+        "id": user.id,
         "is_admin": user.isAdmin,
         "first_name": user.firstName,
         "last_name": user.lastName,

@@ -40,7 +40,11 @@ class UserRepositoryImpl extends UserRepository {
 
   @override
   Future<List<User>> getAllUsersByGroup(String groupId) async {
-    List<UserModel> list = await _userDataSource.getAllUsersByGroupId(groupId);
-    return list.map((e) => e.toEntity()).toList();
+    try {
+      List<UserModel> list = await _userDataSource.getAllUsersByGroupId(groupId);
+      return list.map((e) => e.toEntity()).toList();
+    } catch (e) {
+      throw RepositoryException("Wystąpił problem przy pobieraniu użytkowników");
+    }
   }
 }

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:pelgrim/core/const/app_consts.dart';
+import 'package:pelgrim/core/utils/app_snack_bars.dart';
 import 'package:pelgrim/domain/entities/announcement.dart';
 import 'package:pelgrim/domain/entities/user.dart';
 import 'package:pelgrim/presentation/providers/announcement_provider.dart';
@@ -51,6 +52,8 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
             groupId,
             announcement.id!,
           );
+          if (!mounted) return;
+          AppSnackBars.success(context, 'Usunięto wybrany wpis.');
         },
       ),
     );

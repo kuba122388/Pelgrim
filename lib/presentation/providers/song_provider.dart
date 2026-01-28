@@ -9,6 +9,8 @@ import 'package:pelgrim/domain/usecases/song/get_song_list_use_case.dart';
 import 'package:pelgrim/domain/usecases/song/stream_song_use_case.dart';
 import 'package:pelgrim/domain/usecases/song/watch_playing_now_use_case.dart';
 
+import '../../domain/usecases/song/add_song_use_case.dart';
+
 class SongProvider extends ChangeNotifier {
   final GetLocalSongListUseCase _getLocalSongListUseCase;
   final GetSongListUseCase _getSongListUseCase;
@@ -16,6 +18,7 @@ class SongProvider extends ChangeNotifier {
   final StreamSongUseCase _streamSongUseCase;
   final EditSongUseCase _editSongUseCase;
   final DeleteSongByIdUseCase _deleteSongUseCase;
+  final AddSongUseCase _addSongUseCase;
 
   StreamSubscription? _subSongList;
   StreamSubscription? _subPlayingNow;
@@ -30,6 +33,10 @@ class SongProvider extends ChangeNotifier {
 
   bool get isLoading => _isLoading;
 
+  bool _isAdding = false;
+
+  bool get isAdding => _isAdding;
+
   SongProvider(
     this._getLocalSongListUseCase,
     this._getSongListUseCase,
@@ -37,7 +44,19 @@ class SongProvider extends ChangeNotifier {
     this._streamSongUseCase,
     this._editSongUseCase,
     this._deleteSongUseCase,
+    this._addSongUseCase,
   );
+
+  Future<void> addSong(String groupId, Song song) async {
+    _isAdding = true;
+    notifyListeners();
+    try {
+      await _addSongUseCase.execute(groupId, song);
+    } finally {
+      _isAdding = false;
+      notifyListeners();
+    }
+  }
 
   Future<void> deleteSong(String groupId, String songId) async {
     await _deleteSongUseCase.execute(groupId, songId);

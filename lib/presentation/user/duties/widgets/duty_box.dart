@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pelgrim/core/utils/app_snack_bars.dart';
 import 'package:pelgrim/domain/entities/duty.dart';
 import 'package:pelgrim/presentation/providers/duty_provider.dart';
 import 'package:pelgrim/presentation/providers/user_provider.dart';
@@ -61,11 +62,14 @@ class DutyBox extends StatelessWidget {
             Text('Ochotnicy: $slots'),
             const SizedBox(height: 8),
             ElevatedButton(
-              onPressed: () => dutyProvider.toggleSignup(
-                groupId: userProvider.userGroupId,
-                duty: duty,
-                user: userProvider.user!,
-              ),
+              onPressed: () {
+                dutyProvider.toggleSignup(
+                  groupId: userProvider.userGroupId,
+                  duty: duty,
+                  user: userProvider.user!,
+                );
+                AppSnackBars.success(context, "Approved");
+              },
               style: ElevatedButton.styleFrom(
                 backgroundColor: isUserSignedUp ? Colors.red : Colors.green,
               ),
@@ -102,8 +106,13 @@ class DutyBox extends StatelessWidget {
           TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Anuluj')),
           ElevatedButton(
             onPressed: () {
-              provider.deleteDuty(groupId, duty.id!);
-              Navigator.pop(ctx);
+              try {
+                provider.deleteDuty(groupId, duty.id!);
+                Navigator.pop(ctx);
+                AppSnackBars.success(context, 'Pomyślnie usunięto służbę.');
+              } catch (e) {
+                AppSnackBars.error(context, 'Wystąpił problem podczas usuwania służby');
+              }
             },
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
             child: const Text('Usuń', style: TextStyle(color: Colors.white)),

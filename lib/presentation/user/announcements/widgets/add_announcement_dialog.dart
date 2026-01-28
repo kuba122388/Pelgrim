@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pelgrim/core/const/app_consts.dart';
 import 'package:pelgrim/core/const/app_styles.dart';
+import 'package:pelgrim/core/utils/app_snack_bars.dart';
 
 class AddAnnouncementDialog extends StatefulWidget {
   final Future<void> Function({
@@ -177,9 +178,7 @@ class _AddAnnouncementDialogState extends State<AddAnnouncementDialog> {
       if (mounted) {
         setState(() => _isProcessing = false);
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Nie udało się dodać ogłoszenia')),
-        );
+        AppSnackBars.error(context, 'Nie udało się dodać ogłoszenia');
       }
     }
   }

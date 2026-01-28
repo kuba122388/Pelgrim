@@ -7,7 +7,7 @@ import 'package:provider/provider.dart';
 import '../../../widgets/topbar_clipper.dart';
 
 class AddSongTopBar extends StatefulWidget implements PreferredSizeWidget {
-  final Future<void> Function() onAccept;
+  final Future<void> Function()? onAccept;
 
   const AddSongTopBar({super.key, required this.onAccept});
 
@@ -90,7 +90,9 @@ class _AddSongTopBarState extends State<AddSongTopBar> {
                                 setState(() {
                                   processing = true;
                                 });
-                                await widget.onAccept();
+
+                                if (widget.onAccept != null) await widget.onAccept!();
+
                                 setState(() {
                                   processing = false;
                                 });

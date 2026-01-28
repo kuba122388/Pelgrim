@@ -111,6 +111,7 @@ class UserProvider extends ChangeNotifier {
       notifyListeners();
     } catch (e) {
       debugPrint("Synchronizacja nie udana");
+      rethrow;
     }
   }
 

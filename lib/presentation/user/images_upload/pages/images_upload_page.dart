@@ -10,6 +10,7 @@ import 'package:pelgrim/presentation/providers/images_provider.dart';
 import 'package:pelgrim/presentation/providers/user_provider.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../core/utils/app_snack_bars.dart';
 import 'all_images_page.dart';
 
 class ImagePage extends StatefulWidget {
@@ -68,7 +69,7 @@ class _ImagePageState extends State<ImagePage> {
             ),
             const Spacer(),
             const Text(
-              'Tutaj wrzucać zdjęcia\nz pielgrzymki',
+              'Tutaj proszę wysyłać\nzdjęcia z pielgrzymki',
               style: TextStyle(fontFamily: 'Lexend', fontSize: 20),
               textAlign: TextAlign.center,
             ),
@@ -120,19 +121,14 @@ class _ImagePageState extends State<ImagePage> {
                                   userEmail: myUser.email,
                                 );
                           } catch (e) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text("Nie wybrano żadnych zdjęć"),
-                              ),
-                            );
-                          }
-                          if (!mounted) return;
+                            if (!context.mounted) return;
 
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Zdjęcia przesłano pomyślnie!'),
-                            ),
-                          );
+                            AppSnackBars.error(context, "Nie wybrano żadnych zdjęć");
+                            return;
+                          }
+
+                          if (!context.mounted) return;
+                          AppSnackBars.success(context, 'Zdjęcia przesłano pomyślnie!');
                         },
                   child: Container(
                     height: 50,
@@ -142,7 +138,7 @@ class _ImagePageState extends State<ImagePage> {
                       child: Text(
                         provider.isUploading
                             ? 'Przesłano ${provider.sent}/${provider.total}'
-                            : 'Opublikuj',
+                            : 'Prześlij',
                         style: const TextStyle(fontFamily: 'Lexend', fontSize: 18),
                       ),
                     ),

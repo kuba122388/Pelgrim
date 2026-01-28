@@ -3,6 +3,7 @@ import 'package:pelgrim/core/const/app_consts.dart';
 import 'package:pelgrim/presentation/providers/user_provider.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../core/utils/app_snack_bars.dart';
 import '../../../providers/help_provider.dart';
 
 class HelpPage extends StatefulWidget {
@@ -25,15 +26,12 @@ class _HelpPageState extends State<HelpPage> {
 
   Future<void> _send(BuildContext context) async {
     final helpProvider = context.read<HelpProvider>();
-    final messenger = ScaffoldMessenger.of(context);
 
     final userProvider = context.read<UserProvider>();
     final user = userProvider.user!;
 
     if (titleController.text.isEmpty || contentController.text.isEmpty) {
-      messenger.showSnackBar(
-        const SnackBar(content: Text('Temat lub treść nie może być pusta')),
-      );
+      AppSnackBars.error(context, 'Temat lub treść nie może być pusta');
       return;
     }
 
@@ -48,13 +46,11 @@ class _HelpPageState extends State<HelpPage> {
       titleController.clear();
       contentController.clear();
 
-      messenger.showSnackBar(
-        const SnackBar(content: Text('Wiadomość wysłano pomyślnie!')),
-      );
+      if (!context.mounted) return;
+      AppSnackBars.success(context, 'Wiadomość wysłano pomyślnie!');
     } catch (_) {
-      messenger.showSnackBar(
-        const SnackBar(content: Text('Wystąpił błąd podczas wysyłania')),
-      );
+      if (!context.mounted) return;
+      AppSnackBars.error(context, 'Wystąpił błąd podczas wysyłania');
     }
   }
 

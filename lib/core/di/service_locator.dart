@@ -265,6 +265,7 @@ void setupLocator() {
       sl<StreamSongUseCase>(),
       sl<EditSongUseCase>(),
       sl<DeleteSongByIdUseCase>(),
+      sl<AddSongUseCase>(),
     ),
   );
 

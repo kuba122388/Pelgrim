@@ -12,9 +12,10 @@ class AddAnnouncementRow extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
             decoration: BoxDecoration(
-                color: BACKGROUND_CONTAINERS_COLOR,
-                border: Border.all(color: Colors.black),
-                borderRadius: BorderRadius.circular(10)),
+              color: BACKGROUND_CONTAINERS_COLOR,
+              border: Border.all(color: Colors.black),
+              borderRadius: BorderRadius.circular(10),
+            ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [

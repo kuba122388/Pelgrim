@@ -1,8 +1,11 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
+import 'package:pelgrim/core/errors/no_internet_exception.dart';
 import 'package:pelgrim/presentation/providers/user_provider.dart';
 import 'package:pelgrim/presentation/user/main_page.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../core/utils/app_snack_bars.dart';
 import '../../../welcome/pages/welcome_page.dart';
 import '../widgets/background_image.dart';
 
@@ -26,6 +29,11 @@ class _LoginApprovedState extends State<LoginApproved> {
     await Future.delayed(const Duration(milliseconds: 1200));
 
     try {
+      var connectivityResult = await (Connectivity().checkConnectivity());
+      if (connectivityResult.contains(ConnectivityResult.none)) {
+        throw NoInternetException();
+      }
+
       final uid = userProvider.authenticatedUserId;
 
       if (uid != null) {
@@ -35,8 +43,14 @@ class _LoginApprovedState extends State<LoginApproved> {
         _goToWelcome();
         return;
       }
+    } on NoInternetException catch (e) {
+      if (!mounted) return;
+      AppSnackBars.error(context, "Tryb offline: $e");
+      _goToMain();
     } catch (e) {
-      debugPrint("Tryb offline: korzystam z danych lokalnych");
+      if (!mounted) return;
+      AppSnackBars.error(context, "Wystąpił nieoczekiwany problem.");
+      _goToMain();
     }
 
     if (!mounted) return;

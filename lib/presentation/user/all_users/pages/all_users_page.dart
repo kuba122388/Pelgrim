@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pelgrim/core/const/app_consts.dart';
+import 'package:pelgrim/core/utils/app_snack_bars.dart';
 import 'package:pelgrim/domain/entities/user.dart';
 import 'package:pelgrim/presentation/providers/all_users_provider.dart';
 import 'package:pelgrim/presentation/providers/user_provider.dart';
@@ -23,8 +24,13 @@ class _AllUsersPageState extends State<AllUsersPage> {
     final userProvider = context.read<UserProvider>();
     final allUsersProvider = context.read<AllUsersProvider>();
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      allUsersProvider.loadUsers(userProvider.groupInfo!.id!);
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      try {
+        await allUsersProvider.loadUsers(userProvider.groupInfo!.id!);
+      } catch (e) {
+        if (!mounted) return;
+        AppSnackBars.error(context, e.toString());
+      }
     });
   }
 
@@ -104,125 +110,118 @@ class _AllUsersPageState extends State<AllUsersPage> {
                           return GestureDetector(
                             onTap: () async {
                               final allUsersProvider = context.read<AllUsersProvider>();
-                              User userFullInfo = await allUsersProvider.getUser(chosenUser.id);
 
-                              if (!context.mounted) return;
+                              try {
+                                User userFullInfo = await allUsersProvider.getUser(chosenUser.id);
 
-                              await showDialog(
-                                context: context,
-                                builder: (ctx) => AlertDialog(
-                                  title: const Text('Informacje'),
-                                  content: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        "${chosenUser.fullName}\n"
-                                        "Telefon: ${userFullInfo.phone}\n"
-                                        "E-mail: ${userFullInfo.email}",
-                                        style: const TextStyle(
-                                          fontSize: 16,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  actions: [
-                                    const Text("Jakie uprawnienia chciałbyś nadać?"),
-                                    const SizedBox(
-                                      height: 20.0,
-                                    ),
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.end,
+                                if (!context.mounted) return;
+
+                                await showDialog(
+                                  context: context,
+                                  builder: (ctx) => AlertDialog(
+                                    title: const Text('Informacje'),
+                                    content: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
-                                        ElevatedButton(
-                                          onPressed: () async {
-                                            final messenger = ScaffoldMessenger.of(context);
-                                            final User currentUser =
-                                                context.read<UserProvider>().user!;
-
-                                            if (chosenUser.id == currentUser.id) {
-                                              Navigator.of(ctx).pop(false);
-                                              messenger.showSnackBar(
-                                                const SnackBar(
-                                                  content: Center(
-                                                    child:
-                                                        Text('Nie możesz zabrać sobie uprawnień!'),
-                                                  ),
-                                                ),
-                                              );
-                                              return;
-                                            }
-                                            if (chosenUser.isAdmin) {
-                                              await allUsersProvider.changeAdminStatus(
-                                                currentUserId: currentUser.id,
-                                                groupId: currentUser.groupId,
-                                                isAdmin: false,
-                                                targetUser: chosenUser,
-                                              );
-
-                                              if (!ctx.mounted) return;
-                                              Navigator.of(ctx).pop(false);
-
-                                              messenger.showSnackBar(
-                                                const SnackBar(
-                                                  content: Center(
-                                                    child: Text(
-                                                      'Pomyślnie przyznano uprawnienia użytkownika!',
-                                                    ),
-                                                  ),
-                                                ),
-                                              );
-                                            }
-                                          },
-                                          style: const ButtonStyle(
-                                            padding: WidgetStatePropertyAll<EdgeInsetsGeometry>(
-                                              EdgeInsetsGeometry.symmetric(horizontal: 15),
-                                            ),
+                                        Text(
+                                          "${chosenUser.fullName}\n"
+                                          "Telefon: ${userFullInfo.phone}\n"
+                                          "E-mail: ${userFullInfo.email}",
+                                          style: const TextStyle(
+                                            fontSize: 16,
                                           ),
-                                          child: const Text('Użytkownik'),
-                                        ),
-                                        const SizedBox(
-                                          width: 10.0,
-                                        ),
-                                        ElevatedButton(
-                                          onPressed: () async {
-                                            final messenger = ScaffoldMessenger.of(context);
-                                            final User currentUser =
-                                                context.read<UserProvider>().user!;
-
-                                            if (chosenUser.isAdmin) {
-                                              await allUsersProvider.changeAdminStatus(
-                                                currentUserId: currentUser.id,
-                                                groupId: currentUser.groupId,
-                                                isAdmin: true,
-                                                targetUser: chosenUser,
-                                              );
-
-                                              if (!ctx.mounted) return;
-                                              Navigator.of(ctx).pop(true);
-
-                                              messenger.showSnackBar(
-                                                const SnackBar(
-                                                  content: Center(
-                                                    child: Text(
-                                                        'Pomyślnie przyznano uprawnienia użytkownika!'),
-                                                  ),
-                                                ),
-                                              );
-                                            }
-                                          },
-                                          style: const ButtonStyle(
-                                            padding: WidgetStatePropertyAll<EdgeInsetsGeometry>(
-                                              EdgeInsetsGeometry.symmetric(horizontal: 15),
-                                            ),
-                                          ),
-                                          child: const Text('Administrator'),
                                         ),
                                       ],
                                     ),
-                                  ],
-                                ),
-                              );
+                                    actions: [
+                                      const Text("Jakie uprawnienia chciałbyś nadać?"),
+                                      const SizedBox(
+                                        height: 20.0,
+                                      ),
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.end,
+                                        children: [
+                                          ElevatedButton(
+                                            onPressed: () async {
+                                              final User currentUser =
+                                                  context.read<UserProvider>().user!;
+
+                                              if (chosenUser.id == currentUser.id) {
+                                                Navigator.of(ctx).pop(false);
+                                                AppSnackBars.error(
+                                                    context, 'Nie możesz zabrać sobie uprawnień!');
+                                                return;
+                                              }
+                                              if (currentUser.isAdmin) {
+                                                await allUsersProvider.changeAdminStatus(
+                                                  currentUserId: currentUser.id,
+                                                  groupId: currentUser.groupId,
+                                                  isAdmin: false,
+                                                  targetUser: chosenUser,
+                                                );
+
+                                                if (!ctx.mounted) return;
+                                                Navigator.of(ctx).pop(false);
+
+                                                AppSnackBars.success(
+                                                  ctx,
+                                                  'Pomyślnie przyznano uprawnienia użytkownika!',
+                                                );
+                                              }
+                                            },
+                                            style: const ButtonStyle(
+                                              padding: WidgetStatePropertyAll<EdgeInsetsGeometry>(
+                                                EdgeInsetsGeometry.symmetric(horizontal: 15),
+                                              ),
+                                            ),
+                                            child: const Text('Użytkownik'),
+                                          ),
+                                          const SizedBox(
+                                            width: 10.0,
+                                          ),
+                                          ElevatedButton(
+                                            onPressed: () async {
+                                              final User currentUser =
+                                                  context.read<UserProvider>().user!;
+
+                                              try {
+                                                if (currentUser.isAdmin) {
+                                                  await allUsersProvider.changeAdminStatus(
+                                                    currentUserId: currentUser.id,
+                                                    groupId: currentUser.groupId,
+                                                    isAdmin: true,
+                                                    targetUser: chosenUser,
+                                                  );
+
+                                                  if (!ctx.mounted) return;
+                                                  Navigator.of(ctx).pop(true);
+
+                                                  AppSnackBars.success(ctx,
+                                                      'Pomyślnie przyznano uprawnienia administratora!');
+                                                }
+                                              } catch (e) {
+                                                AppSnackBars.error(context,
+                                                    "Wystąpił błąd podczas nadawania uprawnień");
+                                              }
+                                            },
+                                            style: const ButtonStyle(
+                                              padding: WidgetStatePropertyAll<EdgeInsetsGeometry>(
+                                                EdgeInsetsGeometry.symmetric(horizontal: 15),
+                                              ),
+                                            ),
+                                            child: const Text('Administrator'),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              } catch (e) {
+                                if (!context.mounted) return;
+                                AppSnackBars.error(
+                                    context, "Nie udało się pobrać informacji o użytkowniku");
+                              }
                             },
                             child: Container(
                               margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),

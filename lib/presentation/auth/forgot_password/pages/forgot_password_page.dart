@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pelgrim/presentation/providers/user_provider.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../core/utils/app_snack_bars.dart';
 import '../../../widgets/custom_navigate_button.dart';
 import '../../../widgets/welcome_background.dart';
 
@@ -32,21 +33,11 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
 
       if (!mounted) return;
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Link do resetu hasła został wysłany na Twój e-mail.'),
-          backgroundColor: Colors.green,
-        ),
-      );
+      AppSnackBars.success(context, 'Link do resetu hasła został wysłany na Twój e-mail.');
       Navigator.pop(context);
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(e.toString()),
-          backgroundColor: Colors.red,
-        ),
-      );
+      AppSnackBars.error(context, e.toString());
     }
   }
 
