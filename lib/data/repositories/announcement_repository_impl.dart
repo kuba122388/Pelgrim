@@ -1,3 +1,4 @@
+import 'package:pelgrim/core/errors/repository_exception.dart';
 import 'package:pelgrim/data/datasources/remote/announcement_data_source.dart';
 import 'package:pelgrim/domain/entities/announcement.dart';
 import 'package:pelgrim/domain/repositories/announcement_repository.dart';
@@ -15,7 +16,7 @@ class AnnouncementRepositoryImpl implements AnnouncementRepository {
       await _announcementDataSource.addAnnouncement(
           groupName, AnnouncementModel.fromEntity(announcement));
     } catch (e) {
-      rethrow;
+      throw RepositoryException("Publikacja postu nie powiodła się.");
     }
   }
 
@@ -24,7 +25,7 @@ class AnnouncementRepositoryImpl implements AnnouncementRepository {
     try {
       await _announcementDataSource.deleteAnnouncement(group, announcementId);
     } catch (e) {
-      rethrow;
+      throw RepositoryException("Usunięcie postu nie powiodło się.");
     }
   }
 
@@ -35,7 +36,7 @@ class AnnouncementRepositoryImpl implements AnnouncementRepository {
           .getAnnouncementsStream(groupName)
           .map((models) => models.map((e) => e.toEntity()).toList());
     } catch (e) {
-      rethrow;
+      throw RepositoryException("Pobranie ogłoszeń nie powiodło się.");
     }
   }
 }

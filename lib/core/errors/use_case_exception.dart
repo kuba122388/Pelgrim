@@ -4,5 +4,5 @@ class UseCaseException implements Exception {
   UseCaseException(this.message);
 
   @override
-  String toString() => 'UseCaseException: $message';
+  String toString() => message;
 }

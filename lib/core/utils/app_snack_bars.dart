@@ -6,7 +6,7 @@ class AppSnackBars {
     required String message,
     Color? backgroundColor,
     bool isError = false,
-    int duration = 4,
+    required int duration,
   }) {
     ScaffoldMessenger.of(context).hideCurrentSnackBar();
 
@@ -29,16 +29,16 @@ class AppSnackBars {
           borderRadius: BorderRadius.circular(12),
         ),
         margin: const EdgeInsets.all(20),
-        duration: const Duration(seconds: 4),
+        duration: Duration(seconds: duration),
       ),
     );
   }
 
-  static void success(BuildContext context, String message) =>
-      show(context, message: message, isError: false);
+  static void success(BuildContext context, String message, {int duration = 4}) =>
+      show(context, message: message, isError: false, duration: duration);
 
-  static void error(BuildContext context, String message) =>
-      show(context, message: message, isError: true);
+  static void error(BuildContext context, String message, {int duration = 4}) =>
+      show(context, message: message, isError: true, duration: duration);
 
   static void info(BuildContext context, String message, {int duration = 4}) =>
       show(context, message: message, backgroundColor: Colors.grey.shade800, duration: duration);

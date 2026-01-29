@@ -156,8 +156,9 @@ class _LoginPageState extends State<LoginPage> {
 
   Future<void> _signIn() async {
     try {
-      AppSnackBars.info(context, "Logowanie...", duration: 1);
-
+      if (_controllerEmail.text.isEmpty || _controllerPassword.text.isEmpty) {
+        AppSnackBars.error(context, "");
+      }
       await context.read<UserProvider>().signIn(
             email: _controllerEmail.text,
             password: _controllerPassword.text,
@@ -175,7 +176,7 @@ class _LoginPageState extends State<LoginPage> {
         (route) => false,
       );
     } catch (e) {
-      AppSnackBars.error(context, "Nieprawidłowy E-mail lub hasło");
+      AppSnackBars.error(context, e.toString());
     }
   }
 }

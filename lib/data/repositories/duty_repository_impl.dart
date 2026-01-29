@@ -11,20 +11,20 @@ class DutyRepositoryImpl implements DutyRepository {
   DutyRepositoryImpl(this._dutyDataSource);
 
   @override
-  Future<void> addDuty(String groupName, Duty duty) {
+  Future<void> addDuty(String groupName, Duty duty) async {
     try {
-      return _dutyDataSource.addDuty(groupName, DutyModel.fromEntity(duty));
+      return await _dutyDataSource.addDuty(groupName, DutyModel.fromEntity(duty));
     } catch (e) {
-      throw Exception("Nie udało się dodać dyżuru: $e");
+      throw Exception("Wystąpił problem podczas tworzenia dyżuru.");
     }
   }
 
   @override
-  Future<void> deleteDuty(String groupName, String dutyId) {
+  Future<void> deleteDuty(String groupName, String dutyId) async {
     try {
-      return _dutyDataSource.deleteDuty(groupName, dutyId);
+      return await _dutyDataSource.deleteDuty(groupName, dutyId);
     } catch (e) {
-      throw Exception("Nie udało się dodać dyżuru: $e");
+      throw Exception("Usunięcie dyżuru nie powiodło się.");
     }
   }
 
@@ -35,27 +35,27 @@ class DutyRepositoryImpl implements DutyRepository {
           .getDutiesStream(groupName)
           .map((models) => models.map((e) => e.toEntity()).toList());
     } catch (e) {
-      throw Exception("Nie udało się dodać dyżuru: $e");
+      throw Exception("Wystąpił problem z ładowaniem dyżurów.");
     }
   }
 
   @override
-  Future<void> addVolunteer(String groupId, String dutyId, DutyVolunteer volunteer) {
+  Future<void> addVolunteer(String groupId, String dutyId, DutyVolunteer volunteer) async {
     try {
-      return _dutyDataSource.addVolunteer(
+      return await _dutyDataSource.addVolunteer(
           groupId, dutyId, DutyVolunteerModel.fromEntity(volunteer));
     } catch (e) {
-      throw Exception("Nie udało się dodać dyżuru: $e");
+      throw Exception("Nie udało się zapisać do dyżuru.");
     }
   }
 
   @override
-  Future<void> removeVolunteer(String groupId, String dutyId, DutyVolunteer volunteer) {
+  Future<void> removeVolunteer(String groupId, String dutyId, DutyVolunteer volunteer) async {
     try {
-      return _dutyDataSource.removeVolunteer(
+      return await _dutyDataSource.removeVolunteer(
           groupId, dutyId, DutyVolunteerModel.fromEntity(volunteer));
     } catch (e) {
-      throw Exception("Nie udało się dodać dyżuru: $e");
+      throw Exception("Nie udało się wypisać z dyżuru.");
     }
   }
 }

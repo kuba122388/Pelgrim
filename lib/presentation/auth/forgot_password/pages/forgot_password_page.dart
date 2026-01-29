@@ -132,7 +132,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                       Hero(
                         tag: "Navigate_button",
                         child: CustomNavigateButton(
-                          text: isLoading ? "Wysyłanie...: " : "Wyślij link",
+                          text: isLoading ? "Wysyłanie..." : "Wyślij link",
                           onPressed: () {
                             FocusScope.of(context).unfocus();
                             if (!isLoading) _submit();

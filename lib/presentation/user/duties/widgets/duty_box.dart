@@ -109,7 +109,7 @@ class DutyBox extends StatelessWidget {
               try {
                 provider.deleteDuty(groupId, duty.id!);
                 Navigator.pop(ctx);
-                AppSnackBars.success(context, 'Pomyślnie usunięto służbę.');
+                AppSnackBars.success(context, 'Pomyślnie usunięto służbę.', duration: 2);
               } catch (e) {
                 AppSnackBars.error(context, 'Wystąpił problem podczas usuwania służby');
               }

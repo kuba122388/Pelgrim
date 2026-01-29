@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:pelgrim/core/errors/repository_exception.dart';
 import 'package:pelgrim/data/datasources/local/local_song_list_storage.dart';
 import 'package:pelgrim/data/datasources/remote/song_data_source.dart';
 import 'package:pelgrim/data/models/song_model.dart';
@@ -16,13 +17,21 @@ class SongRepositoryImpl extends SongRepository {
   );
 
   @override
-  Future<void> addSong(String groupId, Song song) {
-    return _songDataSource.addSong(groupId, SongModel.fromEntity(song));
+  Future<void> addSong(String groupId, Song song) async {
+    try{
+      return await _songDataSource.addSong(groupId, SongModel.fromEntity(song));
+    } catch (e){
+      throw RepositoryException("Wystapił problem. Dodanie piosenki nie powiodło się.");
+    }
   }
 
   @override
-  Future<void> editSong(String groupId, Song song) {
-    return _songDataSource.editSong(groupId, SongModel.fromEntity(song));
+  Future<void> editSong(String groupId, Song song) async {
+    try{
+      return await _songDataSource.editSong(groupId, SongModel.fromEntity(song));
+    } catch (e){
+      throw RepositoryException("Wystąpił problem. Edycja piosenki nie powiodła się.");
+    }
   }
 
   @override
@@ -32,13 +41,17 @@ class SongRepositoryImpl extends SongRepository {
 
       return model?.toEntity();
     } catch (e) {
-      throw Exception('Nie udało się pobrać piosenki');
+      throw Exception('Wystąpił problem. Nie udało się wczytać piosenki.');
     }
   }
 
   @override
-  Future<void> deleteSongById(String groupId, String songId) {
-    return _songDataSource.deleteSong(groupId, songId);
+  Future<void> deleteSongById(String groupId, String songId) async {
+    try{
+      return await _songDataSource.deleteSong(groupId, songId);
+    } catch (e){
+      throw RepositoryException("Wystąpił problem. Piosenka nie została usunięta.");
+    }
   }
 
   @override
@@ -83,18 +96,30 @@ class SongRepositoryImpl extends SongRepository {
   }
 
   @override
-  Future<void> streamSong(String groupId, Song song) {
-    return _songDataSource.streamSong(groupId, SongModel.fromEntity(song));
+  Future<void> streamSong(String groupId, Song song) async {
+    try{
+      return await _songDataSource.streamSong(groupId, SongModel.fromEntity(song));
+    } catch (e){
+      throw RepositoryException("Wystąpił problem ze strumieniowaniem piosenki.");
+    }
   }
 
   @override
   Future<List<Song>> getLocalSongList(String groupId) async {
-    final songModelList = await _localSongListStorage.getSongList(groupId);
-    return songModelList?.map((s) => s.toEntity()).toList() ?? [];
+    try{
+      final songModelList = await _localSongListStorage.getSongList(groupId);
+      return songModelList?.map((s) => s.toEntity()).toList() ?? [];
+    } catch (e){
+      throw RepositoryException("Wystąpił problem z załadowaniem lokalnych piosenek.");
+    }
   }
 
   @override
-  Future<DateTime?> getLastSync(String groupId) {
-    return _localSongListStorage.getLastSync(groupId);
+  Future<DateTime?> getLastSync(String groupId) async {
+    try{
+      return await _localSongListStorage.getLastSync(groupId);
+    } catch (e) {
+      throw RepositoryException("Wystąpił problem z pobraniem daty ostatniej synchronizacji.");
+    }
   }
 }

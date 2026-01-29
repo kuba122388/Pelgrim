@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:pelgrim/core/errors/repository_exception.dart';
 import 'package:pelgrim/data/datasources/remote/auth_data_source.dart';
 import 'package:pelgrim/domain/repositories/auth_repository.dart';
@@ -12,7 +13,7 @@ class AuthRepositoryImpl extends AuthRepository {
     try {
       return await _authDataSource.register(email: email, password: password);
     } catch (e) {
-      throw RepositoryException("Wystąpił problem z rejestracją konta: $e");
+      throw RepositoryException("Wystąpił problem z rejestracją konta.");
     }
   }
 
@@ -20,8 +21,11 @@ class AuthRepositoryImpl extends AuthRepository {
   Future<String> signIn({required String email, required String password}) async {
     try {
       return await _authDataSource.signIn(email: email, password: password);
+    } on FirebaseAuthException catch (e) {
+      final message = _mapFirebaseAuthError(e);
+      throw RepositoryException(message);
     } catch (e) {
-      throw RepositoryException("Wystąpił problem z logowaniem: $e");
+      throw RepositoryException("Wystąpił problem z logowaniem. $e");
     }
   }
 
@@ -30,7 +34,7 @@ class AuthRepositoryImpl extends AuthRepository {
     try {
       return await _authDataSource.deleteAccount(uid);
     } catch (e) {
-      throw RepositoryException("Wystąpił problem z usunięciem konta: $e");
+      throw RepositoryException("Wystąpił problem z usunięciem konta.");
     }
   }
 
@@ -39,7 +43,7 @@ class AuthRepositoryImpl extends AuthRepository {
     try {
       await _authDataSource.signOut();
     } catch (e) {
-      throw RepositoryException("Nie udało się wylogować użytkownika: $e");
+      throw RepositoryException("Nie udało się wylogować użytkownika.");
     }
   }
 
@@ -49,11 +53,29 @@ class AuthRepositoryImpl extends AuthRepository {
   }
 
   @override
-  Future<void> sendPasswordReset(String email) {
+  Future<void> sendPasswordReset(String email) async {
     try {
-      return _authDataSource.sendPasswordReset(email);
-    } catch (_) {
-      rethrow;
+      await _authDataSource.sendPasswordReset(email);
+    } on FirebaseAuthException catch (e) {
+      final message = _mapFirebaseAuthError(e);
+      throw RepositoryException(message);
+    } catch (e) {
+      throw RepositoryException("Wystąpił nieoczekiwany błąd.");
+    }
+  }
+
+  String _mapFirebaseAuthError(FirebaseAuthException e) {
+    switch (e.code) {
+      case 'user-not-found':
+        return 'Nie znaleziono użytkownika o tym adresie e-mail.';
+      case 'invalid-email':
+        return 'Adres e-mail jest nieprawidłowy.';
+      case 'network-request-failed':
+        return 'Brak połączenia z internetem.';
+      case 'invalid-credential':
+        throw "Email lub hasło nie są poprawne.";
+      default:
+        return 'Wystąpił błąd podczas resetowania hasła. Spróbuj ponownie później.';
     }
   }
 }

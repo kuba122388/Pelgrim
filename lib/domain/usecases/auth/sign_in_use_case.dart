@@ -3,6 +3,8 @@ import 'package:pelgrim/domain/repositories/auth_repository.dart';
 import 'package:pelgrim/domain/repositories/group_repository.dart';
 import 'package:pelgrim/domain/repositories/user_repository.dart';
 
+import '../../../core/errors/use_case_exception.dart';
+
 class SignInUseCase {
   final AuthRepository _authRepository;
   final UserRepository _userRepository;
@@ -18,6 +20,10 @@ class SignInUseCase {
     required String email,
     required String password,
   }) async {
+    if (email.isEmpty || password.isEmpty) {
+      throw UseCaseException("Email lub hasło jest puste.");
+    }
+
     final userId = await _authRepository.signIn(
       email: email,
       password: password,

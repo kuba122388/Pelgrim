@@ -32,23 +32,6 @@ class AuthDataSource {
   Future<void> signOut() async => await _auth.signOut();
 
   Future<void> sendPasswordReset(String email) async {
-    try {
-      await _auth.sendPasswordResetEmail(email: email);
-    } on FirebaseAuthException catch (e) {
-      throw _handleAuthException(e);
-    } catch (e) {
-      throw Exception('Wystąpił nieoczekiwany błąd');
-    }
-  }
-
-  String _handleAuthException(FirebaseAuthException e) {
-    switch (e.code) {
-      case 'user-not-found':
-        return 'Nie znaleziono użytkownika o tym adresie e-mail.';
-      case 'invalid-email':
-        return 'Adres e-mail jest nieprawidłowy.';
-      default:
-        return 'Błąd podczas resetowania hasła. Spróbuj ponownie.';
-    }
+    await _auth.sendPasswordResetEmail(email: email);
   }
 }

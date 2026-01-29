@@ -17,7 +17,7 @@ class GroupRepositoryImpl extends GroupRepository {
       GroupModel groupModel = await _groupDataSource.getGroupById(groupId);
       return groupModel.toEntity();
     } catch (e) {
-      throw Exception("Wystąpił problem z pobraniem danych grupy: $e");
+      throw Exception("Wystąpił problem z pobraniem danych grupy.");
     }
   }
 
@@ -34,7 +34,7 @@ class GroupRepositoryImpl extends GroupRepository {
 
       return groupModel.toEntity();
     } catch (e) {
-      throw Exception("Wystąpił problem z utworzeniem grupy: $e");
+      throw Exception("Wystąpił problem z utworzeniem grupy.");
     }
   }
 
@@ -44,7 +44,7 @@ class GroupRepositoryImpl extends GroupRepository {
       final list = await _groupDataSource.getAllGroups();
       return list.map((m) => m.toEntity()).toList();
     } catch (e) {
-      throw Exception("Wystąpił problem z pobraniem grup: $e");
+      throw Exception("Wystąpił problem z pobraniem grup.");
     }
   }
 
@@ -53,7 +53,7 @@ class GroupRepositoryImpl extends GroupRepository {
     try {
       await _groupDataSource.joinUserToGroup(groupId, UserModel.fromEntity(user));
     } catch (e) {
-      throw Exception("Dołączenie użytkownika do grupy nie powiodło się: $e");
+      throw Exception("Dołączenie użytkownika do grupy nie powiodło się.");
     }
   }
 
@@ -66,7 +66,7 @@ class GroupRepositoryImpl extends GroupRepository {
     try {
       await _groupDataSource.setAdminStatus(groupId, UserModel.fromEntity(user), isAdmin);
     } catch (e) {
-      throw Exception("Nadawanie uprawnień nie powiodło się: $e");
+      throw Exception("Nadawanie uprawnień nie powiodło się.");
     }
   }
 
@@ -75,7 +75,7 @@ class GroupRepositoryImpl extends GroupRepository {
     try {
       await _groupDataSource.deleteGroup(groupId);
     } catch (e) {
-      throw RepositoryException("Usuwanie grupy nie powiodło się: $e");
+      throw RepositoryException("Usuwanie grupy nie powiodło się.");
     }
   }
 }

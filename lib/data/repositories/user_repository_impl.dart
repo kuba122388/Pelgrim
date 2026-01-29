@@ -14,7 +14,7 @@ class UserRepositoryImpl extends UserRepository {
   @override
   Future<void> createUser(User user) async {
     try {
-      _userDataSource.createUser(UserModel.fromEntity(user));
+      await _userDataSource.createUser(UserModel.fromEntity(user));
     } catch (e) {
       throw RepositoryException("Wystąpił problem przy tworzeniu użytkownika: $e");
     }

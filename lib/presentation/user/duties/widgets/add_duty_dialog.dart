@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pelgrim/core/utils/app_snack_bars.dart';
 import 'package:pelgrim/domain/entities/duty.dart';
 
 class AddDutyDialog extends StatefulWidget {
@@ -15,6 +16,8 @@ class AddDutyDialog extends StatefulWidget {
 class _AddDutyDialogState extends State<AddDutyDialog> {
   late final TextEditingController _titleController;
 
+  String? _titleError;
+  bool _isSending = false;
   int _maxVolunteers = 1;
 
   @override
@@ -38,7 +41,15 @@ class _AddDutyDialogState extends State<AddDutyDialog> {
         children: [
           TextField(
             controller: _titleController,
-            decoration: const InputDecoration(labelText: 'Tytuł zadania'),
+            decoration: InputDecoration(
+              labelText: 'Tytuł zadania',
+              errorText: _titleError,
+            ),
+            onChanged: (value) {
+              if (_titleError != null) {
+                setState(() => _titleError = null);
+              }
+            },
           ),
           const SizedBox(height: 10),
           Row(
@@ -71,23 +82,43 @@ class _AddDutyDialogState extends State<AddDutyDialog> {
           child: const Text('Anuluj'),
         ),
         ElevatedButton(
-          onPressed: () async {
-            final title = _titleController.text.trim();
-            if (title.isEmpty) return;
-
-            final newDuty = Duty(
-              title: title,
-              maxVolunteers: _maxVolunteers,
-              createdAt: DateTime.now(),
-            );
-
-            await widget.onConfirm(newDuty);
-
-            Navigator.of(context).pop();
-          },
+          onPressed: _isSending ? null : _handleConfirm,
           child: const Text('Dodaj'),
         ),
       ],
     );
+  }
+
+  Future<void> _handleConfirm() async {
+    final title = _titleController.text.trim();
+
+    if (title.isEmpty) {
+      setState(() => _titleError = "Treść zadania nie może być pusta");
+      return;
+    }
+
+    setState(() {
+      _isSending = true;
+      _titleError = null;
+    });
+
+    try {
+      final newDuty = Duty(
+        title: title,
+        maxVolunteers: _maxVolunteers,
+        createdAt: DateTime.now(),
+      );
+
+      await widget.onConfirm(newDuty);
+
+      if (!mounted) return;
+      Navigator.of(context).pop();
+      AppSnackBars.success(context, "Zadanie zostało dodane!", duration: 2);
+    } catch (e) {
+      if (!mounted) return;
+      AppSnackBars.error(context, "Nie udało się dodać zadania.");
+    } finally {
+      if (mounted) setState(() => _isSending = false);
+    }
   }
 }
