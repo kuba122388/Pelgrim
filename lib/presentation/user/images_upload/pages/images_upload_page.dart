@@ -88,14 +88,15 @@ class _ImagePageState extends State<ImagePage> {
                         provider.selectedImages[index],
                         fit: BoxFit.cover,
                       ),
-                      Positioned(
-                        top: 0,
-                        right: 0,
-                        child: IconButton(
-                          icon: const Icon(Icons.cancel, color: Colors.red),
-                          onPressed: () => context.read<ImagesProvider>().removeAt(index),
+                      if (!provider.isUploading)
+                        Positioned(
+                          top: 0,
+                          right: 0,
+                          child: IconButton(
+                            icon: const Icon(Icons.cancel, color: Colors.red),
+                            onPressed: () => context.read<ImagesProvider>().removeAt(index),
+                          ),
                         ),
-                      ),
                     ],
                   );
                 },
@@ -106,7 +107,7 @@ class _ImagePageState extends State<ImagePage> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                if (provider.selectedImages.isNotEmpty)
+                if (provider.selectedImages.isNotEmpty && !provider.isUploading)
                   InkWell(
                     onTap: () => _pickImages(context),
                     child: _iconBox('./images/upload.png'),
@@ -154,7 +155,7 @@ class _ImagePageState extends State<ImagePage> {
                     ),
                     child: _iconBox('./images/images.png'),
                   ),
-                if (provider.selectedImages.isNotEmpty)
+                if (provider.selectedImages.isNotEmpty && !provider.isUploading)
                   InkWell(
                     onTap: () => context.read<ImagesProvider>().clear(),
                     child: _iconBox(

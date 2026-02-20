@@ -1,7 +1,9 @@
 import 'dart:io';
 import 'dart:math';
+import 'dart:typed_data';
 
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:http/http.dart' as http;
 
 class ImagesStorageDataSource {
   final FirebaseStorage _storage;
@@ -40,5 +42,24 @@ class ImagesStorageDataSource {
     return Future.wait(
       result.items.map((e) => e.getDownloadURL()),
     );
+  }
+
+  Future<void> deleteImages({
+    required String groupId,
+    required List<String> imageUrls,
+  }) async {
+    for (final url in imageUrls) {
+      final ref = _storage.refFromURL(url);
+      await ref.delete();
+    }
+  }
+
+  Future<Uint8List> downloadImageBytes(String url) async {
+    final response = await http.get(Uri.parse(url));
+    if (response.statusCode == 200) {
+      return response.bodyBytes;
+    } else {
+      throw Exception("Błąd pobierania obrazu");
+    }
   }
 }

@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:pelgrim/app.dart';
 import 'package:pelgrim/core/config/firebase_options.dart';
 import 'package:pelgrim/core/storage/hive_setup.dart';
@@ -51,6 +52,11 @@ Future<void> main() async {
   // }
 
   WidgetsFlutterBinding.ensureInitialized();
+
+  await FlutterDownloader.initialize(
+    debug: true,
+    ignoreSsl: true,
+  );
 
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,

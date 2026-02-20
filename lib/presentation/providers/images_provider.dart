@@ -2,16 +2,22 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 
+import '../../domain/usecases/images/delete_images_use_case.dart';
+import '../../domain/usecases/images/download_images_use_case.dart';
 import '../../domain/usecases/images/get_all_images_use_case.dart';
 import '../../domain/usecases/images/upload_images_use_case.dart';
 
 class ImagesProvider extends ChangeNotifier {
   final GetAllImagesUseCase _getAllImages;
   final UploadImagesUseCase _uploadImages;
+  final DeleteImagesUseCase _deleteImages;
+  final DownloadImagesUseCase _downloadImages;
 
   ImagesProvider(
     this._getAllImages,
     this._uploadImages,
+    this._deleteImages,
+    this._downloadImages,
   );
 
   final List<File> _selectedImages = [];
@@ -19,6 +25,9 @@ class ImagesProvider extends ChangeNotifier {
 
   bool _loading = false;
   bool _uploading = false;
+  bool _isDownloading = false;
+
+  bool get isDownloading => _isDownloading;
   int _sent = 0;
   String? _error;
 
@@ -103,5 +112,46 @@ class ImagesProvider extends ChangeNotifier {
 
     _uploading = false;
     notifyListeners();
+  }
+
+  Future<void> deleteSelected({
+    required String groupId,
+    required List<String> selectedUrls,
+  }) async {
+    if (selectedUrls.isEmpty) return;
+
+    _loading = true;
+    notifyListeners();
+
+    try {
+      await _deleteImages(
+        groupId: groupId,
+        imageUrls: selectedUrls,
+      );
+
+      _images.removeWhere((url) => selectedUrls.contains(url));
+    } catch (e) {
+      _error = e.toString();
+    }
+
+    _loading = false;
+    notifyListeners();
+  }
+
+  Future<void> downloadSelected(List<String> urls) async {
+    if (urls.isEmpty) return;
+
+    _isDownloading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      await _downloadImages(urls);
+    } catch (e) {
+      _error = "Nie udało się pobrać zdjęć: ${e.toString()}";
+    } finally {
+      _isDownloading = false;
+      notifyListeners();
+    }
   }
 }

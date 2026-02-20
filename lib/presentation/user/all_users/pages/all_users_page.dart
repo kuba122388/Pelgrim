@@ -76,6 +76,7 @@ class _AllUsersPageState extends State<AllUsersPage> {
             onTapOutside: (event) {
               FocusManager.instance.primaryFocus?.unfocus();
             },
+            onChanged: (_) => setState(() {}),
             autofocus: false,
             controller: _searchEngineController,
             decoration: InputDecoration(
@@ -124,7 +125,7 @@ class _AllUsersPageState extends State<AllUsersPage> {
                                       mainAxisSize: MainAxisSize.min,
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
-                                        Text(
+                                        SelectableText(
                                           "${chosenUser.fullName}\n"
                                           "Telefon: ${userFullInfo.phone}\n"
                                           "E-mail: ${userFullInfo.email}",

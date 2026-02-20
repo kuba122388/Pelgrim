@@ -78,6 +78,10 @@ class SongsTopBar extends StatelessWidget implements PreferredSizeWidget {
                           builder: (_) => const AddSongPage(),
                         ),
                       ),
+                    )
+                  else
+                    const SizedBox(
+                      width: 25,
                     ),
                   InkWell(
                     child: Image.asset('./images/settings.png', width: 25),

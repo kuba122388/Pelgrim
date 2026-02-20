@@ -6,7 +6,10 @@ import 'package:provider/provider.dart';
 import 'topbar_clipper.dart';
 
 class SpecialTopBar extends StatefulWidget implements PreferredSizeWidget {
-  const SpecialTopBar({super.key});
+  final List<Widget>? actions;
+  final VoidCallback? onBack;
+
+  const SpecialTopBar({super.key, this.actions, this.onBack});
 
   @override
   State<SpecialTopBar> createState() => _SpecialTopBarState();
@@ -49,30 +52,46 @@ class _SpecialTopBarState extends State<SpecialTopBar> {
               children: [
                 SizedBox(
                   width: screenWidth * 0.9,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      InkWell(
-                          onTap: () => {Navigator.of(context).pop()},
-                          child: Image.asset('./images/back-arrow-2.png', width: 30)),
-                      SizedBox(
-                        width: screenWidth * 0.5,
-                        child: Center(
-                          child: Text(
-                            title,
-                            style: TextStyle(
-                              color: secondColor == const Color(0xFFFFFFFF)
-                                  ? Colors.black
-                                  : Colors.white,
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            maxLines: 1,
+                  child: SizedBox(
+                    width: screenWidth * 0.9,
+                    height: 30,
+                    child: Stack(
+                      alignment: Alignment.topCenter,
+                      children: [
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: InkWell(
+                            onTap: widget.onBack ?? () => Navigator.of(context).pop(),
+                            child: Image.asset('./images/back-arrow-2.png', width: 30),
                           ),
                         ),
-                      ),
-                      const SizedBox(width: 25)
-                    ],
+                        Center(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 60),
+                            child: Text(
+                              title,
+                              style: TextStyle(
+                                color: secondColor == const Color(0xFFFFFFFF)
+                                    ? Colors.black
+                                    : Colors.white,
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ),
+                        if (widget.actions != null && widget.actions!.isNotEmpty)
+                          Align(
+                            alignment: Alignment.topRight,
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: widget.actions!,
+                            ),
+                          ),
+                      ],
+                    ),
                   ),
                 ),
                 Text(

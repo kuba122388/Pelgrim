@@ -75,18 +75,20 @@ class AnnouncementCard extends StatelessWidget {
                 Flexible(
                   child: Padding(
                     padding: const EdgeInsets.only(top: 5, bottom: 10),
-                    child: SelectableLinkify(
-                      text: announcement.content,
-                      style: const TextStyle(fontSize: FONT_SIZE_SMALL),
-                      linkStyle: const TextStyle(color: Colors.blue),
-                      onOpen: (link) async {
-                        final Uri url = Uri.parse(link.url);
-                        if (await canLaunchUrl(url)) {
-                          await launchUrl(url, mode: LaunchMode.externalApplication);
-                        } else {
-                          throw 'Nie można otworzyć $url';
-                        }
-                      },
+                    child: SelectionArea(
+                      child: Linkify(
+                        text: announcement.content,
+                        style: const TextStyle(fontSize: FONT_SIZE_SMALL),
+                        linkStyle: const TextStyle(color: Colors.blue),
+                        onOpen: (link) async {
+                          final Uri url = Uri.parse(link.url);
+                          if (await canLaunchUrl(url)) {
+                            await launchUrl(url, mode: LaunchMode.externalApplication);
+                          } else {
+                            throw 'Nie można otworzyć $url';
+                          }
+                        },
+                      ),
                     ),
                   ),
                 ),

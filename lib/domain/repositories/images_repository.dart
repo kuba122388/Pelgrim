@@ -9,4 +9,11 @@ abstract class ImagesRepository {
   });
 
   Future<List<String>> getAllImages(String groupId);
+
+  Future<void> deleteImages({
+    required String groupId,
+    required List<String> imageUrls,
+  });
+
+  Future<void> downloadAndSaveImages(List<String> urls);
 }

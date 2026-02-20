@@ -53,6 +53,7 @@ import 'package:pelgrim/domain/usecases/group/get_all_group_names_use_case.dart'
 import 'package:pelgrim/domain/usecases/group/get_group_by_id_use_case.dart';
 import 'package:pelgrim/domain/usecases/group/set_admin_status_use_case.dart';
 import 'package:pelgrim/domain/usecases/help/send_help_request_use_case.dart';
+import 'package:pelgrim/domain/usecases/images/delete_images_use_case.dart';
 import 'package:pelgrim/domain/usecases/images/get_all_images_use_case.dart';
 import 'package:pelgrim/domain/usecases/informant/delete_informant_image_use_case.dart';
 import 'package:pelgrim/domain/usecases/informant/get_informant_images_use_case.dart';
@@ -84,6 +85,7 @@ import 'package:pelgrim/presentation/providers/informant_provider.dart';
 import 'package:pelgrim/presentation/providers/song_provider.dart';
 import 'package:pelgrim/presentation/providers/user_provider.dart';
 
+import '../../domain/usecases/images/download_images_use_case.dart';
 import '../../domain/usecases/images/upload_images_use_case.dart';
 
 final sl = GetIt.instance;
@@ -222,6 +224,8 @@ void setupLocator() {
 
   sl.registerLazySingleton(() => GetAllImagesUseCase(sl<ImagesRepository>()));
   sl.registerLazySingleton(() => UploadImagesUseCase(sl<ImagesRepository>()));
+  sl.registerLazySingleton(() => DeleteImagesUseCase(sl<ImagesRepository>()));
+  sl.registerLazySingleton(() => DownloadImagesUseCase(sl<ImagesRepository>()));
 
   sl.registerLazySingleton(() => SendPasswordResetUseCase(sl<AuthRepository>()));
 
@@ -300,6 +304,11 @@ void setupLocator() {
   );
 
   sl.registerLazySingleton(
-    () => ImagesProvider(sl<GetAllImagesUseCase>(), sl<UploadImagesUseCase>()),
+    () => ImagesProvider(
+      sl<GetAllImagesUseCase>(),
+      sl<UploadImagesUseCase>(),
+      sl<DeleteImagesUseCase>(),
+      sl<DownloadImagesUseCase>(),
+    ),
   );
 }

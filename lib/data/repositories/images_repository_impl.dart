@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:gal/gal.dart';
 import 'package:pelgrim/core/errors/repository_exception.dart';
 
 import '../../domain/repositories/images_repository.dart';
@@ -9,6 +10,17 @@ class ImagesRepositoryImpl implements ImagesRepository {
   final ImagesStorageDataSource _imagesStorageDataSource;
 
   ImagesRepositoryImpl(this._imagesStorageDataSource);
+
+  @override
+  Future<void> deleteImages({
+    required String groupId,
+    required List<String> imageUrls,
+  }) {
+    return _imagesStorageDataSource.deleteImages(
+      groupId: groupId,
+      imageUrls: imageUrls,
+    );
+  }
 
   @override
   Future<void> uploadImages({
@@ -35,6 +47,18 @@ class ImagesRepositoryImpl implements ImagesRepository {
       return _imagesStorageDataSource.getAllImages(groupId);
     } catch (e) {
       throw RepositoryException("Wystąpił problem z pobieraniem zdjęć.");
+    }
+  }
+
+  @override
+  Future<void> downloadAndSaveImages(List<String> urls) async {
+    try {
+      for (final url in urls) {
+        final bytes = await _imagesStorageDataSource.downloadImageBytes(url);
+        await Gal.putImageBytes(bytes);
+      }
+    } catch (e) {
+      throw RepositoryException("Błąd podczas zapisywania zdjęć: $e");
     }
   }
 }
