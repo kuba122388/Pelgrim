@@ -56,7 +56,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     _dataField('Nr tel', myUser.phone, context),
                     _dataField(
                       'Status',
-                      myUser.isAdmin == false ? 'Pielgrzym' : 'Pielgrzym moderator',
+                      myUser.isAdmin == false ? 'Pielgrzym' : 'Pielgrzym administrator',
                       context,
                     ),
                     _dataFieldLast('Pielgrzymka', groupInfo.groupColor, context),

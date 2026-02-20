@@ -68,7 +68,6 @@ class DutyBox extends StatelessWidget {
                   duty: duty,
                   user: userProvider.user!,
                 );
-                AppSnackBars.success(context, "Approved");
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: isUserSignedUp ? Colors.red : Colors.green,
