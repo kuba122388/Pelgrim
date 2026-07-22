@@ -1,0 +1,222 @@
+import 'dart:async';
+
+import 'package:flutter/material.dart';
+import 'package:pelgrim/core/const/app_consts.dart';
+import 'package:pelgrim/core/utils/app_snack_bars.dart';
+import 'package:pelgrim/domain/entities/announcement.dart';
+import 'package:pelgrim/domain/entities/user.dart';
+import 'package:pelgrim/presentation/providers/announcement_provider.dart';
+import 'package:pelgrim/presentation/providers/user_provider.dart';
+import 'package:pelgrim/presentation/user/announcements/widgets/add_announcement_dialog.dart';
+import 'package:pelgrim/presentation/user/announcements/widgets/add_announcement_trigger.dart';
+import 'package:pelgrim/presentation/user/announcements/widgets/announcement_card.dart';
+import 'package:pelgrim/presentation/user/announcements/widgets/delete_announcement_dialog.dart';
+import 'package:provider/provider.dart';
+
+class AnnouncementsPage extends StatefulWidget {
+  const AnnouncementsPage({super.key});
+
+  @override
+  State<AnnouncementsPage> createState() => _AnnouncementsPageState();
+}
+
+class _AnnouncementsPageState extends State<AnnouncementsPage> {
+  late final UserProvider _userProvider;
+  late final AnnouncementProvider _announcementProvider;
+
+  bool _important = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _userProvider = context.read<UserProvider>();
+    _announcementProvider = context.read<AnnouncementProvider>();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _announcementProvider.startAnnouncementStream(
+        _userProvider.userGroupId,
+      );
+    });
+  }
+
+  Future<void> _deleteAnnouncement(
+    Announcement announcement,
+    String groupId,
+  ) {
+    return showDialog(
+      context: context,
+      builder: (_) => DeleteAnnouncementDialog(
+        announcement: announcement,
+        onConfirm: () async {
+          await _announcementProvider.deleteAnnouncement(
+            groupId,
+            announcement.id!,
+          );
+          if (!mounted) return;
+          AppSnackBars.success(context, 'Usunięto wybrany wpis.');
+        },
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final User user = _userProvider.user!;
+
+    final List<Announcement> announcements = _announcementProvider.announcementList;
+
+    final announcementProvider = context.watch<AnnouncementProvider>();
+
+    final filtered = _important ? announcements.where((a) => a.important).toList() : announcements;
+
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: SafeArea(
+        child: Center(
+          child: Column(
+            children: [
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 10.0),
+                child: Text(
+                  'Dodaj Ogłoszenie',
+                  style: TextStyle(
+                    fontFamily: 'Lexend',
+                    fontWeight: FontWeight.bold,
+                    color: FONT_BLACK_COLOR,
+                    fontSize: 18,
+                    shadows: [APP_TEXT_SHADOW],
+                  ),
+                ),
+              ),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                  child: Column(
+                    children: [
+                      _buildAddAnnouncementButton(context, user),
+                      const SizedBox(height: 10),
+                      Expanded(
+                        child: Container(
+                          padding: const EdgeInsets.only(top: 15, left: 15, right: 15),
+                          margin: const EdgeInsets.only(bottom: 10),
+                          decoration: BoxDecoration(
+                              color: BACKGROUND_CONTAINERS_COLOR,
+                              border: Border.all(color: Colors.black),
+                              borderRadius: BorderRadius.circular(10)),
+                          child: Column(
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  const Text(
+                                    'Tablica ogłoszeń',
+                                    style: TextStyle(
+                                      fontFamily: 'Lexend',
+                                      fontWeight: FontWeight.bold,
+                                      color: FONT_BLACK_COLOR,
+                                      fontSize: FONT_SIZE_BIG,
+                                    ),
+                                  ),
+                                  Row(
+                                    children: [
+                                      SizedBox(
+                                        width: 36,
+                                        height: 24,
+                                        child: Checkbox(
+                                          value: _important,
+                                          onChanged: (bool? value) {
+                                            setState(() {
+                                              _important = value!;
+                                            });
+                                          },
+                                          activeColor: Colors.grey,
+                                        ),
+                                      ),
+                                      const Text(
+                                        'Ważne',
+                                        style: TextStyle(
+                                          fontFamily: 'Lexend',
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: FONT_SIZE_SMALL,
+                                          color: FONT_BLACK_COLOR,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 10),
+                              Expanded(
+                                child: announcementProvider.isInitialLoading
+                                    ? const Center(
+                                        child: CircularProgressIndicator(),
+                                      )
+                                    : filtered.isEmpty
+                                        ? const Center(
+                                            child: Text(
+                                              'Brak ogłoszeń',
+                                              style: TextStyle(
+                                                  fontFamily: 'Lexend', color: FONT_BLACK_COLOR),
+                                            ),
+                                          )
+                                        : ListView.builder(
+                                            itemCount: filtered.length,
+                                            itemBuilder: (_, i) => AnnouncementCard(
+                                              currentUserId: _userProvider.user!.id,
+                                              isAdmin: _userProvider.user!.isAdmin,
+                                              announcement: filtered[i],
+                                              onDelete: () => _deleteAnnouncement(
+                                                filtered[i],
+                                                _userProvider.userGroupId,
+                                              ),
+                                            ),
+                                          ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  InkWell _buildAddAnnouncementButton(BuildContext context, User user) {
+    return InkWell(
+      onTap: () {
+        showDialog(
+          context: context,
+          builder: (_) => AddAnnouncementDialog(
+            onConfirm: ({
+              required content,
+              required isImportant,
+              required isAnonymous,
+            }) async {
+              final announcement = Announcement(
+                authorId: user.id,
+                authorName: user.fullName,
+                content: content,
+                createdAt: DateTime.now(),
+                important: isImportant,
+                anonymous: isAnonymous,
+              );
+
+              await _announcementProvider.addAnnouncement(
+                _userProvider.userGroupId,
+                announcement,
+              );
+            },
+          ),
+        );
+      },
+      child: const AddAnnouncementRow(),
+    );
+  }
+}
