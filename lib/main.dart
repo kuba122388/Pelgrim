@@ -15,6 +15,7 @@ import 'package:pelgrim/presentation/providers/help_provider.dart';
 import 'package:pelgrim/presentation/providers/images_provider.dart';
 import 'package:pelgrim/presentation/providers/informant_provider.dart';
 import 'package:pelgrim/presentation/providers/song_provider.dart';
+import 'package:pelgrim/presentation/providers/text_size_provider.dart';
 import 'package:pelgrim/presentation/providers/user_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -110,6 +111,9 @@ Future<void> main() async {
         ),
         ChangeNotifierProvider<ImagesProvider>(
           create: (_) => sl<ImagesProvider>(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => TextSizeProvider(),
         )
       ],
       child: const MyApp(),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pelgrim/core/const/app_consts.dart';
 import 'package:pelgrim/domain/entities/song.dart';
+import 'package:pelgrim/presentation/providers/text_size_provider.dart';
 import 'package:pelgrim/presentation/providers/user_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -30,16 +31,19 @@ class _PlayingNowPageState extends State<PlayingNowPage> {
     final screenHeight = MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top;
 
     final songProvider = context.watch<SongProvider>();
+    final textProvider = context.watch<TextSizeProvider>();
     final currentSong = songProvider.playingNowSong;
 
     return SafeArea(
       child: Center(
-        child: _buildContent(currentSong, songProvider.isLoading, screenWidth, screenHeight),
+        child: _buildContent(currentSong, songProvider.isLoading, screenWidth, screenHeight,
+            textProvider.scaleFactor),
       ),
     );
   }
 
-  Widget _buildContent(Song? currentSong, bool isLoading, double width, double height) {
+  Widget _buildContent(
+      Song? currentSong, bool isLoading, double width, double height, double textSizeScale) {
     if (isLoading && currentSong == null) {
       return const CircularProgressIndicator();
     }
@@ -49,7 +53,7 @@ class _PlayingNowPageState extends State<PlayingNowPage> {
     }
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+      padding: const EdgeInsets.symmetric(horizontal: 20.0),
       child: Container(
         decoration: BoxDecoration(
           boxShadow: const [BOX_SHADOW_CONTAINER],
@@ -76,9 +80,12 @@ class _PlayingNowPageState extends State<PlayingNowPage> {
                 child: SingleChildScrollView(
                   child: Padding(
                     padding: const EdgeInsets.only(right: 10),
-                    child: Text(
-                      currentSong.lyrics,
-                      style: const TextStyle(fontFamily: 'Lexend', fontSize: 14),
+                    child: SizedBox(
+                      width: double.maxFinite,
+                      child: Text(
+                        currentSong.lyrics,
+                        style: TextStyle(fontFamily: 'Lexend', fontSize: 14.0 + textSizeScale),
+                      ),
                     ),
                   ),
                 ),

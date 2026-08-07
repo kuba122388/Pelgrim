@@ -20,7 +20,6 @@ class _SettingsPageState extends State<SettingsPage> {
   Widget build(BuildContext context) {
     final User myUser = context.read<UserProvider>().user!;
     final Group groupInfo = context.read<UserProvider>().groupInfo!;
-
     final screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(

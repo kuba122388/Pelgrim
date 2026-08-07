@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:pelgrim/presentation/providers/text_size_provider.dart';
 import 'package:pelgrim/presentation/providers/user_provider.dart';
 import 'package:pelgrim/presentation/user/all_users/pages/all_users_page.dart';
 import 'package:pelgrim/presentation/user/announcements/pages/announcements_page.dart';
 import 'package:pelgrim/presentation/user/contact/pages/contact_page.dart';
 import 'package:pelgrim/presentation/user/help/pages/help_page.dart';
-import 'package:pelgrim/presentation/user/images_upload/pages/images_upload_page.dart';
 import 'package:pelgrim/presentation/user/informant/pages/informant_page.dart';
 import 'package:pelgrim/presentation/user/playing_now/pages/playing_now_page.dart';
 import 'package:pelgrim/presentation/user/playing_now/pages/playing_now_topbar.dart';
@@ -36,6 +36,7 @@ class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     final user = context.read<UserProvider>().user;
+    final textProvider = context.watch<TextSizeProvider>();
     final isAdmin = user?.isAdmin ?? false;
 
     final pages = [
@@ -45,7 +46,7 @@ class _MainPageState extends State<MainPage> {
       const GroupDutiesPage(),
       const InformantPage(),
       const ContactPage(),
-      const ImagePage(),
+      // const ImagePage(),
       if (isAdmin) const AllUsersPage(),
       const HelpPage(),
     ];
@@ -57,7 +58,7 @@ class _MainPageState extends State<MainPage> {
       const CustomTopBar(),
       const CustomTopBar(),
       const CustomTopBar(),
-      const CustomTopBar(),
+      // const CustomTopBar(),
       if (isAdmin) const CustomTopBar(),
       const CustomTopBar(),
     ];
@@ -74,6 +75,32 @@ class _MainPageState extends State<MainPage> {
         currentUser: user!,
       ),
       body: pages[_selectedIndex],
+      floatingActionButton: _selectedIndex == 1
+          ? Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                FloatingActionButton(
+                  onPressed: textProvider.decreaseScaleFactor,
+                  backgroundColor: Colors.cyan,
+                  child: const Text(
+                    "-",
+                    style: TextStyle(fontSize: 32.0, color: Colors.white),
+                  ),
+                ),
+                const SizedBox(
+                  height: 20.0,
+                ),
+                FloatingActionButton(
+                  onPressed: textProvider.increaseScaleFactor,
+                  backgroundColor: Colors.cyan,
+                  child: const Text(
+                    "+",
+                    style: TextStyle(fontSize: 32.0, color: Colors.white),
+                  ),
+                ),
+              ],
+            )
+          : null,
     );
   }
 }

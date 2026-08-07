@@ -30,7 +30,7 @@ class _BurgerMenuState extends State<BurgerMenu> {
     'Służby i dyżury',
     'Informator',
     'Kontakt',
-    'Zdjęcia',
+    // 'Zdjęcia',
     if (widget.currentUser.isAdmin) 'Użytkownicy',
     'Pomoc'
   ];
@@ -42,7 +42,7 @@ class _BurgerMenuState extends State<BurgerMenu> {
     './images/handshake.png',
     './images/information.png',
     './images/phone.png',
-    './images/images.png',
+    // './images/images.png',
     if (widget.currentUser.isAdmin) './images/users.png',
     './images/about.png'
   ];

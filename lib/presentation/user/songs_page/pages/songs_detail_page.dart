@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pelgrim/core/const/app_consts.dart';
 import 'package:pelgrim/presentation/providers/song_provider.dart';
+import 'package:pelgrim/presentation/providers/text_size_provider.dart';
 import 'package:pelgrim/presentation/providers/user_provider.dart';
 import 'package:pelgrim/presentation/user/songs_page/widgets/songs_detail_topbar.dart';
 import 'package:provider/provider.dart';
@@ -40,6 +41,7 @@ class _SongsDetailPageState extends State<SongsDetailPage> {
     final screenHeight = MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top;
 
     final songProvider = context.watch<SongProvider>();
+    final textProvider = context.watch<TextSizeProvider>();
 
     final song = songProvider.songs.firstWhere(
       (s) => s.id == widget.songId,
@@ -53,109 +55,133 @@ class _SongsDetailPageState extends State<SongsDetailPage> {
     Color secondColorHere = isPlayingNow ? groupInfo.secondColor : Colors.white;
 
     return Scaffold(
-      appBar: SongsDetailTopbar(song: song),
-      body: SafeArea(
-        child: Center(
-          child: Container(
-            decoration: BoxDecoration(
-              boxShadow: const [BOX_SHADOW_CONTAINER],
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(20),
-            ),
-            width: screenWidth * 0.91,
-            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-            margin: EdgeInsets.symmetric(vertical: screenHeight * 0.02),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Center(
-                  child: Text(
-                    song.title,
-                    textAlign: TextAlign.center,
-                    softWrap: true,
-                    style: const TextStyle(fontFamily: 'Lexend', fontSize: 22),
-                  ),
-                ),
-                const Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SizedBox(
-                      width: 50,
-                      child: Divider(
-                        color: Colors.black,
-                      ),
+        appBar: SongsDetailTopbar(song: song),
+        body: SafeArea(
+          child: Center(
+            child: Container(
+              decoration: BoxDecoration(
+                boxShadow: const [BOX_SHADOW_CONTAINER],
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              width: screenWidth * 0.91,
+              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+              margin: EdgeInsets.symmetric(vertical: screenHeight * 0.02),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Center(
+                    child: Text(
+                      song.title,
+                      textAlign: TextAlign.center,
+                      softWrap: true,
+                      style: TextStyle(
+                          fontFamily: 'Lexend', fontSize: 22 + textProvider.scaleFactor / 2),
                     ),
-                  ],
-                ),
-                Expanded(
-                  child: Scrollbar(
-                    thumbVisibility: true,
-                    child: SingleChildScrollView(
-                      child: Padding(
-                        padding: const EdgeInsets.only(right: 10),
-                        child: Text(
-                          song.lyrics,
-                          style: const TextStyle(
-                            letterSpacing: 0.1,
-                            fontFamily: 'Lexend',
-                            fontSize: FONT_SIZE_SMALL,
-                            color: Colors.black,
+                  ),
+                  const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SizedBox(
+                        width: 50,
+                        child: Divider(
+                          color: Colors.black,
+                        ),
+                      ),
+                    ],
+                  ),
+                  Expanded(
+                    child: Scrollbar(
+                      thumbVisibility: true,
+                      child: SingleChildScrollView(
+                        child: Padding(
+                          padding: const EdgeInsets.only(right: 10),
+                          child: Text(
+                            song.lyrics,
+                            style: TextStyle(
+                              letterSpacing: 0.1,
+                              fontFamily: 'Lexend',
+                              fontSize: FONT_SIZE_SMALL + textProvider.scaleFactor,
+                              color: Colors.black,
+                            ),
                           ),
                         ),
                       ),
                     ),
                   ),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Visibility(
-                      visible: isAdmin,
-                      child: InkWell(
-                        onTap: () {
-                          songProvider.streamSong(_groupId, song);
-                        },
-                        child: Container(
-                          margin: const EdgeInsets.only(bottom: 10, top: 10),
-                          width: 50,
-                          height: 50,
-                          decoration: BoxDecoration(
-                            gradient: RadialGradient(
-                              center: Alignment.center,
-                              radius: 1.0,
-                              colors: [secondColorHere, firstColorHere],
-                              stops: const [0.2, 0.8],
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Visibility(
+                        visible: isAdmin,
+                        child: InkWell(
+                          onTap: () {
+                            songProvider.streamSong(_groupId, song);
+                          },
+                          child: Container(
+                            margin: const EdgeInsets.only(bottom: 10, top: 10),
+                            width: 50,
+                            height: 50,
+                            decoration: BoxDecoration(
+                              gradient: RadialGradient(
+                                center: Alignment.center,
+                                radius: 1.0,
+                                colors: [secondColorHere, firstColorHere],
+                                stops: const [0.2, 0.8],
+                              ),
+                              borderRadius: BorderRadius.circular(30),
+                              boxShadow: const [BOX_SHADOW_CONTAINER],
                             ),
-                            borderRadius: BorderRadius.circular(30),
-                            boxShadow: const [BOX_SHADOW_CONTAINER],
-                          ),
-                          child: ElevatedButton(
-                            style: ButtonStyle(
-                              padding: WidgetStateProperty.all(EdgeInsets.zero),
-                              backgroundColor: WidgetStateProperty.all(Colors.transparent),
-                            ),
-                            onPressed: null,
-                            child: Image.asset(
-                              './images/radio-waves.png',
-                              width: 30,
-                              height: 30,
-                              color: firstColorHere == Colors.white
-                                  ? Colors.black.withValues(alpha: 0.6)
-                                  : Colors.white,
-                              colorBlendMode: BlendMode.srcIn,
+                            child: ElevatedButton(
+                              style: ButtonStyle(
+                                padding: WidgetStateProperty.all(EdgeInsets.zero),
+                                backgroundColor: WidgetStateProperty.all(Colors.transparent),
+                              ),
+                              onPressed: null,
+                              child: Image.asset(
+                                './images/radio-waves.png',
+                                width: 30,
+                                height: 30,
+                                color: firstColorHere == Colors.white
+                                    ? Colors.black.withValues(alpha: 0.6)
+                                    : Colors.white,
+                                colorBlendMode: BlendMode.srcIn,
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    )
-                  ],
-                ),
-              ],
+                      )
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ),
-      ),
-    );
+        floatingActionButton: Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            FloatingActionButton(
+              onPressed: textProvider.decreaseScaleFactor,
+              backgroundColor: Colors.cyan,
+              child: const Text(
+                "-",
+                style: TextStyle(fontSize: 32.0, color: Colors.white),
+              ),
+            ),
+            const SizedBox(
+              height: 20.0,
+            ),
+            FloatingActionButton(
+              onPressed: textProvider.increaseScaleFactor,
+              backgroundColor: Colors.cyan,
+              child: const Text(
+                "+",
+                style: TextStyle(fontSize: 32.0, color: Colors.white),
+              ),
+            ),
+          ],
+        ));
   }
 }

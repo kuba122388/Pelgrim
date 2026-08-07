@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:pelgrim/core/const/app_consts.dart';
 import 'package:pelgrim/domain/entities/song.dart';
 import 'package:pelgrim/presentation/providers/song_provider.dart';
+import 'package:pelgrim/presentation/providers/text_size_provider.dart';
 import 'package:pelgrim/presentation/providers/user_provider.dart';
 import 'package:pelgrim/presentation/user/songs_page/pages/songs_detail_page.dart';
 import 'package:provider/provider.dart';
@@ -51,6 +52,8 @@ class SongsPageState extends State<SongsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final textProvider = context.watch<TextSizeProvider>();
+
     List<Song> filteredSongs(List<Song> listSong) {
       final q = query.toLowerCase();
 
@@ -98,7 +101,7 @@ class SongsPageState extends State<SongsPage> {
                     'Tutaj wyszukaj piosenki',
                     style: TextStyle(
                       color: Colors.black.withValues(alpha: 0.4),
-                      fontSize: 14,
+                      fontSize: 14 + textProvider.scaleFactor / 2,
                     ),
                   ),
                   border: const OutlineInputBorder(borderSide: BorderSide.none),
@@ -163,8 +166,8 @@ class SongsPageState extends State<SongsPage> {
                                   padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
                                   child: Text(
                                     displayTitle,
-                                    style: const TextStyle(
-                                      fontSize: 16,
+                                    style: TextStyle(
+                                      fontSize: 16 + textProvider.scaleFactor / 2,
                                       fontFamily: 'Lexend',
                                       color: FONT_BLACK_COLOR,
                                     ),
