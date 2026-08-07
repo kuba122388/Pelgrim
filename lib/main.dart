@@ -6,7 +6,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:pelgrim/app.dart';
 import 'package:pelgrim/core/config/firebase_options.dart';
-import 'package:pelgrim/core/storage/hive_setup.dart';
 import 'package:pelgrim/presentation/providers/all_users_provider.dart';
 import 'package:pelgrim/presentation/providers/announcement_provider.dart';
 import 'package:pelgrim/presentation/providers/contact_provider.dart';
@@ -20,6 +19,7 @@ import 'package:pelgrim/presentation/providers/user_provider.dart';
 import 'package:provider/provider.dart';
 
 import 'core/di/service_locator.dart';
+import 'core/storage/hive_setup.dart';
 
 Future<void> main() async {
   // Future<void> migrateToNewStructure() async {
@@ -54,10 +54,12 @@ Future<void> main() async {
 
   WidgetsFlutterBinding.ensureInitialized();
 
-  await FlutterDownloader.initialize(
-    debug: true,
-    ignoreSsl: true,
-  );
+  if (!kIsWeb) {
+    await FlutterDownloader.initialize(
+      debug: true,
+      ignoreSsl: true,
+    );
+  }
 
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,

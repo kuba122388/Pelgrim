@@ -114,7 +114,7 @@ class _ContactPageState extends State<ContactPage> {
                                   _isEditing ? _controller.text : provider.contactDescription,
                                   style: const TextStyle(
                                     fontFamily: 'Lexend',
-                                    fontSize: 14,
+                                    fontSize: 20,
                                     letterSpacing: 0.2,
                                   ),
                                 );

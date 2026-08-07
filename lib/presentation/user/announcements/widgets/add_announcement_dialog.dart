@@ -39,8 +39,10 @@ class _AddAnnouncementDialogState extends State<AddAnnouncementDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
+      constraints: const BoxConstraints(minWidth: double.maxFinite),
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisSize: MainAxisSize.max,
         children: [
           const Text('Dodaj ogłoszenie'),
           IconButton(
@@ -78,8 +80,8 @@ class _AddAnnouncementDialogState extends State<AddAnnouncementDialog> {
                 controller: _controller,
                 decoration: const InputDecoration(border: InputBorder.none),
                 textCapitalization: TextCapitalization.sentences,
-                style: const TextStyle(fontSize: FONT_SIZE_SMALL),
-                maxLines: 8,
+                style: const TextStyle(fontSize: 20.0),
+                maxLines: 6,
               ),
             ),
             _buildCheckboxes(),
@@ -91,13 +93,16 @@ class _AddAnnouncementDialogState extends State<AddAnnouncementDialog> {
   }
 
   Widget _buildCheckboxes() {
-    return Row(
+    return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         _checkboxWithLabel(
           label: 'Oznacz jako ważne',
           value: _isImportant,
           onChanged: (v) => setState(() => _isImportant = v!),
+        ),
+        const SizedBox(
+          height: 20,
         ),
         _checkboxWithLabel(
           label: 'Post anonimowy',
@@ -127,7 +132,7 @@ class _AddAnnouncementDialogState extends State<AddAnnouncementDialog> {
         Text(
           label,
           style: const TextStyle(
-            fontSize: 10,
+            fontSize: 18,
             fontFamily: 'Lexend',
           ),
         ),
